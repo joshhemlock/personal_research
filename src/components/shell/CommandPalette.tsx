@@ -121,7 +121,6 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
     }
   };
 
-  let index = -1;
   return (
     <dialog
       ref={dialogRef}
@@ -164,8 +163,8 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
                 {g}
               </div>
               {items.map((item) => {
-                index += 1;
-                const i = index;
+                // Results are already in group order, so this is the flat index.
+                const i = results.indexOf(item);
                 const on = i === active;
                 return (
                   <div
