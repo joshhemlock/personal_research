@@ -14,6 +14,7 @@ type Column = {
   label: string;
   est: number;
   actual?: number;
+  beat?: boolean;
   surprise: string;
   surpriseClass: string;
   dot?: string;
@@ -32,7 +33,8 @@ export function EpsCard({ quarters, eps }: EpsCardProps) {
   const pos = (v: number) => (((v - lo) / (hi - lo)) * 100).toFixed(1);
 
   const cols: Column[] = quarters.map((q, k) => {
-    const s = (eps.actual[k] / eps.est[k] - 1) * 100;
+    // Rounded first, so a tiny miss that shows as 0.0 reads as in line, not "−0.0".
+    const s = +((eps.actual[k] / eps.est[k] - 1) * 100).toFixed(1);
     const beat = s >= 0;
     const label = `${q.q} ${q.fy.replace("FY", "’")}`;
     return {
@@ -42,6 +44,7 @@ export function EpsCard({ quarters, eps }: EpsCardProps) {
       label: `${label}: estimate ${eps.est[k].toFixed(2)}, actual ${eps.actual[k].toFixed(2)}`,
       est: eps.est[k],
       actual: eps.actual[k],
+      beat,
       surprise: (beat ? "+" : MINUS) + Math.abs(s).toFixed(1),
       surpriseClass: beat ? "text-up-text" : "text-down-text",
       dot: beat ? "#111113" : "#E5484D",
@@ -58,7 +61,7 @@ export function EpsCard({ quarters, eps }: EpsCardProps) {
     surpriseClass: "text-ink-3",
     bg: "rgba(245,165,36,0.16)",
   });
-  const beats = cols.filter((c) => c.actual !== undefined && c.actual >= c.est).length;
+  const beats = cols.filter((c) => c.beat).length;
 
   return (
     <section id="earnings" aria-labelledby="ea-h" className={`${PANEL} flex flex-col gap-2.5 px-[18px] py-[14px]`}>

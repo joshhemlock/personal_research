@@ -240,6 +240,28 @@ const SEGMENT_NAMES: Record<string, string[]> = {
   "Health care": ["Pharma", "Devices", "Diagnostics"],
 };
 
+/**
+ * Rough shape of each sample company so generated figures land in a plausible
+ * range: latest quarterly revenue (USD millions) and costs as shares of revenue.
+ * Ballpark sample values; seeded noise is added on top.
+ */
+const PROFILES: Record<string, { rev: number; gm: number; rd: number; sga: number }> = {
+  AAPL: { rev: 102000, gm: 0.47, rd: 0.08, sga: 0.065 },
+  MSFT: { rev: 76000, gm: 0.69, rd: 0.13, sga: 0.1 },
+  AMZN: { rev: 175000, gm: 0.5, rd: 0.14, sga: 0.25 },
+  GOOGL: { rev: 100000, gm: 0.59, rd: 0.14, sga: 0.12 },
+  META: { rev: 51000, gm: 0.82, rd: 0.27, sga: 0.12 },
+  AVGO: { rev: 16000, gm: 0.77, rd: 0.19, sga: 0.05 },
+  COST: { rev: 68000, gm: 0.13, rd: 0, sga: 0.095 },
+  KLAC: { rev: 3200, gm: 0.61, rd: 0.11, sga: 0.07 },
+  LLY: { rev: 16500, gm: 0.82, rd: 0.22, sga: 0.18 },
+  ANET: { rev: 2300, gm: 0.64, rd: 0.12, sga: 0.1 },
+  TSM: { rev: 33000, gm: 0.59, rd: 0.07, sga: 0.03 },
+  VRTX: { rev: 3100, gm: 0.86, rd: 0.3, sga: 0.17 },
+  NOW: { rev: 3400, gm: 0.78, rd: 0.22, sga: 0.42 },
+  ISRG: { rev: 2500, gm: 0.66, rd: 0.1, sga: 0.27 },
+};
+
 /** Four peers: same industry first, then same sector, then the rest of the universe. */
 function peersOf(sec: Security): string[] {
   const others = UNIVERSE.filter((s) => s.symbol !== sec.symbol);
@@ -256,28 +278,35 @@ function generated(sec: Security): FinancialsData {
   const last4 = (a: number[]) => a.slice(4);
   const first4 = (a: number[]) => a.slice(0, 4);
 
+  const profile = PROFILES[sec.symbol] ?? {
+    rev: between(2000, 60000),
+    gm: between(0.4, 0.76),
+    rd: between(0.04, 0.2),
+    sga: between(0.05, 0.16),
+  };
+
   // Revenue (USD millions), eight quarters then four fiscal years.
-  const base = between(2500, 60000);
-  const g = between(0.006, 0.06); // quarterly growth
+  const g = between(0.005, 0.04); // quarterly growth
   const gy = (1 + g) ** 4 - 1;
+  const base = (profile.rev * between(0.9, 1.1)) / (1 + g) ** 7;
   const rev8 = Array.from({ length: 8 }, (_, i) => Math.round(base * (1 + g) ** i * between(0.975, 1.025)));
   const lastFy = sum(first4(rev8));
   const revA = [3, 2, 1, 0].map((k) => Math.round((lastFy / (1 + gy) ** k) * (k ? between(0.97, 1.03) : 1)));
 
-  // Cost structure as shares of revenue; operating margin stays at 8% or more.
-  const gm = between(0.4, 0.76);
-  let rd = between(0.04, 0.2);
-  let sg = between(0.05, 0.16);
-  if (gm - rd - sg < 0.08) {
-    const f = (gm - 0.08) / (rd + sg);
+  // Cost structure as shares of revenue; operating margin stays at 3% or more.
+  const gm = profile.gm * between(0.97, 1.03);
+  let rd = profile.rd * between(0.9, 1.1);
+  let sg = profile.sga * between(0.9, 1.1);
+  if (gm - rd - sg < 0.03) {
+    const f = (gm - 0.03) / (rd + sg);
     rd *= f;
     sg *= f;
   }
-  const otherRate = between(0.003, 0.02);
+  const otherRate = (gm - rd - sg) * between(0.02, 0.1); // small next to operating profit
   const taxRate = between(0.12, 0.21);
 
   const income = (rev: number[]) => {
-    const cogs = rev.map((v) => Math.round(v * (1 - gm + between(-0.012, 0.012))));
+    const cogs = rev.map((v) => Math.round(v * (1 - gm * between(0.985, 1.015))));
     const gross = rev.map((v, k) => v - cogs[k]);
     const rnd = rev.map((v) => Math.round(v * rd * between(0.95, 1.05)));
     const sga = rev.map((v) => Math.round(v * sg * between(0.95, 1.05)));
@@ -363,11 +392,11 @@ function generated(sec: Security): FinancialsData {
   const op8 = pctOf(q.op, rev8);
   const marginTtm = (part: number[], which: (x: number[]) => number[]) => (sum(which(part)) / sum(which(rev8))) * 100;
   const kpiFlow = (label: string, s: number[]): Kpi => {
-    const d = change(sum(last4(s)), sum(first4(s)));
+    const d = round1(change(sum(last4(s)), sum(first4(s))));
     return { label, value: billions(sum(last4(s))), delta: pct(d, 1) + " YoY", up: d >= 0, bars: s };
   };
   const kpiMargin = (label: string, part: number[], bars: number[]): Kpi => {
-    const d = marginTtm(part, last4) - marginTtm(part, first4);
+    const d = round1(marginTtm(part, last4) - marginTtm(part, first4));
     return { label, value: marginTtm(part, last4).toFixed(1) + "%", delta: signed(d, 1) + " pt YoY", up: d >= 0, bars };
   };
 
@@ -383,7 +412,7 @@ function generated(sec: Security): FinancialsData {
   const spread = (v: number) => [v, ...peers.map(() => round1(v * between(0.5, 1.4)))];
 
   // Earnings: estimates a few percent off the reported EPS.
-  const est8 = eps8.map((v) => round2(v / (1 + between(-0.05, 0.08))));
+  const est8 = eps8.map((v) => round2(v / (1 + between(-0.04, 0.09))));
   const nextEst = round2(eps8[7] * (1 + g) * between(0.99, 1.04));
 
   // Revenue mix: one dominant segment, two smaller ones, then "Other" (gray).
@@ -426,7 +455,7 @@ function generated(sec: Security): FinancialsData {
         flowRow("Net income", "total", q.net, a.net),
         flowRow("Diluted EPS", "eps", eps8, epsA),
         pointRow("Diluted shares", "plain", { qv: shares8, av: sharesA }),
-      ],
+      ].filter((row) => [...row.quarterly, ...row.annual].some((v) => v !== 0)), // e.g. no R&D line for a retailer
       balance: [
         pointRow("Cash & short-term investments", "plain", cashBal),
         pointRow("Accounts receivable", "item", receivables),
