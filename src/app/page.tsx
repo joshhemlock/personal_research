@@ -39,7 +39,7 @@ export default function OverviewPage() {
         <Watchlist rows={WATCHLIST} />
         <SectorPerformance sectors={SECTORS} periods={SECTOR_PERIODS} scale={SECTOR_HEAT_SCALE} />
       </main>
-      <aside aria-label="Movers, earnings and research queue" className="flex min-w-0 flex-[1_1_330px] flex-col gap-3 pb-1">
+      <aside aria-label="Movers, earnings and research queue" className="grid min-w-0 flex-[1_1_330px] grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] content-start gap-3 pb-1 max-split:basis-full">
         <Movers rows={WATCHLIST} fullScale={MOVERS_FULL_SCALE} />
         <UpcomingEarnings
           events={UPCOMING_EARNINGS}

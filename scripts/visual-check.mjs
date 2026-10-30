@@ -3,11 +3,14 @@
 // its target PNG in design/screens.
 //
 //   node scripts/visual-check.mjs <screen> [--clip x,y,w,h] [--zoom n] [--base url]
+//   node scripts/visual-check.mjs <screen> --width 1400 [--height 900] [--full]
 //
 // screen: overview | chart | financials | screener | notes | all
 // Writes to .visual/: <screen>.app.png (the build), <screen>.diff.png
 // (pixelmatch diff, red = different) and, with --clip, <screen>.clip.png
 // (target crop on top, build crop below, optionally zoomed).
+// With --width other than 1512 it only screenshots (no target to diff
+// against): .visual/<screen>.<width>.png, the whole page with --full.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -67,6 +70,20 @@ function stack(a, b, gap = 8) {
   return out;
 }
 
+async function snapshot(browser, name, base, width) {
+  const height = Number(arg("--height", String(VIEWPORT.height)));
+  const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
+  await page.goto(base + SCREENS[name].path, { waitUntil: "networkidle" });
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(400);
+  const file = join(OUT, `${name}.${width}.png`);
+  await page.screenshot({ path: file, fullPage: process.argv.includes("--full") });
+  // Anything wider than the viewport means content is clipped or scrolls.
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+  await page.close();
+  console.log(`${name} @${width}px → .visual/${name}.${width}.png${overflow > 0 ? `  (page overflows by ${overflow}px)` : ""}`);
+}
+
 async function check(browser, name, base) {
   const s = SCREENS[name];
   const page = await browser.newPage({ viewport: VIEWPORT, deviceScaleFactor: 1 });
@@ -107,7 +124,11 @@ mkdirSync(OUT, { recursive: true });
 const base = arg("--base", "http://localhost:3000");
 const browser = await chromium.launch();
 try {
-  for (const name of which === "all" ? Object.keys(SCREENS) : [which]) await check(browser, name, base);
+  const width = Number(arg("--width", String(VIEWPORT.width)));
+  for (const name of which === "all" ? Object.keys(SCREENS) : [which]) {
+    if (width === VIEWPORT.width) await check(browser, name, base);
+    else await snapshot(browser, name, base, width);
+  }
 } finally {
   await browser.close();
 }

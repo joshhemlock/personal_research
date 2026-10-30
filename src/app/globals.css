@@ -37,6 +37,10 @@
   --color-amber: #f5a524;
   --color-alert: #d93c42;
 
+  /* Below this width the design's side columns no longer have room beside
+     the main column, so screens move them underneath (max-split:...). */
+  --breakpoint-split: 91.5rem;
+
   --shadow-shell: 0 40px 80px -40px rgba(17, 17, 19, 0.28), 0 2px 6px rgba(17, 17, 19, 0.04);
   --shadow-seg: 0 1px 3px rgba(17, 17, 19, 0.1);
   --shadow-chip: 0 1px 2px rgba(17, 17, 19, 0.05);

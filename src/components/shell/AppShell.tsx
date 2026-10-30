@@ -13,7 +13,7 @@ type AppShellProps = {
   railClassName?: string;
   /** Overrides the rail's "ask" tool label. */
   askLabel?: string;
-  /** The screen's columns (main, aside…). The rail is appended after them. */
+  /** The screen's columns (main, aside…). They wrap beside the rail. */
   children: ReactNode;
 };
 
@@ -26,8 +26,9 @@ export function AppShell({ active, symbol = "NVDA", quote, railClassName, askLab
     <div className="box-border min-h-screen bg-page p-[14px] max-sm:p-2">
       <div className="mx-auto box-border flex min-h-[calc(100vh-28px)] max-w-[1600px] flex-col gap-[14px] overflow-hidden rounded-[32px] border border-white bg-shell p-4 shadow-shell max-sm:rounded-[24px] max-sm:p-3">
         <TopBar quote={quote} />
-        <div className="flex flex-wrap items-stretch gap-4">
-          {children}
+        {/* Screen columns wrap inside their own area; the rail keeps its column. */}
+        <div className="flex items-stretch gap-4 max-[1100px]:flex-col">
+          <div className="flex min-w-0 flex-1 flex-wrap items-stretch gap-4">{children}</div>
           <Rail active={active} symbol={symbol} askLabel={askLabel} className={railClassName} />
         </div>
       </div>

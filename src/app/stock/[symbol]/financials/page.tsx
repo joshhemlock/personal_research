@@ -54,7 +54,7 @@ export default async function FinancialsPage({ params }: PageProps<"/stock/[symb
         </div>
         <StatementsCard quarters={data.quarters.slice(4)} years={data.years} statements={data.statements} />
       </main>
-      <aside aria-label="Valuation and earnings" className="flex min-w-0 flex-[1_1_330px] flex-col gap-3 pb-1">
+      <aside aria-label="Valuation and earnings" className="grid min-w-0 flex-[1_1_330px] grid-cols-[repeat(auto-fit,minmax(min(420px,100%),1fr))] content-start gap-3 pb-1 max-split:basis-full">
         <ValuationCard symbols={data.valuation.symbols} values={data.valuation.values} />
         <EpsCard quarters={data.quarters} eps={data.eps} />
         <RevenueMix period={data.mix.period} segments={data.mix.segments} />
