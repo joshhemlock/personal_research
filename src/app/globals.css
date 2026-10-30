@@ -93,6 +93,16 @@
     color: inherit;
     text-decoration: none;
   }
+  /* Form controls keep the browser's own metrics, as in the design
+     snapshots: normal line height and proportional digits. */
+  button,
+  input,
+  select,
+  textarea {
+    line-height: normal;
+    font-variant-numeric: normal;
+    letter-spacing: normal;
+  }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
   select,
@@ -109,7 +119,6 @@
 /* Underlined inline links ("Transcripts", "Reset"). */
 @utility link {
   text-decoration: underline;
-  text-underline-offset: 2px;
   &:hover {
     color: var(--color-focus);
   }

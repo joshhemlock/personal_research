@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { AppShell } from "@/components/shell/AppShell";
-import { daysBetween, longDay } from "@/components/overview/format";
 import { Greeting } from "@/components/overview/Greeting";
 import { IndexTiles } from "@/components/overview/IndexTiles";
 import { Movers } from "@/components/overview/Movers";
@@ -25,21 +24,17 @@ import {
 
 export const metadata: Metadata = { title: "Overview" };
 
+// Sample data for now; swap these imports for the data layer later.
 export default function OverviewPage() {
-  const up = WATCHLIST.filter((r) => r.changePct >= 0).length;
-  const next = UPCOMING_EARNINGS[0];
-  const summary = [
-    longDay(MARKET_DATE),
-    `${up} of ${WATCHLIST.length} watchlist names are up`,
-    next && `${next.symbol} reports in ${daysBetween(MARKET_DATE, next.date)} days`,
-  ]
-    .filter(Boolean)
-    .join(" · ");
-
   return (
     <AppShell active="overview">
       <main className="flex min-w-0 flex-[999_1_620px] flex-col gap-3 pb-1">
-        <Greeting title={GREETING} summary={summary} />
+        <Greeting
+          title={GREETING}
+          today={MARKET_DATE}
+          watchlist={WATCHLIST}
+          nextEarnings={UPCOMING_EARNINGS[0]}
+        />
         <IndexTiles tiles={INDEX_TILES} />
         <Watchlist rows={WATCHLIST} />
         <SectorPerformance sectors={SECTORS} periods={SECTOR_PERIODS} scale={SECTOR_HEAT_SCALE} />

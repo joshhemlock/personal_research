@@ -16,9 +16,10 @@ const TOOL =
 
 /** Watchlist panel: group filter, then one row per symbol linking to its chart. */
 export function Watchlist({ rows }: { rows: WatchRow[] }) {
-  const tabs = (["All", ...WATCH_GROUPS] as WatchFilter[]).map((g) => ({
-    value: g,
-    label: `${g} ${g === "All" ? rows.length : rows.filter((r) => r.group === g).length}`,
+  const filters: WatchFilter[] = ["All", ...WATCH_GROUPS];
+  const tabs = filters.map((f) => ({
+    value: f,
+    label: `${f} ${f === "All" ? rows.length : rows.filter((r) => r.group === f).length}`,
   }));
   return (
     <section aria-labelledby="wl-h" className={`${PANEL} pb-1`}>

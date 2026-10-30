@@ -1,19 +1,28 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
+import type { EarningsEvent, WatchRow } from "@/lib/mock/overview";
+import { daysBetween, longDay } from "./format";
 
 type GreetingProps = {
   title: string;
-  /** Date and day summary, e.g. "Friday, October 30 · 5 of 8 watchlist names are up". */
-  summary: string;
+  /** Today, YYYY-MM-DD. */
+  today: string;
+  watchlist: WatchRow[];
+  nextEarnings?: EarningsEvent;
 };
 
-/** Page heading with the Customize and Find ideas actions. */
-export function Greeting({ title, summary }: GreetingProps) {
+/** Page heading with a one-line summary of the day, plus the Customize and Find ideas actions. */
+export function Greeting({ title, today, watchlist, nextEarnings }: GreetingProps) {
+  const up = watchlist.filter((r) => r.changePct >= 0).length;
+  const summary = [longDay(today), `${up} of ${watchlist.length} watchlist names are up`];
+  if (nextEarnings) {
+    summary.push(`${nextEarnings.symbol} reports in ${daysBetween(today, nextEarnings.date)} days`);
+  }
   return (
     <div className="flex flex-wrap items-end justify-between gap-3 px-1">
       <div>
         <h1 className="text-[26px] font-normal tracking-[-0.02em]">{title}</h1>
-        <p className="text-[14px] text-ink-3">{summary}</p>
+        <p className="text-[14px] text-ink-3">{summary.join(" · ")}</p>
       </div>
       <div className="flex flex-wrap gap-2">
         <button
