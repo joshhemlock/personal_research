@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
+import { AlertsPanel } from "@/components/chart/AlertsPanel";
+import { ChartWorkspace } from "@/components/chart/ChartWorkspace";
+import { FLUSH_BOTTOM } from "@/components/chart/layout";
+import { TickerCard } from "@/components/chart/TickerCard";
+import { TickerTabs } from "@/components/chart/TickerTabs";
+import { WatchlistPanel } from "@/components/chart/WatchlistPanel";
+import { ALERTS, LAST_TICK, getChartData } from "@/lib/mock/chart";
 import { findSecurity, UNIVERSE, AS_OF } from "@/lib/mock/market";
 import { num, pct, signed } from "@/lib/format";
 
@@ -34,8 +41,19 @@ export default async function StockChartPage({ params }: PageProps<"/stock/[symb
         asOf: `${AS_OF.date} · ${AS_OF.time}`,
       }}
     >
-      <main className="flex min-w-0 flex-[999_1_640px] flex-col gap-2.5">{sec.symbol} chart</main>
-      <aside className="flex min-w-0 flex-[1_1_330px] flex-col gap-3 pb-4" />
+      <ChartWorkspace
+        security={{ symbol: sec.symbol, name: sec.name, exchange: sec.exchange, changePct: sec.changePct }}
+        data={getChartData(sec)}
+        addNoteHref={sec.symbol === "NVDA" ? "/notes/nvda-core-thesis" : "/notes"}
+        lastTick={LAST_TICK}
+      >
+        <TickerTabs current={sec.symbol} />
+      </ChartWorkspace>
+      <aside aria-label="Watchlist, alerts and details" className={`flex min-w-0 flex-[1_1_330px] flex-col gap-3 pb-4 ${FLUSH_BOTTOM}`}>
+        <WatchlistPanel />
+        <AlertsPanel alerts={ALERTS} />
+        <TickerCard sec={sec} />
+      </aside>
     </AppShell>
   );
 }

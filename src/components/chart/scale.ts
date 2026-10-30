@@ -9,6 +9,9 @@ export const TIMEFRAMES: readonly Timeframe[] = ["1M", "3M", "6M", "YTD", "1Y", 
 
 const TF_BARS: Record<Exclude<Timeframe, "YTD">, number> = { "1M": 22, "3M": 64, "6M": 126, "1Y": 252, "2Y": 500 };
 
+/** Width of the price-label gutter right of the plot (px). */
+export const AXIS = 76;
+
 /** Inclusive range of bar indexes. */
 export type BarWindow = { from: number; to: number };
 
@@ -150,3 +153,12 @@ export function pillDate(time: string): string {
 
 export const monthOf = (time: string) => Number(time.slice(5, 7)) - 1;
 export const yearOf = (time: string) => Number(time.slice(0, 4));
+
+/** Bars that open a new month inside a window (month gridlines and labels). */
+export function monthStarts(bars: readonly Bar[], win: BarWindow): number[] {
+  const out: number[] = [];
+  for (let i = Math.max(1, win.from + 1); i <= win.to; i++) {
+    if (monthOf(bars[i].time) !== monthOf(bars[i - 1].time)) out.push(i);
+  }
+  return out;
+}

@@ -1,0 +1,73 @@
+import Link from "next/link";
+import { Icon } from "@/components/ui/Icon";
+import { TickerDot } from "@/components/ui/Pill";
+import { num, signed, pct } from "@/lib/format";
+import { LEGAL_NAMES, LAST_TICK_TIME, fairValue, noteHref } from "@/lib/mock/chart";
+import type { Security } from "@/lib/mock/market";
+import { CHART_ICONS } from "./icons";
+
+const ICON_LINK =
+  "inline-flex size-9 items-center justify-center rounded-[10px] transition-colors hover:bg-[rgba(17,17,19,0.05)] hover:text-ink";
+
+/** Price card for the open symbol with the user's base-case fair value. */
+export function TickerCard({ sec }: { sec: Security }) {
+  const note = noteHref(sec.symbol);
+  const fair = fairValue(sec);
+  const upside = ((fair - sec.price) / sec.price) * 100;
+  const tone = (v: number) => (v < 0 ? "text-down-text" : "text-up-text");
+  return (
+    <section aria-labelledby="tk-h" className="glass flex flex-col gap-[9px] rounded-[24px] px-[18px] py-4">
+      <div className="flex items-center justify-between gap-2">
+        <span className="inline-flex items-center gap-2.5">
+          <TickerDot symbol={sec.symbol} size={34} fontSize={15} />
+          <h2 id="tk-h" className="text-[22px] font-medium">
+            {sec.symbol}
+          </h2>
+        </span>
+        <span className="inline-flex text-ink-3">
+          <Link href={`/stock/${sec.symbol}/financials`} aria-label="Open financials" className={ICON_LINK}>
+            <Icon name="financials" size={18} />
+          </Link>
+          <Link href={note} aria-label="Open research note" className={ICON_LINK}>
+            <Icon name="notes" size={18} linejoin="round" />
+          </Link>
+          <Link href={note} aria-label="Edit thesis" className={ICON_LINK}>
+            <Icon d={CHART_ICONS.edit} size={18} linejoin="round" />
+          </Link>
+        </span>
+      </div>
+      <div className="flex flex-col gap-0.5">
+        <span className="text-[16px]">
+          {LEGAL_NAMES[sec.symbol] ?? sec.name} <span className="text-muted">↗ ·</span> {sec.exchange}
+        </span>
+        <span className="text-[13px] text-ink-3">
+          {sec.industry} · {sec.sector}
+        </span>
+      </div>
+      <div className="flex flex-col gap-0.5">
+        <span className="flex flex-wrap items-baseline gap-2">
+          <span className="text-[28px] font-normal tracking-[-0.02em]">{num(sec.price)}</span>
+          <span className="text-[14px]">USD</span>
+          <span className={`text-[18px] ${tone(sec.change)}`}>
+            {signed(sec.change)} ({pct(sec.changePct)})
+          </span>
+        </span>
+        <span className="text-[13px] text-muted">Last update at {LAST_TICK_TIME}, UTC−4</span>
+      </div>
+      <span aria-hidden="true" className="h-px bg-[rgba(17,17,19,0.07)]" />
+      <Link href={note} className="group flex flex-col gap-1 text-ink">
+        <span className="flex flex-wrap items-baseline gap-2">
+          <span className="text-[24px] font-normal tracking-[-0.02em] group-hover:text-focus">{num(fair)}</span>
+          <span className="text-[14px]">USD</span>
+          <span className={`text-[17px] ${tone(upside)}`}>
+            {upside >= 0 ? "+" : "−"}
+            {Math.abs(upside).toFixed(1)}% {upside >= 0 ? "upside" : "downside"}
+          </span>
+        </span>
+        <span className="inline-flex h-[22px] items-center self-start rounded-md bg-ink px-[9px] text-[12px] font-medium text-white">
+          My fair value · base case
+        </span>
+      </Link>
+    </section>
+  );
+}
