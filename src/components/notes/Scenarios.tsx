@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import type { Scenario, ScenarioKey } from "@/lib/mock/notes";
 import { num, pct } from "@/lib/format";
 
@@ -77,7 +77,7 @@ export function Scenarios({ initial, price }: { initial: Scenario[]; price: numb
     onFocus: () => {
       before.current = rows;
     },
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => set(key, f, e.target.value),
+    onChange: (e: ChangeEvent<HTMLInputElement>) => set(key, f, e.target.value),
     onBlur: () => done(key, f),
     onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => onKeyDown(e, key, f),
   });
@@ -103,7 +103,7 @@ export function Scenarios({ initial, price }: { initial: Scenario[]; price: numb
             <div key={r.key} className={`flex flex-[1_1_120px] flex-col gap-[2px] rounded-[14px] px-[14px] py-[10px] ${LOOK[r.key]}`}>
               <span className="text-[13px] opacity-80">
                 {r.key} ·{" "}
-                {/* The hidden copy sizes the box, so the input is exactly as wide as its text. */}
+                {/* A hidden copy of the text sizes the box, so the input is exactly as wide as its value. */}
                 <span className="relative inline-block">
                   <span aria-hidden="true" className="invisible whitespace-pre">
                     {prob || "0"}
@@ -118,19 +118,19 @@ export function Scenarios({ initial, price }: { initial: Scenario[]; price: numb
                 </span>
                 %
               </span>
-              {/* Sized by a hidden copy too, so the card never gets narrower than its value. */}
-              <span className="relative -mx-1 block text-[24px] font-normal tracking-[-0.02em]">
-                <span aria-hidden="true" className="invisible block px-1 whitespace-pre">
-                  {drafts[`${r.key}-value`] || num(r.value)}
-                </span>
+              <div className="-mx-1">
                 <input
                   type="text"
                   inputMode="decimal"
                   aria-label={`${r.key} case value`}
                   {...field(r.key, "value", num(r.value))}
-                  className={`${INPUT} absolute inset-0 size-full px-1 tracking-[-0.02em]`}
+                  className={`${INPUT} block w-full px-1 text-[24px] font-normal tracking-[-0.02em]`}
                 />
-              </span>
+                {/* Zero-height copy of the value: keeps the card from getting narrower than it. */}
+                <span aria-hidden="true" className="invisible block h-0 overflow-hidden px-1 text-[24px] tracking-[-0.02em] whitespace-pre">
+                  {drafts[`${r.key}-value`] || num(r.value)}
+                </span>
+              </div>
               <span className="text-[12px] opacity-85">{pct((r.value / price - 1) * 100, 1)}</span>
             </div>
           );

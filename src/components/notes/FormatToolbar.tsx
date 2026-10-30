@@ -18,6 +18,7 @@ const BUTTONS: { action: Action; label: string; d: string }[] = [
 
 const COMMANDS: Record<Toggle, string> = { bold: "bold", italic: "italic", list: "insertUnorderedList" };
 const NONE: Record<Toggle, boolean> = { bold: false, italic: false, list: false };
+const isToggle = (a: Action): a is Toggle => a in COMMANDS;
 
 /** What "Embed chart" inserts: the price since the note as a small figure. */
 export type ChartEmbed = {
@@ -221,7 +222,6 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed }) {
         className="flex gap-[2px] rounded-full bg-track p-[3px]"
       >
         {BUTTONS.map((b, i) => {
-          const toggle = b.action === "bold" || b.action === "italic" || b.action === "list";
           return (
             <button
               key={b.action}
@@ -231,7 +231,7 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed }) {
               type="button"
               aria-label={b.label}
               title={b.label}
-              aria-pressed={toggle ? pressed[b.action as Toggle] : undefined}
+              aria-pressed={isToggle(b.action) ? pressed[b.action] : undefined}
               tabIndex={i === focusIndex ? 0 : -1}
               onFocus={() => setFocusIndex(i)}
               // Keep the caret and selection in the note while clicking.
