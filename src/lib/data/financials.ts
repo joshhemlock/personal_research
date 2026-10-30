@@ -62,7 +62,7 @@ export async function getFinancialsPage(symbol: string): Promise<FinancialsPage 
   const q = quotes[listing.id];
   return {
     symbol: listing.symbol,
-    name: listing.name,
+    name: listing.name.replace(/\s*&$/, ""), // "JPMorgan Chase & Co." is shortened to "JPMorgan Chase &"
     quote: q ? { price: q.price, change: q.change, changePct: q.changePct, asOf: asOfLabel(q.asOf) } : null,
     data,
     thesisHref: sample.thesisHref(listing.symbol),
@@ -161,7 +161,7 @@ const COLUMNS = [
   "cash_f_operating_activities_fq", "cash_f_operating_activities_ttm", "cash_f_operating_activities_fy",
   "total_cash_dividends_paid_fq", "total_cash_dividends_paid_ttm", "total_cash_dividends_paid_fy",
   // Earnings: per-quarter EPS actual vs estimate, and the next report.
-  "earnings_fq_h", "earnings_release_next_date", "earnings_release_next_time",
+  "earnings_fq_h", "revenues_fq_h", "earnings_release_next_date", "earnings_release_next_time",
   "earnings_per_share_forecast_next_fq", "revenue_forecast_next_fq",
   ...MULTIPLE_COLUMNS,
 ] as const;
@@ -328,8 +328,10 @@ async function liveFinancials(id: string, symbol: string, name: string): Promise
   const nextEps = numOrNull(v.earnings_per_share_forecast_next_fq) ?? upcoming?.estimate ?? null;
   const nextRevenue = numOrNull(v.revenue_forecast_next_fq);
   const nextQuarter = upcoming ? fiscal.label(upcoming.index) : fiscal.label(fiscal.current + 1);
-  // Revenue of the same quarter a year earlier, to put the estimate in context.
-  const yearAgoRevenue = at(rev.q, fiscal.current - (nextQuarter.index - 4));
+  // Revenue of the same quarter a year earlier, to put the estimate in context. Taken from
+  // TradingView's revenue actual-vs-estimate history, which is on the estimates' basis (for
+  // banks that is net revenue, smaller than the total revenue in the statements).
+  const yearAgoRevenue = earningsHistory(v.revenues_fq_h).find((e) => e.index === nextQuarter.index - 4)?.actual ?? null;
 
   return {
     symbol,
@@ -351,11 +353,11 @@ async function liveFinancials(id: string, symbol: string, name: string): Promise
     },
     mix: null, // TradingView has no revenue by segment
     nextReport: {
-      when: nextDate ? `${shortDate(nextDate)}${timingLabel(numOrNull(v.earnings_release_next_time), nextDate)}` : "Date not announced",
+      when: nextDate ? `${shortDate(nextDate)}${timingLabel(numOrNull(v.earnings_release_next_time))}` : "Date not announced",
       revenueEst: nextRevenue == null ? "—" : money(nextRevenue / MILLION),
       epsEst: nextEps == null ? "—" : `${nextEps < 0 ? MINUS : ""}${Math.abs(nextEps).toFixed(2)}`,
       revenueGrowthEst: (() => {
-        const g = change(nextRevenue == null ? null : nextRevenue / MILLION, yearAgoRevenue);
+        const g = change(nextRevenue, yearAgoRevenue);
         return g == null ? undefined : pct(g, 1);
       })(),
     },
@@ -426,7 +428,10 @@ function monthIndex(unixSeconds: number): number {
 
 type Earnings = { index: number; actual: number | null; estimate: number | null; reported: boolean };
 
-/** TradingView's earnings_fq_h: [{ FiscalPeriod: "2026-Q2", Actual, Estimate, IsReported }], oldest first. */
+/**
+ * TradingView's earnings_fq_h / revenues_fq_h: [{ FiscalPeriod: "2026-Q2", Actual,
+ * Estimate, IsReported }], oldest first, running into future quarters' estimates.
+ */
 function earningsHistory(raw: unknown): Earnings[] {
   if (!Array.isArray(raw)) return [];
   return raw.flatMap((e: Record<string, unknown>) => {
@@ -571,14 +576,12 @@ function shortDate(unixSeconds: number): string {
   return new Date(unixSeconds * 1000).toLocaleDateString("en-US", { timeZone: NY, month: "short", day: "numeric" });
 }
 
-/** " · after close" / " · before open", from TradingView's code (1 / −1) or the release time. */
-function timingLabel(code: number | null, unixSeconds: number): string {
-  if (code === 1) return " · after close";
-  if (code === -1) return " · before open";
-  const hour = Number(new Date(unixSeconds * 1000).toLocaleString("en-US", { timeZone: NY, hour: "numeric", hour12: false }));
-  if (hour >= 16) return " · after close";
-  if (hour > 0 && hour < 9) return " · before open";
-  return "";
+/**
+ * " · after close" / " · before open" from TradingView's code (1 / −1). Code 0 means the
+ * time isn't confirmed (the timestamp then holds a placeholder hour), so nothing is shown.
+ */
+function timingLabel(code: number | null): string {
+  return code === 1 ? " · after close" : code === -1 ? " · before open" : "";
 }
 
 /** Unix ms → "Oct 30, 2026 · 3:11:04 PM" (New York), as the top bar shows it. */
