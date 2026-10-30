@@ -107,7 +107,7 @@ function chartHtml(c: ChartEmbed): string {
  * contentEditable body regions (marked with data-rich-text) through
  * document.execCommand, so edits stay on the browser's undo stack.
  */
-export function FormatToolbar({ chart }: { chart: ChartEmbed }) {
+export function FormatToolbar({ chart }: { chart: ChartEmbed | null }) {
   const saved = useRef<Range | null>(null);
   const toolbar = useRef<HTMLDivElement>(null);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
@@ -192,8 +192,9 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed }) {
     } else if (action === "link") {
       toggleLink();
     } else if (restoreSelection(editor(), saved.current)) {
-      if (action === "chart") document.execCommand("insertHTML", false, chartHtml(chart));
-      else document.execCommand(COMMANDS[action]);
+      if (action !== "chart") document.execCommand(COMMANDS[action]);
+      else if (chart) document.execCommand("insertHTML", false, chartHtml(chart));
+      else flash("No price history to embed right now");
     }
   };
 

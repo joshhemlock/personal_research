@@ -1,15 +1,7 @@
 import Link from "next/link";
+import type { NoteMarket } from "@/lib/data/notes";
 import type { Note } from "@/lib/mock/notes";
-import {
-  NOTE_LIST,
-  longDate,
-  noteTitle,
-  notePrice,
-  savedLabel,
-  shortDate,
-  sinceChangePct,
-  sincePaths,
-} from "@/lib/mock/notes";
+import { NOTE_LIST, longDate, noteTitle, savedLabel, shortDate } from "@/lib/mock/notes";
 import { num, pct, tone } from "@/lib/format";
 import { Icon } from "@/components/ui/Icon";
 import { TickerDot } from "@/components/ui/Pill";
@@ -29,6 +21,8 @@ const CHIP = "inline-flex h-7 items-center rounded-full bg-track text-[13px]";
 
 type NotesScreenProps = {
   note: Note;
+  /** Prices and metrics around the note (sample or live). */
+  market: NoteMarket;
   /**
    * Prefix for element ids. Next keeps recently visited pages mounted (hidden),
    * so two note pages can share the document: each route passes its own.
@@ -42,12 +36,10 @@ type NotesScreenProps = {
  * `split` breakpoint the context column moves under the list and editor as
  * a row of panels, so the editor keeps its room.
  */
-export function NotesScreen({ note, idPrefix }: NotesScreenProps) {
+export function NotesScreen({ note, market, idPrefix }: NotesScreenProps) {
   const title = noteTitle(note);
-  const price = notePrice(note);
-  const change = sinceChangePct(note);
-  const t = tone(change);
-  const paths = sincePaths(note);
+  const { price, changePct: change, paths } = market;
+  const t = tone(change ?? 0);
   const id = (part: string) => `${idPrefix}-${part}`;
 
   return (
@@ -90,14 +82,16 @@ export function NotesScreen({ note, idPrefix }: NotesScreenProps) {
             {` · Saved ${savedLabel(note)}`}
           </div>
           <FormatToolbar
-            chart={{
-              caption: `${note.symbol} since ${shortDate(note.started.date)} · ${pct(change, 1)}`,
-              href: `/stock/${note.symbol}`,
-              line: paths.line,
-              area: paths.area,
-              stroke: t.stroke,
-              fill: t.fill,
-            }}
+            chart={
+              paths && {
+                caption: `${note.symbol} since ${shortDate(note.started.date)}${change == null ? "" : ` · ${pct(change, 1)}`}`,
+                href: `/stock/${note.symbol}`,
+                line: paths.line,
+                area: paths.area,
+                stroke: t.stroke,
+                fill: t.fill,
+              }
+            }
           />
         </div>
 
@@ -113,22 +107,24 @@ export function NotesScreen({ note, idPrefix }: NotesScreenProps) {
             </Link>
             <span className={`${CHIP} px-[10px]`}>{note.type}</span>
             <span className={`${CHIP} px-[10px] text-ink-2`}>
-              Started {longDate(note.started.date)} at {num(note.started.price)}
+              Started {longDate(note.started.date)} at {num(market.startPrice)}
             </span>
-            <span
-              className={`inline-flex h-7 items-center rounded-full px-[10px] text-[13px] ${
-                change >= 0 ? "bg-up-pill text-up-pill-text" : "bg-down-pill text-down-pill-text"
-              }`}
-            >
-              {pct(change, 1)} since
-            </span>
+            {change != null && (
+              <span
+                className={`inline-flex h-7 items-center rounded-full px-[10px] text-[13px] ${
+                  change >= 0 ? "bg-up-pill text-up-pill-text" : "bg-down-pill text-down-pill-text"
+                }`}
+              >
+                {pct(change, 1)} since
+              </span>
+            )}
           </div>
         </div>
 
         <ConvictionPicker />
         <Scenarios initial={note.scenarios} price={price} />
         <NoteBody note={note} idPrefix={idPrefix} />
-        <Catalysts items={note.catalysts} headingId={id("catalysts-h")} />
+        <Catalysts items={market.catalysts} headingId={id("catalysts-h")} />
       </main>
 
       {/* No grow (the design has 1, worth 0.2px): with the shell's fixed rail
@@ -137,7 +133,7 @@ export function NotesScreen({ note, idPrefix }: NotesScreenProps) {
         aria-label="Note context"
         className="flex min-w-0 flex-[0_1_300px] flex-col gap-3 max-split:grid max-split:basis-full max-split:grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] max-split:content-start"
       >
-        <SinceNote note={note} headingId={id("since-h")} />
+        <SinceNote note={note} market={market} headingId={id("since-h")} />
         <Checklist items={note.checklist} headingId={id("checklist-h")} />
         <LinkedItems items={note.linked} headingId={id("linked-h")} />
       </aside>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
 import { NotesScreen } from "@/components/notes/NotesScreen";
+import { getNoteMarket } from "@/lib/data/notes";
 import { NOTE_INDEX } from "@/lib/mock/note-index";
 import { findNote, noteTitle } from "@/lib/mock/notes";
 
@@ -23,9 +24,10 @@ export default async function NotePage({ params }: PageProps<"/notes/[id]">) {
   const { id } = await params;
   const note = findNote(id);
   if (!note) notFound();
+  const market = await getNoteMarket(note);
   return (
     <AppShell active="notes" symbol={note.symbol} askLabel="Ask about this note">
-      <NotesScreen note={note} idPrefix={note.id} />
+      <NotesScreen note={note} market={market} idPrefix={note.id} />
     </AppShell>
   );
 }

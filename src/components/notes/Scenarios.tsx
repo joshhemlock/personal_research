@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
+import { useLayoutEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import type { Scenario, ScenarioKey } from "@/lib/mock/notes";
 import { num, pct } from "@/lib/format";
 
@@ -40,16 +40,60 @@ function position(v: number, lo: number, hi: number): string {
 const INPUT =
   "min-w-0 rounded-[6px] bg-transparent leading-[1.4] tabular-nums transition-colors duration-150 hover:bg-[rgba(17,17,19,0.05)] focus:bg-white/60";
 
+/** Least space between the "Now" label and a value label on the track, px. */
+const LABEL_GAP = 8;
+
+/**
+ * Keeps the "Now" label inside the track and hides the value labels it
+ * would overlap (each value is in its card above). Runs after layout and
+ * on resize, as only then are the label widths known.
+ */
+function fitTrackLabels(track: HTMLElement) {
+  const now = track.querySelector<HTMLElement>("[data-now]");
+  const ticks = [...track.querySelectorAll<HTMLElement>("[data-tick]")];
+  for (const t of ticks) t.style.visibility = "";
+  if (!now) return;
+  now.style.marginLeft = "";
+  const box = track.getBoundingClientRect();
+  let r = now.getBoundingClientRect();
+  const shift = r.left < box.left ? box.left - r.left : r.right > box.right ? box.right - r.right : 0;
+  if (shift) {
+    now.style.marginLeft = `${shift}px`;
+    r = now.getBoundingClientRect();
+  }
+  for (const t of ticks) {
+    const tr = t.getBoundingClientRect();
+    if (tr.left < r.right + LABEL_GAP && r.left < tr.right + LABEL_GAP) t.style.visibility = "hidden";
+  }
+}
+
+/** Percent from today's price to a value, or "—" without a price. */
+function fromPrice(value: number, price: number | null): string {
+  return price == null ? "—" : pct((value / price - 1) * 100, 1);
+}
+
 /**
  * Bear / base / bull fair values with probabilities, their weighted value
  * and where today's price sits between them. Values and probabilities are
- * editable; everything else is recomputed as you type.
+ * editable; everything else is recomputed as you type. Without a price
+ * (market data unavailable) the upsides show "—" and the marker is hidden.
  */
-export function Scenarios({ initial, price }: { initial: Scenario[]; price: number }) {
+export function Scenarios({ initial, price }: { initial: Scenario[]; price: number | null }) {
   const [rows, setRows] = useState(initial);
   // Text being typed, per field, while it is focused.
   const [drafts, setDrafts] = useState<Partial<Record<DraftKey, string>>>({});
   const before = useRef<Scenario[]>(initial);
+  const track = useRef<HTMLDivElement>(null);
+
+  // Re-fit the track's labels whenever the price or a value moves them.
+  useLayoutEffect(() => {
+    const el = track.current;
+    if (!el) return;
+    fitTrackLabels(el);
+    const observer = new ResizeObserver(() => fitTrackLabels(el));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [price, rows]);
 
   const set = (key: ScenarioKey, field: Field, text: string) => {
     setDrafts((d) => ({ ...d, [`${key}-${field}`]: text }));
@@ -84,7 +128,7 @@ export function Scenarios({ initial, price }: { initial: Scenario[]; price: numb
 
   const probSum = rows.reduce((s, r) => s + r.prob, 0);
   const weighted = probSum > 0 ? rows.reduce((s, r) => s + r.prob * r.value, 0) / probSum : null;
-  const upside = weighted == null ? null : (weighted / price - 1) * 100;
+  const upside = weighted == null || price == null ? null : (weighted / price - 1) * 100;
   const values = rows.map((r) => r.value);
   const lo = Math.min(...values);
   const hi = Math.max(...values);
@@ -131,7 +175,7 @@ export function Scenarios({ initial, price }: { initial: Scenario[]; price: numb
                   {drafts[`${r.key}-value`] || num(r.value)}
                 </span>
               </div>
-              <span className="text-[12px] opacity-85">{pct((r.value / price - 1) * 100, 1)}</span>
+              <span className="text-[12px] opacity-85">{fromPrice(r.value, price)}</span>
             </div>
           );
         })}
@@ -139,7 +183,7 @@ export function Scenarios({ initial, price }: { initial: Scenario[]; price: numb
           <span className="text-[13px] text-[#B4B4BB]">Weighted value</span>
           <span className="text-[24px] font-normal tracking-[-0.02em]">{weighted == null ? "—" : num(weighted)}</span>
           <span className={`text-[12px] ${upside != null && upside < 0 ? "text-[#F7B1AB]" : "text-[#9FE0BE]"}`}>
-            {upside == null ? "Add probabilities" : `${pct(upside, 1)} from ${num(price)}`}
+            {weighted == null ? "Add probabilities" : upside == null || price == null ? "No price now" : `${pct(upside, 1)} from ${num(price)}`}
           </span>
         </div>
       </div>
@@ -149,24 +193,31 @@ export function Scenarios({ initial, price }: { initial: Scenario[]; price: numb
       </p>
 
       <div
+        ref={track}
         role="img"
-        aria-label={`Fair value range ${tick(lo)} to ${tick(hi)}; price now ${num(price)}`}
+        aria-label={`Fair value range ${tick(lo)} to ${tick(hi)}${price == null ? "" : `; price now ${num(price)}`}`}
         className="relative mx-2 h-[34px]"
       >
         <span className="absolute inset-x-0 top-2 h-[6px] rounded-[3px] bg-[linear-gradient(90deg,rgba(234,91,82,0.35),rgba(17,17,19,0.12)_50%,rgba(77,176,127,0.45))]" />
-        <span
-          className="absolute top-[3px] -ml-2 size-4 rounded-full border-[3px] border-white bg-ink shadow-[0_0_0_1px_rgba(17,17,19,0.15)]"
-          style={{ left: position(price, lo, hi) }}
-        />
-        <span
-          className="absolute top-5 -translate-x-1/2 text-[11px] whitespace-nowrap text-ink"
-          style={{ left: position(price, lo, hi) }}
-        >
-          Now {num(price)}
-        </span>
+        {price != null && (
+          <>
+            <span
+              className="absolute top-[3px] -ml-2 size-4 rounded-full border-[3px] border-white bg-ink shadow-[0_0_0_1px_rgba(17,17,19,0.15)]"
+              style={{ left: position(price, lo, hi) }}
+            />
+            <span
+              data-now=""
+              className="absolute top-5 -translate-x-1/2 text-[11px] whitespace-nowrap text-ink"
+              style={{ left: position(price, lo, hi) }}
+            >
+              Now {num(price)}
+            </span>
+          </>
+        )}
         {ordered.map((r, i) => (
           <span
             key={r.key}
+            data-tick=""
             className={`absolute top-5 text-[11px] text-muted ${i === 0 || i === ordered.length - 1 ? "" : "-translate-x-1/2"}`}
             style={
               i === 0 ? { left: 0 } : i === ordered.length - 1 ? { right: 0 } : { left: position(r.value, lo, hi) }
