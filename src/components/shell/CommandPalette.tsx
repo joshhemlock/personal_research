@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import { UNIVERSE } from "@/lib/mock/market";
 import { NOTE_INDEX } from "@/lib/mock/note-index";
@@ -126,6 +126,8 @@ function search(query: string): Item[] {
 /** ⌘K palette: jump to a ticker, a screen or a note. */
 export function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
   const router = useRouter();
+  // Next keeps recently visited pages mounted, so ids must be unique per instance.
+  const uid = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
@@ -187,9 +189,9 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
           autoFocus
           role="combobox"
           aria-expanded="true"
-          aria-controls="cmdk-list"
+          aria-controls={`${uid}-list`}
           aria-autocomplete="list"
-          aria-activedescendant={results[active] ? `cmdk-${results[active].id}` : undefined}
+          aria-activedescendant={results[active] ? `${uid}-${results[active].id}` : undefined}
           aria-label="Search tickers, companies, notes"
           placeholder="Search tickers, companies, notes"
           value={query}
@@ -202,14 +204,14 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
         />
         <kbd className="rounded-full bg-[rgba(17,17,19,0.06)] px-[9px] py-1 font-sans text-[12px] text-ink-2">esc</kbd>
       </div>
-      <div ref={listRef} id="cmdk-list" role="listbox" aria-label="Results" className="max-h-[min(440px,60vh)] overflow-y-auto p-2">
+      <div ref={listRef} id={`${uid}-list`} role="listbox" aria-label="Results" className="max-h-[min(440px,60vh)] overflow-y-auto p-2">
         {results.length === 0 && <p className="px-3 py-6 text-center text-[14px] text-muted">No matches for “{query}”.</p>}
         {GROUPS.map((g) => {
           const items = results.filter((r) => r.group === g);
           if (!items.length) return null;
           return (
-            <div key={g} role="group" aria-labelledby={`cmdk-g-${g}`} className="pb-1">
-              <div id={`cmdk-g-${g}`} className="px-3 pt-2 pb-1 text-[12px] text-muted">
+            <div key={g} role="group" aria-labelledby={`${uid}-g-${g}`} className="pb-1">
+              <div id={`${uid}-g-${g}`} className="px-3 pt-2 pb-1 text-[12px] text-muted">
                 {g}
               </div>
               {items.map((item) => {
@@ -219,7 +221,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
                 return (
                   <div
                     key={item.id}
-                    id={`cmdk-${item.id}`}
+                    id={`${uid}-${item.id}`}
                     role="option"
                     aria-selected={on}
                     data-index={i}
