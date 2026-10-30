@@ -217,7 +217,7 @@ type LegendRowProps = {
 
 function LegendRow({ badge, color, symbol, name, value, change = "", changeColor = "#55555C", on, onToggle, toggleLabel }: LegendRowProps) {
   return (
-    <div className={`flex items-center gap-2 text-[14px] ${on ? "text-ink" : "text-[#8A8A92]"}`}>
+    <div className={`flex items-center gap-2 text-[14px] whitespace-nowrap ${on ? "text-ink" : "text-[#8A8A92]"}`}>
       <span
         aria-hidden="true"
         className="inline-flex size-[22px] items-center justify-center rounded-full text-[9px] font-semibold text-white"
@@ -226,10 +226,13 @@ function LegendRow({ badge, color, symbol, name, value, change = "", changeColor
         {badge}
       </span>
       <span className="font-medium">{symbol}</span>
-      <span className="text-muted">·</span>
-      <span className="text-ink-3">{name}</span>
+      {/* Narrow charts keep just the symbol and value. */}
+      <span className="text-muted @max-[560px]:hidden">·</span>
+      <span className="text-ink-3 @max-[560px]:hidden">{name}</span>
       <span className="font-medium">{value}</span>
-      <span style={{ color: changeColor }}>{change}</span>
+      <span className="@max-[560px]:hidden" style={{ color: changeColor }}>
+        {change}
+      </span>
       <button
         type="button"
         aria-pressed={on}
@@ -273,7 +276,7 @@ function DrawingTools({ tool, onTool }: { tool: Tool; onTool: (tool: Tool) => vo
       role="toolbar"
       aria-label="Drawing tools"
       onKeyDown={onKeyDown}
-      className="absolute bottom-[18px] left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-white/85 bg-white/50 p-1.5 shadow-[0_12px_36px_-10px_rgba(17,17,19,0.22)] backdrop-blur-[18px] backdrop-saturate-[1.4]"
+      className="absolute bottom-[18px] left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-white/85 bg-white/50 p-1.5 shadow-[0_12px_36px_-10px_rgba(17,17,19,0.22)] backdrop-blur-[18px] backdrop-saturate-[1.4] @max-[560px]:gap-0.5 @max-[560px]:p-1"
     >
       {TOOLS.map((t) => {
         const on = t.value === tool;
@@ -286,7 +289,7 @@ function DrawingTools({ tool, onTool }: { tool: Tool; onTool: (tool: Tool) => vo
             title={t.label}
             tabIndex={on ? 0 : -1}
             onClick={() => onTool(t.value)}
-            className={`inline-flex size-12 items-center justify-center rounded-full text-ink transition-[background-color,box-shadow] duration-150 ${
+            className={`inline-flex size-12 items-center justify-center rounded-full text-ink transition-[background-color,box-shadow] duration-150 @max-[560px]:size-10 ${
               on ? "bg-white shadow-[0_2px_10px_rgba(17,17,19,0.14)]" : "hover:bg-white/60"
             }`}
           >

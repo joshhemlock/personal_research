@@ -10,6 +10,7 @@ import {
   LineType,
   createChart,
   type IChartApi,
+  type IRange,
   type ISeriesApi,
   type LineWidth,
   type Logical,
@@ -56,23 +57,7 @@ type Api = {
   lines: Record<CompareKey, ISeriesApi<"Line">>;
 };
 
-// The library sizes its canvas down to an even number of pixels and centres
-// bar i at (i + 0.5) × spacing − 1px. Size it to the nearest even width and
-// nudge it right by that pixel so bars land where the design puts them; the
-// overlays add the same offset.
-const SHIFT_X = 1;
-const evenWidth = (w: number) => 2 * Math.round(w / 2);
-
-/**
- * Room above and below the data (design: 12% and 18% of its range). The
- * library maps prices onto height − 1 px, so trimming a pixel off the bottom
- * margin puts every price exactly where the design's scale does.
- */
-function scaleMargins(height: number) {
-  const span = 1 + PAD_ABOVE + PAD_BELOW;
-  const pane = Math.max(2, 2 * Math.floor(height / 2)); // the library's even pane height
-  return { top: PAD_ABOVE / span, bottom: PAD_BELOW / span - 1 / pane };
-}
+type Box = { width: number; height: number };
 
 const UP = "#4DB07F";
 const DOWN = "#EA5B52";
@@ -85,6 +70,29 @@ const width = (w: number) => w as LineWidth;
 
 // Overlay series never show their own labels or markers.
 const QUIET = { priceScaleId: "right", lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false } as const;
+
+/**
+ * Canvas size and offset inside the plot box. The library only draws on even
+ * pixel sizes and centres bar i at (i + 0.5) × spacing − 1px; pick the even
+ * width and whole-pixel shift that put bar centres within half a pixel of
+ * the design's grid, (i + 0.5) × box / bars.
+ */
+function canvasFit(box: Box) {
+  const w = Math.round(box.width);
+  const odd = w % 2 === 1;
+  return { width: odd ? w + 1 : w, height: 2 * Math.floor(box.height / 2), shift: odd ? 0 : 1 };
+}
+
+/**
+ * Room above and below the data (design: 12% and 18% of its range). The
+ * library maps prices onto height − 1 px; a pixel off the bottom margin puts
+ * every price where the design's scale does.
+ */
+function scaleMargins(paneHeight: number) {
+  const span = 1 + PAD_ABOVE + PAD_BELOW;
+  const bottom = PAD_BELOW / span;
+  return { top: PAD_ABOVE / span, bottom: paneHeight > 20 ? bottom - 1 / paneHeight : bottom };
+}
 
 /**
  * The price chart itself: TradingView Lightweight Charts drawing candles (or a
@@ -108,15 +116,31 @@ export function ChartCanvas({
   const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const apiRef = useRef<Api | null>(null);
+  const shiftRef = useRef(0);
+  /** The range we last fitted; any other range means the user scrolled or zoomed. */
+  const fittedRef = useRef<IRange<number> | null>(null);
   const reported = useRef<Geometry | null>(null);
 
   const report = useEffectEvent(() => {
     const api = apiRef.current;
     const host = hostRef.current;
-    const g = api && host && measure(api, host.getBoundingClientRect());
+    const g = api && host && measure(api, host.getBoundingClientRect(), shiftRef.current);
     if (!g || (reported.current && sameGeometry(reported.current, g))) return;
     reported.current = g;
     onGeometry(g);
+  });
+
+  /** Show the window's bars across the plot at exactly box width ÷ bars spacing. */
+  const fit = useEffectEvent(() => {
+    const api = apiRef.current;
+    const host = hostRef.current;
+    if (!api || !host) return;
+    const box = host.getBoundingClientRect();
+    if (!box.width) return;
+    const n = win.to - win.from + 1;
+    const range = { from: win.to + 1 - (n * canvasFit(box).width) / box.width, to: win.to };
+    fittedRef.current = range;
+    api.chart.timeScale().setVisibleLogicalRange(range);
   });
 
   const move = useEffectEvent((p: MouseEventParams<Time>) => {
@@ -129,19 +153,22 @@ export function ChartCanvas({
     onPointer({ index: Math.max(0, Math.min(bars.length - 1, Math.round(p.logical))), price });
   });
 
-  const fit = useEffectEvent(() => {
-    apiRef.current?.chart.timeScale().setVisibleLogicalRange({ from: win.from, to: win.to });
-  });
-
   // Create the chart once; the effects below feed it data and options.
   useEffect(() => {
     const host = hostRef.current;
     const container = canvasRef.current;
     if (!host || !container) return;
-    const box = host.getBoundingClientRect();
+
+    const place = (box: Box) => {
+      const c = canvasFit(box);
+      shiftRef.current = c.shift;
+      container.style.transform = `translateX(${c.shift}px)`;
+      return c;
+    };
+    const size = place(host.getBoundingClientRect());
     const chart = createChart(container, {
-      width: evenWidth(box.width),
-      height: Math.floor(box.height),
+      width: size.width,
+      height: size.height,
       layout: {
         background: { type: ColorType.Solid, color: CLEAR },
         // The attribution link to tradingview.com is in the chart settings menu.
@@ -149,7 +176,7 @@ export function ChartCanvas({
       },
       grid: { vertLines: { visible: false }, horzLines: { visible: false } },
       leftPriceScale: { visible: false },
-      rightPriceScale: { visible: false, scaleMargins: scaleMargins(box.height) },
+      rightPriceScale: { visible: false, scaleMargins: scaleMargins(size.height) },
       timeScale: {
         visible: false,
         rightOffset: 0,
@@ -193,26 +220,34 @@ export function ChartCanvas({
       wickDownColor: DOWN,
     });
     candleSeries.attachPrimitive(new ViewportProbe(() => report()));
-
     apiRef.current = { chart, candles: candleSeries, area, sma: smaSeries, smaLine, lines: { sector, market } };
+
     const onMove = (p: MouseEventParams<Time>) => move(p);
     const onDoubleClick = () => fit();
     chart.subscribeCrosshairMove(onMove);
     chart.subscribeDblClick(onDoubleClick);
-    // Grow with the page: follow the box size (and re-measure the overlays).
+
+    // Grow with the page. Keep the exact fit unless the user has scrolled or zoomed.
     const resize = new ResizeObserver(([entry]) => {
-      const { width: w, height: h } = entry.contentRect;
-      chart.priceScale("right").applyOptions({ scaleMargins: scaleMargins(h) });
-      chart.resize(evenWidth(w), Math.floor(h), true);
+      // Zero while the page is hidden (Next keeps visited pages alive).
+      if (entry.contentRect.width < 4 || entry.contentRect.height < 4) return;
+      const c = place(entry.contentRect);
+      const fitted = fittedRef.current;
+      const current = chart.timeScale().getVisibleLogicalRange();
+      chart.priceScale("right").applyOptions({ scaleMargins: scaleMargins(c.height) });
+      chart.resize(c.width, c.height, true);
+      if (fitted && current && Math.abs(current.from - fitted.from) < 1e-6 && Math.abs(current.to - fitted.to) < 1e-6) fit();
       report();
     });
     resize.observe(host);
+
     return () => {
       resize.disconnect();
       chart.unsubscribeCrosshairMove(onMove);
       chart.unsubscribeDblClick(onDoubleClick);
       chart.remove();
       apiRef.current = null;
+      fittedRef.current = null;
       reported.current = null;
     };
   }, []);
@@ -259,7 +294,7 @@ export function ChartCanvas({
   }, [candles]);
 
   useEffect(() => {
-    apiRef.current?.chart.timeScale().setVisibleLogicalRange({ from: win.from, to: win.to });
+    fit();
   }, [win.from, win.to]);
 
   useImperativeHandle(
@@ -294,16 +329,16 @@ export function ChartCanvas({
   // `isolate`: the library z-indexes its canvases; keep them under the overlays.
   return (
     <div ref={hostRef} {...hostProps} className={`absolute inset-0 isolate ${className}`}>
-      <div ref={canvasRef} className="absolute inset-0" style={{ transform: `translateX(${SHIFT_X}px)` }} />
+      <div ref={canvasRef} className="absolute top-0 left-0" />
     </div>
   );
 }
 
 /**
- * Linear maps from bar index and price to fractions of the overlay box, read
- * from the chart's coordinate APIs (the chart sits SHIFT_X px into the box).
+ * Linear maps from bar index and price to fractions of the plot box, read
+ * from the chart's coordinate APIs (the canvas sits `shift` px into the box).
  */
-function measure({ chart, candles }: Api, box: { width: number; height: number }): Geometry | null {
+function measure({ chart, candles }: Api, box: Box, shift: number): Geometry | null {
   const ts = chart.timeScale();
   const { width, height } = box;
   const range = ts.getVisibleLogicalRange();
@@ -314,7 +349,7 @@ function measure({ chart, candles }: Api, box: { width: number; height: number }
   if (!width || !height || !range || x0 === null || x1 === null || y0 === null || y1 === null) return null;
   if (x1 === x0 || y1 === y0) return null;
   return {
-    ax: (x0 + SHIFT_X) / width,
+    ax: (x0 + shift) / width,
     bx: (x1 - x0) / width,
     ay: y0 / height,
     by: (y1 - y0) / 100 / height,

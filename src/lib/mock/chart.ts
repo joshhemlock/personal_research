@@ -306,6 +306,11 @@ export const WATCH_GROUPS: WatchGroup[] = [
   },
 ];
 
+/** Whether a symbol is on the user's watchlist (pinned or in a group). */
+export function isWatched(symbol: string): boolean {
+  return PINNED.some((r) => r.symbol === symbol) || WATCH_GROUPS.some((g) => g.items.some((w) => w.symbol === symbol));
+}
+
 export type AlertTab = "Alerts" | "History" | "System";
 export type AlertItem = { text: string; symbol: string; scope: string; state: string; stateColor: string };
 

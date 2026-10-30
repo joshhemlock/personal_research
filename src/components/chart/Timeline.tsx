@@ -46,21 +46,20 @@ export function Timeline({ bars, geometry: g, crossIndex, events }: TimelineProp
     ticks += `M${(xOf(g, i) * 1000).toFixed(1)} ${mod(k, every * 5) === 0 ? 2 : 5}V10`;
   }
 
-  // Short ranges label dates; longer ones label months (years in January).
-  let labels: { key: number; x: number; text: string }[] = [];
+  // Short ranges label six dates; longer ones label month starts (the year
+  // in January).
+  type Label = { key: number; x: number; text: string; year: boolean };
+  let labels: Label[] = [];
   if (n <= 70) {
     for (let j = 0; j < 6; j++) {
       const i = vis.from + Math.round(((j + 0.5) * (n - 1)) / 6);
-      if (i <= vis.to) labels.push({ key: i, x: xOf(g, i), text: shortDate(bars[i].time) });
+      if (i <= vis.to) labels.push({ key: i, x: xOf(g, i), text: shortDate(bars[i].time), year: false });
     }
   } else {
-    const starts = monthStarts(bars, vis);
-    const step = Math.ceil(starts.length / 9);
-    starts.forEach((i, k) => {
-      if (k % step !== 0) return;
-      const t = bars[i].time;
-      labels.push({ key: i, x: xOf(g, i), text: monthOf(t) === 0 ? String(yearOf(t)) : MONTHS[monthOf(t)] });
-    });
+    for (const i of monthStarts(bars, vis)) {
+      const m = monthOf(bars[i].time);
+      labels.push({ key: i, x: xOf(g, i), text: m === 0 ? String(yearOf(bars[i].time)) : MONTHS[m], year: m === 0 });
+    }
   }
 
   const markers: Marker[] = [
@@ -69,8 +68,19 @@ export function Timeline({ bars, geometry: g, crossIndex, events }: TimelineProp
   ];
   const bells = events.alerts.filter(inView).map((i) => ({ key: `a${i}`, x: xOf(g, i), label: `Alert fired · ${shortDate(bars[i].time)}` }));
   const crossX = xOf(g, crossIndex);
-  const taken = [...markers.map((m) => m.x), ...bells.map((b) => b.x), crossX];
-  labels = labels.filter((l) => !taken.some((x) => Math.abs(x - l.x) < 0.032));
+  // A label gives way to anything it would touch: a 22px marker, a bell, or
+  // the date pill (about 100px wide). Half a label is ~3.7px a character.
+  const touches = (l: { x: number; text: string }, x: number, halfWidth: number) =>
+    Math.abs(x - l.x) * g.width < l.text.length * 3.7 + 2 + halfWidth;
+  labels = labels.filter(
+    (l) => !markers.some((m) => touches(l, m.x, 13)) && !bells.some((b) => touches(l, b.x, 10)) && !touches(l, crossX, 54),
+  );
+  // Then keep them at least 56px apart, years first.
+  const kept: Label[] = [];
+  for (const l of [...labels.filter((l) => l.year), ...labels.filter((l) => !l.year)]) {
+    if (kept.every((k) => Math.abs(k.x - l.x) * g.width >= 56)) kept.push(l);
+  }
+  labels = kept;
   // Keep the date pill inside the axis.
   const half = 52 / g.width;
   const pillX = Math.min(1 - half, Math.max(half, crossX));

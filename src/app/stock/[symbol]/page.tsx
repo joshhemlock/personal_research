@@ -7,7 +7,7 @@ import { ASIDE, FLUSH_BOTTOM } from "@/components/chart/layout";
 import { TickerCard } from "@/components/chart/TickerCard";
 import { TickerTabs } from "@/components/chart/TickerTabs";
 import { WatchlistPanel } from "@/components/chart/WatchlistPanel";
-import { ALERTS, LAST_TICK, getChartData } from "@/lib/mock/chart";
+import { ALERTS, LAST_TICK, getChartData, isWatched } from "@/lib/mock/chart";
 import { findSecurity, UNIVERSE, AS_OF } from "@/lib/mock/market";
 import { num, pct, signed } from "@/lib/format";
 
@@ -42,7 +42,7 @@ export default async function StockChartPage({ params }: PageProps<"/stock/[symb
       }}
     >
       <ChartWorkspace
-        security={{ symbol: sec.symbol, name: sec.name, exchange: sec.exchange, changePct: sec.changePct }}
+        security={{ symbol: sec.symbol, name: sec.name, exchange: sec.exchange, changePct: sec.changePct, watched: isWatched(sec.symbol) }}
         data={getChartData(sec)}
         addNoteHref={sec.symbol === "NVDA" ? "/notes/nvda-core-thesis" : "/notes"}
         lastTick={LAST_TICK}

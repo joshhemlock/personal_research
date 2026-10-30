@@ -86,9 +86,12 @@ export function designGeometry(
   return { ax: (0.5 - win.from) / n, bx: 1 / n, ay: ymax / span, by: -1 / span, from: win.from, to: win.to, ...size };
 }
 
-/** First and last bar index (inclusive) at least partly inside the plot. */
+/**
+ * First and last bar (inclusive) centred inside the plot. The logical range's
+ * ends are bar centres half a bar in from the plot's edges.
+ */
 export function visibleBars(g: Geometry, count: number): BarWindow {
-  return { from: Math.max(0, Math.floor(g.from)), to: Math.min(count - 1, Math.ceil(g.to)) };
+  return { from: Math.max(0, Math.ceil(g.from - 0.5)), to: Math.min(count - 1, Math.floor(g.to + 0.5)) };
 }
 
 /** Number of bars across the plot (the design switches label styles at 70). */

@@ -13,7 +13,18 @@ import { SeriesChips } from "./SeriesChips";
 import { Timeline } from "./Timeline";
 import { VolumeStrip } from "./VolumeStrip";
 import { FLUSH_BOTTOM } from "./layout";
-import { designGeometry, pillDate, rebase, shortDate, sma, windowFor, type BarWindow, type Geometry, type Timeframe } from "./scale";
+import {
+  designGeometry,
+  pillDate,
+  rebase,
+  shortDate,
+  sma,
+  visibleBars,
+  windowFor,
+  type BarWindow,
+  type Geometry,
+  type Timeframe,
+} from "./scale";
 import type { ChartType, Cross, DisplayPrefs, SecurityInfo, SeriesKey, Tool, Visibility } from "./types";
 
 type ChartWorkspaceProps = {
@@ -47,7 +58,7 @@ export function ChartWorkspace({ security, data, addNoteHref, lastTick, children
   const [legend, setLegend] = useState(true);
   const [prefs, setPrefs] = useState<DisplayPrefs>({ grid: true, priceLine: true, alertLine: true });
   const [tool, setTool] = useState<Tool>("select");
-  const [watching, setWatching] = useState(true);
+  const [watching, setWatching] = useState(security.watched);
   const [cross, setCross] = useState<Cross>(() => restingCross(windowFor("6M", bars)));
   /** Bar under the pointer (the OHLC readout follows it); null when away. */
   const [hover, setHover] = useState<number | null>(null);
@@ -105,8 +116,7 @@ export function ChartWorkspace({ security, data, addNoteHref, lastTick, children
   };
 
   // Keyboard: the chart is a slider over the visible bars.
-  const first = Math.max(0, Math.ceil(g.from));
-  const lastVisible = Math.min(N - 1, Math.floor(g.to));
+  const { from: first, to: lastVisible } = visibleBars(g, N);
   const onChartKey = (e: KeyboardEvent<HTMLDivElement>) => {
     const step = e.shiftKey ? 5 : 1;
     const next =

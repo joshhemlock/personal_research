@@ -23,4 +23,6 @@ export type SecurityInfo = {
   name: string;
   exchange: string;
   changePct: number;
+  /** On the user's watchlist (the Watching toggle's starting state). */
+  watched: boolean;
 };
