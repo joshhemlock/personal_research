@@ -6,7 +6,7 @@ import { CommandPalette } from "./CommandPalette";
 import type { HeaderQuote } from "./TopBar";
 
 const PILL =
-  "mx-auto flex h-[52px] max-w-[520px] flex-[1_1_340px] items-center gap-3 rounded-full border border-white/95 bg-white/80 px-[18px] text-ink shadow-[0_1px_2px_rgba(17,17,19,0.04),0_10px_30px_-14px_rgba(17,17,19,0.14)] backdrop-blur-[20px] transition-shadow hover:shadow-[0_1px_2px_rgba(17,17,19,0.06),0_12px_32px_-14px_rgba(17,17,19,0.22)]";
+  "mx-auto flex h-[52px] max-w-[520px] flex-[1_1_340px] items-center max-sm:order-3 gap-3 rounded-full border border-white/95 bg-white/80 px-[18px] text-ink shadow-[0_1px_2px_rgba(17,17,19,0.04),0_10px_30px_-14px_rgba(17,17,19,0.14)] backdrop-blur-[20px] transition-shadow hover:shadow-[0_1px_2px_rgba(17,17,19,0.06),0_12px_32px_-14px_rgba(17,17,19,0.22)]";
 
 /** The center search pill. Opens the command palette on click or ⌘K / Ctrl+K. */
 export function SearchTrigger({ quote }: { quote?: HeaderQuote }) {

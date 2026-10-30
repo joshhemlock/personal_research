@@ -16,11 +16,13 @@ const TOOLS: { label: string; icon: IconName }[] = [
   { label: "Favorites", icon: "star" },
 ];
 
-// Column of 52px tiles on wide screens; a row above the content on narrow ones.
-const GROUP = "flex w-[60px] flex-col flex-wrap justify-center gap-2 max-[1100px]:w-auto max-[1100px]:flex-row";
+// Column of 52px tiles on wide screens; one scrollable row above the content
+// on narrow ones.
+const GROUP =
+  "flex w-[60px] flex-col flex-wrap justify-center gap-2 max-[1100px]:w-auto max-[1100px]:flex-none max-[1100px]:flex-row max-[1100px]:flex-nowrap";
 
 type RailProps = {
-  active: NavKey;
+  active?: NavKey;
   symbol: string;
   /** Label of the "ask" tool; the notes screen scopes it to the open note. */
   askLabel?: string;
@@ -38,7 +40,7 @@ export function Rail({ active, symbol, askLabel = "Ask a research question", cla
   return (
     <nav
       aria-label="Main"
-      className={`flex flex-[1_1_60px] flex-wrap content-start justify-center gap-5 max-[1100px]:order-first max-[1100px]:basis-full ${className}`}
+      className={`flex flex-[1_1_60px] flex-wrap content-start justify-center gap-5 max-[1100px]:order-first max-[1100px]:basis-full max-[1100px]:flex-nowrap max-[1100px]:justify-start max-[1100px]:overflow-x-auto max-[1100px]:pb-1 ${className}`}
     >
       <div className={GROUP}>
         <button type="button" aria-label="Notifications" title="Notifications" className={`relative ${TILE} ${IDLE}`}>

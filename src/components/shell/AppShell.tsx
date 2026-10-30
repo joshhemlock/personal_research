@@ -3,8 +3,8 @@ import { TopBar, type HeaderQuote } from "./TopBar";
 import { Rail, type NavKey } from "./Rail";
 
 type AppShellProps = {
-  /** Which rail item is the current page. */
-  active: NavKey;
+  /** Which rail item is the current page, if any. */
+  active?: NavKey;
   /** Symbol the Chart and Financials rail links open. */
   symbol?: string;
   /** Show this quote in the center pill instead of the search prompt. */
