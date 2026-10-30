@@ -5,9 +5,10 @@ import { ICONS } from "@/components/ui/Icon";
 import { TickerDot } from "@/components/ui/Pill";
 import { pct, tone } from "@/lib/format";
 import { UNIVERSE } from "@/lib/mock/market";
-import type { ScreenSort, ScreenStock } from "@/lib/mock/screener";
+import type { ScreenRow, ScreenSort } from "@/lib/mock/screener";
 import {
   COLUMNS,
+  LIVE_UNSORTABLE,
   defaultDir,
   fitSteps,
   fmtCap,
@@ -25,15 +26,40 @@ import { useScreener } from "./ScreenerProvider";
 const ROW = "grid items-center gap-x-[10px] px-1 [grid-template-columns:var(--cols)]";
 const COMPANY = "flex items-center gap-[10px] text-ink";
 
-// Symbols the chart screen has sample data for. Other rows show the same
-// cell without a link (their /stock page would 404) until that data exists.
+// Symbols the chart screen has sample data for. With sample data, other rows
+// show the same cell without a link (their /stock page would 404); with live
+// data every row links.
 const CHARTED = new Set(UNIVERSE.map((s) => s.symbol));
 
-function SortHeader({ col, sort, onSort }: { col: ColumnDef; sort: ScreenSort; onSort: () => void }) {
+/** Shown for a value TradingView doesn't have. */
+const MISSING = <span className="text-muted">—</span>;
+
+function orMissing<T>(v: T | null, format: (v: T) => string) {
+  return v === null ? MISSING : format(v);
+}
+
+function SortHeader({
+  col,
+  sort,
+  sortable,
+  onSort,
+}: {
+  col: ColumnDef;
+  sort: ScreenSort;
+  sortable: boolean;
+  onSort: () => void;
+}) {
   if (col.key === "watch") {
     return (
       <span role="columnheader" data-col="watch">
         <span className="sr-only">Watch</span>
+      </span>
+    );
+  }
+  if (!sortable) {
+    return (
+      <span role="columnheader" data-col={col.key} className={`whitespace-nowrap ${col.align === "right" ? "text-right" : ""}`}>
+        {col.label}
       </span>
     );
   }
@@ -75,7 +101,19 @@ function SortHeader({ col, sort, onSort }: { col: ColumnDef; sort: ScreenSort; o
   );
 }
 
-function Cell({ col, s, watched, onWatch }: { col: ColumnKey; s: ScreenStock; watched: boolean; onWatch: () => void }) {
+function Cell({
+  col,
+  s,
+  linked,
+  watched,
+  onWatch,
+}: {
+  col: ColumnKey;
+  s: ScreenRow;
+  linked: boolean;
+  watched: boolean;
+  onWatch: () => void;
+}) {
   switch (col) {
     case "company": {
       const body = (
@@ -89,7 +127,7 @@ function Cell({ col, s, watched, onWatch }: { col: ColumnKey; s: ScreenStock; wa
       );
       return (
         <span role="cell" data-col={col}>
-          {CHARTED.has(s.symbol) ? (
+          {linked ? (
             <Link href={`/stock/${s.symbol}`} className={`${COMPANY} hover:text-focus`}>
               {body}
             </Link>
@@ -102,7 +140,7 @@ function Cell({ col, s, watched, onWatch }: { col: ColumnKey; s: ScreenStock; wa
     case "industry":
       return (
         <span role="cell" data-col={col} className="truncate text-[13px] text-ink-3">
-          {s.industry}
+          {s.industry ?? MISSING}
         </span>
       );
     case "price":
@@ -120,34 +158,41 @@ function Cell({ col, s, watched, onWatch }: { col: ColumnKey; s: ScreenStock; wa
     case "cap":
       return (
         <span role="cell" data-col={col} className="text-right text-ink-2">
-          {fmtCap(s.marketCap)}
+          {orMissing(s.marketCap, fmtCap)}
         </span>
       );
     case "pe":
       return (
         <span role="cell" data-col={col} className="text-right text-ink-2">
-          {fmtPe(s.fwdPe)}
+          {orMissing(s.fwdPe, fmtPe)}
         </span>
       );
     case "growth":
       return (
         <span role="cell" data-col={col} className="text-right text-ink-2">
-          {fmtGrowth(s.revGrowth)}
+          {orMissing(s.revGrowth, fmtGrowth)}
         </span>
       );
     case "gm":
       return (
         <span role="cell" data-col={col} className="text-right text-ink-2">
-          {fmtPct1(s.grossMargin)}
+          {orMissing(s.grossMargin, fmtPct1)}
         </span>
       );
     case "roic":
       return (
         <span role="cell" data-col={col} className="text-right font-medium">
-          {fmtPct1(s.roic)}
+          {orMissing(s.roic, fmtPct1)}
         </span>
       );
     case "range": {
+      if (s.rangePos === null || s.low52 === null || s.high52 === null) {
+        return (
+          <span role="cell" data-col={col}>
+            {MISSING}
+          </span>
+        );
+      }
       const label = `52-week range ${fmtPrice(s.low52)} to ${fmtPrice(s.high52)}`;
       return (
         <span role="cell" data-col={col} title={label} className="relative block h-1 rounded-[2px] bg-[rgba(17,17,19,0.08)]">
@@ -160,16 +205,25 @@ function Cell({ col, s, watched, onWatch }: { col: ColumnKey; s: ScreenStock; wa
         </span>
       );
     }
-    case "trend":
+    case "trend": {
+      if (s.spark === null) {
+        return (
+          <span role="cell" data-col={col}>
+            {MISSING}
+          </span>
+        );
+      }
+      const up = (s.trend ?? 0) >= 0;
       return (
         <span role="cell" data-col={col}>
-          <span className="sr-only">{s.trend >= 0 ? "Up over 3 months" : "Down over 3 months"}</span>
+          <span className="sr-only">{up ? "Up over 3 months" : "Down over 3 months"}</span>
           {/* Inline (not block) like the design, so it sits on the text baseline. */}
           <svg width="84" height="24" viewBox="0 0 84 24" aria-hidden="true" className="inline align-baseline">
-            <path d={s.spark} fill="none" stroke={tone(s.trend).stroke} strokeWidth="1.5" strokeLinejoin="round" />
+            <path d={s.spark} fill="none" stroke={tone(s.trend ?? 0).stroke} strokeWidth="1.5" strokeLinejoin="round" />
           </svg>
         </span>
       );
+    }
     case "watch":
       return (
         <span role="cell" data-col={col}>
@@ -220,8 +274,9 @@ function fitCss(cols: ColumnDef[]): string {
 
 /** The matching stocks: sortable headers, one row per stock on this page. */
 export function ResultsTable() {
-  const { state, dispatch, result } = useScreener();
+  const { state, dispatch, result, live, retry } = useScreener();
   const cols = COLUMNS.filter((c) => !state.hiddenColumns.includes(c.key));
+  const sortable = (key: ColumnKey) => key !== "watch" && !(live && LIVE_UNSORTABLE.includes(key));
 
   return (
     <div className="overflow-x-auto">
@@ -229,9 +284,10 @@ export function ResultsTable() {
       <div
         role="table"
         aria-label="Matching stocks"
-        aria-rowcount={result.matches.length + 1}
+        aria-rowcount={result.total + 1}
+        aria-busy={result.loading || undefined}
         data-results-table=""
-        className="min-w-[960px] max-split:min-w-0"
+        className={`min-w-[960px] max-split:min-w-0${result.loading ? " opacity-60 transition-opacity" : ""}`}
       >
         <div role="row" aria-rowindex={1} className={`${ROW} py-[6px] text-[12px] text-muted`}>
           {cols.map((c) => (
@@ -239,6 +295,7 @@ export function ResultsTable() {
               key={c.key}
               col={c}
               sort={state.sort}
+              sortable={sortable(c.key)}
               onSort={() => c.key !== "watch" && dispatch({ type: "sortColumn", key: c.key })}
             />
           ))}
@@ -255,6 +312,7 @@ export function ResultsTable() {
                 key={c.key}
                 col={c.key}
                 s={s}
+                linked={live !== null || CHARTED.has(s.symbol)}
                 watched={state.watched.includes(s.symbol)}
                 onWatch={() => dispatch({ type: "toggleWatch", symbol: s.symbol })}
               />
@@ -263,12 +321,23 @@ export function ResultsTable() {
         ))}
         {result.rows.length === 0 && (
           <div role="row" className="border-t border-hairline px-1 py-8 text-center text-ink-3">
-            <span role="cell">
-              No stocks match these filters.{" "}
-              <button type="button" onClick={() => dispatch({ type: "reset" })} className="text-ink underline">
-                Reset filters
-              </button>
-            </span>
+            {result.failed ? (
+              <span role="cell">
+                Couldn’t load results from TradingView.{" "}
+                <button type="button" onClick={retry} className="text-ink underline">
+                  Try again
+                </button>
+              </span>
+            ) : result.loading ? (
+              <span role="cell">Loading results…</span>
+            ) : (
+              <span role="cell">
+                No stocks match these filters.{" "}
+                <button type="button" onClick={() => dispatch({ type: "reset" })} className="text-ink underline">
+                  Reset filters
+                </button>
+              </span>
+            )}
           </div>
         )}
       </div>

@@ -1,15 +1,15 @@
 "use client";
 
-import { fmtGrowth, fmtPct1, fmtPe } from "./screen";
+import { fmtCount, fmtGrowth, fmtPct1, fmtPe } from "./screen";
 import { useScreener } from "./ScreenerProvider";
 
 const DASH = "—";
 
 /** Five frosted tiles summarising the current matches. */
 export function SummaryTiles() {
-  const { summary: s } = useScreener().result;
+  const { summary: s, medianBase } = useScreener().result;
   const tiles = [
-    { k: "Matches", v: String(s.count) },
+    { k: "Matches", v: fmtCount(s.count) },
     { k: "Median fwd P/E", v: s.fwdPe === null ? DASH : fmtPe(s.fwdPe) },
     { k: "Median rev growth", v: s.revGrowth === null ? DASH : fmtGrowth(s.revGrowth) },
     { k: "Median gross margin", v: s.grossMargin === null ? DASH : fmtPct1(s.grossMargin) },
@@ -30,6 +30,12 @@ export function SummaryTiles() {
           <span className="text-[24px] font-normal tracking-[-0.02em]">{t.v}</span>
         </div>
       ))}
+      {medianBase !== null && (
+        // Live data: medians are fetched for a capped number of matches.
+        <p className="basis-full px-1 text-[12px] text-muted">
+          {`Medians are of the ${fmtCount(medianBase)} largest matches by market cap.`}
+        </p>
+      )}
     </section>
   );
 }

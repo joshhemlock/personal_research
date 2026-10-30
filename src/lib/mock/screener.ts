@@ -72,6 +72,35 @@ export type ScreenStock = {
   spark: string;
 };
 
+/**
+ * One results row as the table, the summary and the CSV export use it. A
+ * ScreenStock is one; a live row may lack any fundamental (null) and has no
+ * sparkline when price history couldn't be loaded.
+ */
+export type ScreenRow = {
+  symbol: string;
+  name: string;
+  industry: string | null;
+  sector: string | null;
+  price: number;
+  changePct: number;
+  /** $B. */
+  marketCap: number | null;
+  fwdPe: number | null;
+  revGrowth: number | null;
+  grossMargin: number | null;
+  roic: number | null;
+  netDebtEbitda: number | null;
+  low52: number | null;
+  high52: number | null;
+  /** 0–100. */
+  rangePos: number | null;
+  /** 3-month change, %; sets the sparkline's color. */
+  trend: number | null;
+  /** 84×24 sparkline path. */
+  spark: string | null;
+};
+
 /** Market-cap buckets in $B: Mega ≥ 200, Large ≥ 10, Mid ≥ 2, Small below. */
 export function capBucket(marketCap: number): CapBucket {
   if (marketCap >= 200) return "Mega";
@@ -269,3 +298,53 @@ export const SAVED_SCREENS: SavedScreen[] = [
     sort: { key: "pe", dir: "asc" },
   },
 ];
+
+// ── Live screening ──────────────────────────────────────────────────────────
+// Shapes shared by the live data layer (src/lib/data/screener.ts), its route
+// handler and the client. Built by toQuery() in components/screener/screen.ts.
+
+/** A screen in canonical form: equal screens give equal JSON (the cache key). */
+export type ScreenQuery = {
+  universe: UniverseId;
+  /** In CAP_BUCKETS order. */
+  caps: CapBucket[];
+  /** In SECTORS order. */
+  sectors: Sector[];
+  /** Thresholds that hold a number, by key. */
+  limits: { key: MetricKey; value: number }[];
+  sort: ScreenSort;
+  page: number;
+  /** Starred symbols, sorted; only sent for the "My watchlist" universe. */
+  watched: string[];
+};
+
+export type ScreenSummary = {
+  count: number;
+  fwdPe: number | null;
+  revGrowth: number | null;
+  grossMargin: number | null;
+  roic: number | null;
+};
+
+/** One page of live results. */
+export type ScreenPage = {
+  /** JSON of the ScreenQuery these results answer. */
+  key: string;
+  total: number;
+  offset: number;
+  rows: ScreenRow[];
+  summary: ScreenSummary;
+  /** When the medians come from only the largest matches (the fetch is capped), how many. */
+  medianBase: number | null;
+};
+
+/** What the server hands the Screener in live mode. */
+export type LiveScreener = {
+  /** Results of the default screen, or null when TradingView couldn't be reached. */
+  initial: ScreenPage | null;
+  /** Hover text for the chips: what each bucket and sector covers. */
+  capHelp: Record<CapBucket, string>;
+  sectorHelp: Record<Sector, string>;
+  /** Most rows "Export results" downloads. */
+  exportCap: number;
+};

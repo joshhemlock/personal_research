@@ -18,11 +18,14 @@ function ChipGroup<T extends string>({
   options,
   selected,
   onToggle,
+  help,
 }: {
   label: string;
   options: readonly T[];
   selected: readonly T[];
   onToggle: (value: T) => void;
+  /** Hover text per option (live data: what a bucket or sector covers). */
+  help?: Record<T, string>;
 }) {
   const id = useId();
   return (
@@ -38,6 +41,7 @@ function ChipGroup<T extends string>({
               key={o}
               type="button"
               aria-pressed={on}
+              title={help?.[o]}
               onClick={() => onToggle(o)}
               className={`h-[34px] rounded-full border px-3 text-[13px] transition-colors duration-150 ${
                 on
@@ -98,7 +102,7 @@ function ThresholdRow({ metric, value, autoFocus }: { metric: MetricKey; value: 
 }
 
 function AddFilter() {
-  const { state, dispatch } = useScreener();
+  const { state, dispatch, live } = useScreener();
   const available = EXTRA_METRICS.filter((k) => !state.filters.thresholds.some((t) => t.key === k));
   return (
     <Popover
@@ -119,7 +123,7 @@ function AddFilter() {
             }}
             className="flex h-9 w-full items-center justify-between gap-3 rounded-[10px] px-3 text-left hover:bg-track"
           >
-            {METRICS[key].menuLabel ?? METRICS[key].label}
+            {(live && METRICS[key].liveMenuLabel) || METRICS[key].menuLabel || METRICS[key].label}
             <span className="text-[13px] whitespace-nowrap text-muted">
               {METRICS[key].bound === "min" ? "≥" : "≤"} {METRICS[key].unit}
             </span>
@@ -162,7 +166,7 @@ function SaveButton() {
 
 /** Left column: universe, size and sector chips, numeric thresholds. */
 export function FiltersPanel() {
-  const { state, dispatch } = useScreener();
+  const { state, dispatch, live } = useScreener();
   const { filters } = state;
   const headingId = useId();
 
@@ -202,12 +206,14 @@ export function FiltersPanel() {
         options={CAP_BUCKETS}
         selected={filters.caps}
         onToggle={(value) => dispatch({ type: "toggleCap", value })}
+        help={live?.capHelp}
       />
       <ChipGroup
         label="Sector"
         options={SECTORS}
         selected={filters.sectors}
         onToggle={(value) => dispatch({ type: "toggleSector", value })}
+        help={live?.sectorHelp}
       />
       <div className="flex flex-col gap-[2px] border-t border-[rgba(17,17,19,0.06)] pt-2">
         {filters.thresholds.map((t) => (

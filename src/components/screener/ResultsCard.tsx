@@ -1,9 +1,9 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import type { SortKey } from "@/lib/mock/screener";
-import { COLUMNS, SORT_OPTIONS, toCsv } from "./screen";
+import { COLUMNS, LIVE_UNSORTABLE, SORT_OPTIONS, fmtCount, toCsv } from "./screen";
 import { Popover } from "./Popover";
 import { ResultsTable } from "./ResultsTable";
 import { useScreener } from "./ScreenerProvider";
@@ -75,23 +75,58 @@ function PageButton({ dir, enabled, onClick }: { dir: "prev" | "next"; enabled: 
   );
 }
 
+/** Muted credit for live data, which TradingView's terms ask for. */
+function Attribution() {
+  return (
+    <a
+      href="https://www.tradingview.com/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-[12px] text-muted hover:text-ink-2 hover:underline"
+    >
+      Data: TradingView
+    </a>
+  );
+}
+
 /** "18 matches" card: sort and export tools, the table and pagination. */
 export function ResultsCard() {
-  const { state, dispatch, result } = useScreener();
+  const { state, dispatch, result, live, exportMatches, retry } = useScreener();
   const headingId = useId();
-  const total = result.matches.length;
+  const [exportFailed, setExportFailed] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const total = result.total;
   const first = result.offset + 1;
   const last = result.offset + result.rows.length;
+  const of = fmtCount(total);
   const pageLine =
-    total === 0 ? "No matches" : first === last ? `Showing ${first} of ${total}` : `Showing ${first}–${last} of ${total}`;
+    total === 0 ? "No matches" : first === last ? `Showing ${first} of ${of}` : `Showing ${first}–${last} of ${of}`;
   const screenName = state.screens.find((s) => s.id === state.activeId)?.name ?? "screen";
+  const sortOptions = live ? SORT_OPTIONS.filter((o) => !LIVE_UNSORTABLE.includes(o.value)) : SORT_OPTIONS;
+  const exportTitle = exportFailed
+    ? "Export failed. Try again"
+    : live && total > live.exportCap
+      ? `Export results (CSV, first ${fmtCount(live.exportCap)})`
+      : "Export results (CSV)";
+
+  async function exportResults() {
+    setExporting(true);
+    try {
+      exportCsv(toCsv(await exportMatches()), screenName);
+      setExportFailed(false);
+    } catch {
+      setExportFailed(true);
+    } finally {
+      setExporting(false);
+    }
+  }
 
   return (
     // A size container: the table's fit stylesheet queries this card's width.
     <section aria-labelledby={headingId} className="glass @container/results rounded-[24px] px-[18px] pt-[14px] pb-2">
       <div className="mb-1 flex flex-wrap items-center justify-between gap-[10px]">
         <h2 id={headingId} className="text-[21px] font-normal tracking-[-0.01em]">
-          {`${total} ${total === 1 ? "match" : "matches"}`}
+          {`${of} ${total === 1 ? "match" : "matches"}`}
         </h2>
         <div className="flex flex-wrap items-center gap-2">
           <label className="inline-flex items-center gap-2 text-[13px] text-ink-3">
@@ -104,7 +139,7 @@ export function ResultsCard() {
               onChange={(e) => dispatch({ type: "sortBy", key: e.target.value as SortKey })}
               className="h-[38px] w-[147px] rounded-full border border-[rgba(17,17,19,0.08)] bg-[rgba(255,255,255,0.9)] px-3 pb-[2px] text-[14px] text-ink"
             >
-              {SORT_OPTIONS.map((o) => (
+              {sortOptions.map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
                 </option>
@@ -115,9 +150,9 @@ export function ResultsCard() {
           <button
             type="button"
             aria-label="Export results"
-            title="Export results (CSV)"
-            disabled={total === 0}
-            onClick={() => exportCsv(toCsv(result.matches), screenName)}
+            title={exportTitle}
+            disabled={total === 0 || exporting}
+            onClick={exportResults}
             className={ICON_BUTTON}
           >
             <Icon d="M12 4v11M7 10l5 5 5-5M5 20h14" size={18} strokeWidth={1.6} linejoin="round" />
@@ -126,7 +161,22 @@ export function ResultsCard() {
       </div>
       <ResultsTable />
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-hairline px-1 pt-2 pb-1 text-[13px] text-ink-3">
-        <span aria-live="polite">{pageLine}</span>
+        {live ? (
+          <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span aria-live="polite">{pageLine}</span>
+            {result.failed && result.rows.length > 0 && (
+              <span className="text-down-text">
+                Couldn’t update.{" "}
+                <button type="button" onClick={retry} className="underline">
+                  Try again
+                </button>
+              </span>
+            )}
+            <Attribution />
+          </span>
+        ) : (
+          <span aria-live="polite">{pageLine}</span>
+        )}
         <span className="inline-flex gap-1">
           <PageButton
             dir="prev"

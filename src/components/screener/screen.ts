@@ -3,19 +3,28 @@
 
 import { MINUS, num, signed } from "@/lib/format";
 import {
+  CAP_BUCKETS,
   SCREEN_STOCKS,
+  SECTORS,
   type MetricKey,
   type ScreenFilters,
+  type ScreenQuery,
+  type ScreenRow,
   type ScreenSort,
   type ScreenStock,
   type SortKey,
 } from "@/lib/mock/screener";
+
+/** Rows per results page. */
+export const PAGE_SIZE = 12;
 
 export type MetricDef = {
   /** Row label. Added rows also carry a remove button, so keep theirs short. */
   label: string;
   /** Longer name for the "Add filter" menu, when the label leaves things out. */
   menuLabel?: string;
+  /** Menu name with live data, when TradingView measures it differently. */
+  liveMenuLabel?: string;
   /** "min" rows keep stocks at or above the value (≥), "max" at or below (≤). */
   bound: "min" | "max";
   unit: "%" | "×";
@@ -33,6 +42,8 @@ export const METRICS: Record<MetricKey, MetricDef> = {
   dividendGrowth: {
     label: "Dividend growth",
     menuLabel: "Dividend growth (5-yr)",
+    // TradingView has no 5-year dividend growth rate, only the latest year's.
+    liveMenuLabel: "Dividend growth (1-yr)",
     bound: "min",
     unit: "%",
     step: 1,
@@ -82,6 +93,9 @@ export function defaultDir(key: SortKey): ScreenSort["dir"] {
   return key === "company" || key === "industry" || key === "pe" ? "asc" : "desc";
 }
 
+/** Columns live data can't sort by (TradingView has no 52-week range position). */
+export const LIVE_UNSORTABLE: readonly SortKey[] = ["range"];
+
 /** Options of the "Sort by" select; the design's four come first. */
 export const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: "roic", label: "ROIC" },
@@ -130,6 +144,44 @@ export function median(values: number[]): number | null {
   const v = [...values].sort((a, b) => a - b);
   const m = Math.floor(v.length / 2);
   return v.length % 2 ? v[m] : (v[m - 1] + v[m]) / 2;
+}
+
+/** Thresholds, chips and sort in canonical order, the form live screens are cached under. */
+export function toQuery(
+  filters: ScreenFilters,
+  sort: ScreenSort,
+  page: number,
+  watched: readonly string[],
+): ScreenQuery {
+  const limits: ScreenQuery["limits"] = [];
+  for (const t of filters.thresholds) {
+    const value = parseThreshold(t.value);
+    if (value !== null && !limits.some((l) => l.key === t.key)) limits.push({ key: t.key, value });
+  }
+  limits.sort((a, b) => a.key.localeCompare(b.key));
+  return {
+    universe: filters.universe,
+    caps: CAP_BUCKETS.filter((c) => filters.caps.includes(c)),
+    sectors: SECTORS.filter((s) => filters.sectors.includes(s)),
+    limits,
+    sort: { key: sort.key, dir: sort.dir },
+    page,
+    watched: filters.universe === "watchlist" ? [...new Set(watched)].sort() : [],
+  };
+}
+
+export function queryKey(q: ScreenQuery): string {
+  return JSON.stringify(q);
+}
+
+/** The same screen on another page or in another order: same matches and medians. */
+export function filtersKey(q: ScreenQuery): string {
+  return JSON.stringify({ ...q, sort: null, page: null });
+}
+
+/** "18", "5,321". */
+export function fmtCount(n: number): string {
+  return n.toLocaleString("en-US");
 }
 
 /** "4.59T" / "143.1B" from $B. */
@@ -237,8 +289,8 @@ export function fitSteps(visible: readonly ColumnDef[]): FitStep[] {
   return steps;
 }
 
-/** CSV of the matches, for "Export results". */
-export function toCsv(rows: readonly ScreenStock[]): string {
+/** CSV of the matches, for "Export results". Missing values are left empty. */
+export function toCsv(rows: readonly ScreenRow[]): string {
   const head = [
     "Symbol",
     "Company",
@@ -255,26 +307,27 @@ export function toCsv(rows: readonly ScreenStock[]): string {
     "52-week low",
     "52-week high",
   ];
-  const cell = (v: string | number) => {
-    const s = String(v);
+  const cell = (v: string | null) => {
+    const s = v ?? "";
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
+  const fixed = (v: number | null, digits: number) => (v === null ? null : v.toFixed(digits));
   const lines = rows.map((s) =>
     [
       s.symbol,
       s.name,
       s.industry,
       s.sector,
-      s.price.toFixed(2),
-      s.changePct.toFixed(2),
-      s.marketCap.toFixed(1),
-      s.fwdPe.toFixed(1),
-      s.revGrowth.toFixed(1),
-      s.grossMargin.toFixed(1),
-      s.roic.toFixed(1),
-      s.netDebtEbitda.toFixed(1),
-      s.low52.toFixed(2),
-      s.high52.toFixed(2),
+      fixed(s.price, 2),
+      fixed(s.changePct, 2),
+      fixed(s.marketCap, 1),
+      fixed(s.fwdPe, 1),
+      fixed(s.revGrowth, 1),
+      fixed(s.grossMargin, 1),
+      fixed(s.roic, 1),
+      fixed(s.netDebtEbitda, 1),
+      fixed(s.low52, 2),
+      fixed(s.high52, 2),
     ]
       .map(cell)
       .join(","),
