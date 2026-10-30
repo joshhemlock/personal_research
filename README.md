@@ -4,18 +4,34 @@ A personal stock-research web app for one user. "Compound" is a placeholder name
 
 The design handoff lives in [`design/`](design/): the brief ([`design/DESIGN_BRIEF.md`](design/DESIGN_BRIEF.md)), target screenshots at 1512 × 982, static HTML snapshots and the original design files.
 
-**Status:** build steps 1–3 of the brief (scaffold, theme and shell; the five screens with their interactions; visual comparison against the targets) are in progress. Every screen runs on typed **sample data**. All numbers are made up; none of them are real market figures. Steps 4–6 (live data, persistence, login and deploy) are not started.
+**Status:** all five screens are built and matched to the design at 1512 × 982, and they reflow below that width. Live market data from TradingView is in progress (see [Data](#data)): the top bar, Overview and ⌘K search are live. Persistence, login and deploy (steps 5–6) are not started.
 
 ## Getting started
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
+npm run dev
 npm run lint
 npx tsc --noEmit
 ```
 
-Requires Node 20+.
+Then open http://localhost:3000. Requires Node 22+.
+
+## Data
+
+Market data comes from TradingView by default, fetched on the server only (`src/lib/data`):
+
+- `market.ts`: the API the screens use: `resolveSymbols`, `getQuotes`, `getDailyBars`, `getFundamentals`, `searchListings`. It's provider-agnostic, so another provider only has to implement these.
+- `tradingview/`: TradingView's screener endpoint (quotes, fundamentals, screens), its chart WebSocket (daily candles) and its symbol search.
+- Caching uses `"use cache"` + `cacheLife`: quotes refresh about every minute, price history and fundamentals daily.
+
+TradingView has no public API: these are the endpoints its own site uses. They are undocumented and can change or be blocked at any time, and automated use is against TradingView's terms. Some things the designs show aren't available there (e.g. revenue by segment, past EPS estimates, the implied earnings move); those parts of the UI say so instead of showing made-up numbers.
+
+**Sample mode.** `DATA_SOURCE=sample npm run dev` uses the design's made-up data instead, so screens can be compared pixel-for-pixel with `design/screens` (see below). All sample numbers are fictional.
+
+**Behind an HTTPS proxy** (e.g. a locked-down dev container), start Node with `NODE_USE_ENV_PROXY=1` so server-side requests use `HTTPS_PROXY`.
+
+Your own data (watchlists and groups, alerts, open ticker tabs, saved screens, research tasks, notes) still comes from the sample modules until persistence is added.
 
 ## Screens
 
@@ -48,6 +64,7 @@ src/
   lib/
     brand.ts              product name and tagline
     format.ts             number formatting (true minus sign), up/down tones
+    data/                 market data layer (TradingView, caching, per-screen builders)
     mock/                 typed sample data, one module per screen
       gen.ts              seeded RNG / random walk / path helpers ported from the design files
       market.ts           sample securities, index readouts, "as of" time
@@ -61,17 +78,19 @@ The frosted-glass recipe is three utilities — `glass` (panels), `glass-tile` (
 
 ## Checking screens against the design
 
-With the dev server running:
+With a dev server running in sample mode (`DATA_SOURCE=sample npm run dev`):
 
 ```bash
 node scripts/visual-check.mjs overview          # or chart | financials | screener | notes | all
 node scripts/visual-check.mjs chart --clip 30,200,960,520 --zoom 2
 ```
 
-This writes to `.visual/` (git-ignored): `<screen>.app.png` (the build at 1512 × 982), `<screen>.diff.png` (pixel diff) and, with `--clip`, `<screen>.clip.png` (target crop above, build crop below). It uses the Playwright installed on the machine (`npm i -g playwright` if it's missing).
+This writes to `.visual/` (git-ignored): `<screen>.app.png` (the build at 1512 × 982), `<screen>.diff.png` (pixel diff) and, with `--clip`, `<screen>.clip.png` (target crop above, build crop below). `--width 1400 --full` screenshots another width without diffing; `--base http://localhost:3001` points it at another server. It uses the Playwright installed on the machine (`npm i -g playwright` if it's missing).
+
+To run a live server next to a sample one, give the second its own build folder: `NEXT_DIST_DIR=.next-live npx next dev -p 3001`.
 
 ## Next steps (from the brief)
 
-4. **Live data.** Put a provider-agnostic layer in front of the mock modules (`getQuote`, `getDailyBars`, `getOverview`, `getStatements`, `getEarnings`, `getNews`, `screen(filters)`). Call providers server-side only, keep keys in environment variables and cache with `"use cache"` + `cacheLife` (quotes ~1 minute, bars and fundamentals ~24 hours). The free Alpha Vantage tier allows 25 requests a day at 1 per second and the company-overview endpoint is premium-only, so batch and cache aggressively or plug in another provider. Snapshot screener fundamentals with a nightly job rather than querying live.
+4. **Live data:** finish wiring the chart, financials, screener and notes screens to `src/lib/data` (in progress). If TradingView becomes unreliable, implement the same functions against a paid provider.
 5. **Persistence** for watchlists, open ticker tabs, alerts, saved screens, research-queue tasks and notes.
 6. **Single-user login**, then deploy (e.g. Vercel with env vars for API keys and the database URL).

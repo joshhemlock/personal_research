@@ -9,6 +9,7 @@ import { UpcomingEarnings } from "@/components/overview/UpcomingEarnings";
 import { Watchlist } from "@/components/overview/Watchlist";
 import { EARNINGS_WINDOW_DAYS, MOVERS_FULL_SCALE, SECTOR_HEAT_SCALE, SECTOR_PERIODS } from "@/lib/mock/overview";
 import { getOverviewData } from "@/lib/data/overview";
+import { isSample } from "@/lib/data/source";
 
 export const metadata: Metadata = { title: "Overview" };
 
@@ -26,6 +27,14 @@ export default async function OverviewPage() {
         <IndexTiles tiles={data.indexTiles} />
         <Watchlist rows={data.watchlist} />
         <SectorPerformance sectors={data.sectors} periods={SECTOR_PERIODS} scale={SECTOR_HEAT_SCALE} />
+        {!isSample && (
+          <p className="m-0 px-1 text-right text-[12px] text-muted">
+            Market data:{" "}
+            <a href="https://www.tradingview.com/" className="link" target="_blank" rel="noreferrer">
+              TradingView
+            </a>
+          </p>
+        )}
       </main>
       <aside aria-label="Movers, earnings and research queue" className="grid min-w-0 flex-[1_1_330px] grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] content-start gap-3 pb-1 max-split:basis-full">
         <Movers

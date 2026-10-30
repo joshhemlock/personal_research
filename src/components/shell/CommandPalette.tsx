@@ -56,6 +56,52 @@ const ITEMS: Item[] = [
 
 const GROUPS: Item["group"][] = ["Tickers", "Go to", "Notes"];
 
+type RemoteListing = { symbol: string; name: string; exchange: string };
+
+/** Live ticker matches from /api/search (empty in sample mode). */
+function useRemoteTickers(query: string): { query: string; items: Item[] } {
+  const [state, setState] = useState<{ query: string; items: Item[] }>({ query: "", items: [] });
+  useEffect(() => {
+    const q = query.trim();
+    if (!q) return;
+    const ctrl = new AbortController();
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: ctrl.signal });
+        const { results } = (await res.json()) as { results: RemoteListing[] };
+        setState({
+          query,
+          items: results.map((r) => ({
+            id: `r-${r.symbol}`,
+            group: "Tickers",
+            label: r.symbol,
+            sub: `${r.name} · ${r.exchange}`,
+            href: `/stock/${r.symbol}`,
+            keywords: r.name,
+            symbol: r.symbol,
+          })),
+        });
+      } catch {
+        // Aborted or offline: keep the local matches.
+      }
+    }, 200);
+    return () => {
+      clearTimeout(t);
+      ctrl.abort();
+    };
+  }, [query]);
+  return state;
+}
+
+/** Local matches first, then live tickers that aren't already listed. */
+function merge(local: Item[], remote: Item[]): Item[] {
+  const known = new Set(local.filter((i) => i.symbol).map((i) => i.symbol));
+  const extra = remote.filter((r) => !known.has(r.symbol)).slice(0, 6);
+  if (!extra.length) return local;
+  const tickers = [...local.filter((i) => i.group === "Tickers"), ...extra];
+  return [...tickers, ...local.filter((i) => i.group !== "Tickers")];
+}
+
 function search(query: string): Item[] {
   const q = query.trim().toLowerCase();
   if (!q) {
@@ -84,7 +130,11 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
   const listRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
-  const results = useMemo(() => search(query), [query]);
+  const remote = useRemoteTickers(query);
+  const results = useMemo(
+    () => merge(search(query), remote.query === query && query.trim() ? remote.items : []),
+    [query, remote],
+  );
 
   useEffect(() => {
     const d = dialogRef.current;

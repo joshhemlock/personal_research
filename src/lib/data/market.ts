@@ -8,6 +8,7 @@ import "server-only";
 import { cacheLife } from "next/cache";
 import { fetchDailyBars } from "./tradingview/chart";
 import { numOrNull, scan, series, strOrNull } from "./tradingview/scanner";
+import { searchSymbols } from "./tradingview/search";
 import type { Bar, EarningsTiming, Fundamentals, Listing, Quote } from "./types";
 
 /** Indices and rates, which aren't found by ticker lookup. */
@@ -55,6 +56,16 @@ export async function resolveSymbols(symbols: string[]): Promise<Record<string, 
     }
   }
   return out;
+}
+
+/** Ticker search for the command palette. */
+export async function searchListings(query: string): Promise<Listing[]> {
+  "use cache";
+  cacheLife("days");
+  const q = query.trim();
+  if (!q) return [];
+  const hits = await searchSymbols(q);
+  return hits.map((h) => ({ ...h, name: shortName(h.name) }));
 }
 
 const QUOTE_COLUMNS = [
