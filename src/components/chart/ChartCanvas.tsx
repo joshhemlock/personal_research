@@ -63,6 +63,17 @@ type Api = {
 const SHIFT_X = 1;
 const evenWidth = (w: number) => 2 * Math.round(w / 2);
 
+/**
+ * Room above and below the data (design: 12% and 18% of its range). The
+ * library maps prices onto height − 1 px, so trimming a pixel off the bottom
+ * margin puts every price exactly where the design's scale does.
+ */
+function scaleMargins(height: number) {
+  const span = 1 + PAD_ABOVE + PAD_BELOW;
+  const pane = Math.max(2, 2 * Math.floor(height / 2)); // the library's even pane height
+  return { top: PAD_ABOVE / span, bottom: PAD_BELOW / span - 1 / pane };
+}
+
 const UP = "#4DB07F";
 const DOWN = "#EA5B52";
 const CLEAR = "rgba(0, 0, 0, 0)";
@@ -127,7 +138,6 @@ export function ChartCanvas({
     const host = hostRef.current;
     const container = canvasRef.current;
     if (!host || !container) return;
-    const margin = 1 + PAD_ABOVE + PAD_BELOW;
     const box = host.getBoundingClientRect();
     const chart = createChart(container, {
       width: evenWidth(box.width),
@@ -139,7 +149,7 @@ export function ChartCanvas({
       },
       grid: { vertLines: { visible: false }, horzLines: { visible: false } },
       leftPriceScale: { visible: false },
-      rightPriceScale: { visible: false, scaleMargins: { top: PAD_ABOVE / margin, bottom: PAD_BELOW / margin } },
+      rightPriceScale: { visible: false, scaleMargins: scaleMargins(box.height) },
       timeScale: {
         visible: false,
         rightOffset: 0,
@@ -191,7 +201,9 @@ export function ChartCanvas({
     chart.subscribeDblClick(onDoubleClick);
     // Grow with the page: follow the box size (and re-measure the overlays).
     const resize = new ResizeObserver(([entry]) => {
-      chart.resize(evenWidth(entry.contentRect.width), Math.floor(entry.contentRect.height), true);
+      const { width: w, height: h } = entry.contentRect;
+      chart.priceScale("right").applyOptions({ scaleMargins: scaleMargins(h) });
+      chart.resize(evenWidth(w), Math.floor(h), true);
       report();
     });
     resize.observe(host);

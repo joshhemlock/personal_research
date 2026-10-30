@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/shell/AppShell";
 import { AlertsPanel } from "@/components/chart/AlertsPanel";
 import { ChartWorkspace } from "@/components/chart/ChartWorkspace";
-import { FLUSH_BOTTOM } from "@/components/chart/layout";
+import { ASIDE, FLUSH_BOTTOM } from "@/components/chart/layout";
 import { TickerCard } from "@/components/chart/TickerCard";
 import { TickerTabs } from "@/components/chart/TickerTabs";
 import { WatchlistPanel } from "@/components/chart/WatchlistPanel";
@@ -49,7 +49,7 @@ export default async function StockChartPage({ params }: PageProps<"/stock/[symb
       >
         <TickerTabs current={sec.symbol} />
       </ChartWorkspace>
-      <aside aria-label="Watchlist, alerts and details" className={`flex min-w-0 flex-[1_1_330px] flex-col gap-3 pb-4 ${FLUSH_BOTTOM}`}>
+      <aside aria-label="Watchlist, alerts and details" className={`${ASIDE} ${FLUSH_BOTTOM}`}>
         <WatchlistPanel />
         <AlertsPanel alerts={ALERTS} />
         <TickerCard sec={sec} />
