@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import type { NoteListItem, NoteType } from "@/lib/mock/notes";
 import { Icon } from "@/components/ui/Icon";
@@ -17,13 +17,33 @@ const KINDS: { kind: Kind; type?: NoteType }[] = [
   { kind: "Ideas", type: "Idea" },
 ];
 
+// Search and type filter, shared by every notes page: the list is the same
+// sidebar whichever note is open, so they survive switching notes.
+type ListFilter = { query: string; kind: Kind };
+const ALL: ListFilter = { query: "", kind: "All" };
+let filter = ALL;
+const listeners = new Set<() => void>();
+const filterStore = {
+  subscribe(listener: () => void) {
+    listeners.add(listener);
+    return () => {
+      listeners.delete(listener);
+    };
+  },
+  get: () => filter,
+  getServer: () => ALL,
+  set(next: Partial<ListFilter>) {
+    filter = { ...filter, ...next };
+    listeners.forEach((l) => l());
+  },
+};
+
 const RAISED = "bg-white shadow-[0_1px_3px_rgba(17,17,19,0.08),0_8px_20px_-12px_rgba(17,17,19,0.2)]";
 
 /** Search box, type filter chips and the list of notes (left column). */
 export function NotesList({ notes }: { notes: NoteListItem[] }) {
   const draft = useNoteDraft();
-  const [query, setQuery] = useState("");
-  const [kind, setKind] = useState<Kind>("All");
+  const { query, kind } = useSyncExternalStore(filterStore.subscribe, filterStore.get, filterStore.getServer);
 
   const type = KINDS.find((k) => k.kind === kind)?.type;
   const q = query.trim().toLowerCase();
@@ -43,7 +63,7 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
           aria-label="Search notes"
           placeholder="Search notes"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => filterStore.set({ query: e.target.value })}
           className="min-w-0 flex-1 border-0 bg-transparent px-[2px] text-[14px] text-ink outline-none placeholder:text-muted"
         />
       </label>
@@ -56,7 +76,7 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
               key={k}
               type="button"
               aria-pressed={on}
-              onClick={() => setKind(k)}
+              onClick={() => filterStore.set({ kind: k })}
               className={`h-8 rounded-full border px-3 text-[13px] transition-colors duration-150 ${
                 on ? "border-ink bg-ink text-white" : "border-[rgba(17,17,19,0.1)] bg-white/70 text-ink-2 hover:bg-white hover:text-ink"
               }`}
@@ -112,10 +132,7 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
           <button
             type="button"
             className="link text-ink"
-            onClick={() => {
-              setQuery("");
-              setKind("All");
-            }}
+            onClick={() => filterStore.set(ALL)}
           >
             Clear filters
           </button>

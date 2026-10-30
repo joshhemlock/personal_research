@@ -118,13 +118,19 @@ export function Scenarios({ initial, price }: { initial: Scenario[]; price: numb
                 </span>
                 %
               </span>
-              <input
-                type="text"
-                inputMode="decimal"
-                aria-label={`${r.key} case value`}
-                {...field(r.key, "value", num(r.value))}
-                className={`${INPUT} -mx-1 w-[calc(100%+8px)] px-1 text-[24px] font-normal tracking-[-0.02em]`}
-              />
+              {/* Sized by a hidden copy too, so the card never gets narrower than its value. */}
+              <span className="relative -mx-1 block text-[24px] font-normal tracking-[-0.02em]">
+                <span aria-hidden="true" className="invisible block px-1 whitespace-pre">
+                  {drafts[`${r.key}-value`] || num(r.value)}
+                </span>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  aria-label={`${r.key} case value`}
+                  {...field(r.key, "value", num(r.value))}
+                  className={`${INPUT} absolute inset-0 size-full px-1 tracking-[-0.02em]`}
+                />
+              </span>
               <span className="text-[12px] opacity-85">{pct((r.value / price - 1) * 100, 1)}</span>
             </div>
           );

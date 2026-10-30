@@ -5,7 +5,7 @@ import { num, pct, tone } from "@/lib/format";
 const ROW = "grid grid-cols-[minmax(0,1.3fr)_1fr_1fr] gap-2";
 
 /** Price since the note was started, and key metrics then vs. now. */
-export function SinceNote({ note }: { note: Note }) {
+export function SinceNote({ note, headingId }: { note: Note; headingId: string }) {
   const change = sinceChangePct(note);
   const t = tone(change);
   const { line, area } = sincePaths(note);
@@ -13,9 +13,9 @@ export function SinceNote({ note }: { note: Note }) {
   const rows = [{ metric: "Price", then: num(note.started.price), now: num(notePrice(note)) }, ...note.metrics];
 
   return (
-    <section aria-labelledby="sn-h" className="glass flex flex-col gap-2 rounded-[24px] px-[18px] py-[14px]">
+    <section aria-labelledby={headingId} className="glass flex flex-col gap-2 rounded-[24px] px-[18px] py-[14px]">
       <div className="flex items-baseline justify-between gap-2">
-        <h2 id="sn-h" className="text-[19px] font-normal">
+        <h2 id={headingId} className="text-[19px] font-normal">
           Since this note
         </h2>
         <span className="text-[17px]" style={{ color: t.color }}>

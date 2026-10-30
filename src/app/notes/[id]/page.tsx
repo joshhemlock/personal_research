@@ -25,7 +25,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[id]">) {
   if (!note) notFound();
   return (
     <AppShell active="notes" symbol={note.symbol} askLabel="Ask about this note">
-      <NotesScreen note={note} />
+      <NotesScreen note={note} idPrefix={note.id} />
     </AppShell>
   );
 }

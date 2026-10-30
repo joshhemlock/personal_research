@@ -34,18 +34,23 @@ function esc(s: string): string {
   return s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 }
 
-/** The editable rich-text region containing `node`, if any. */
-function regionOf(node: Node | null): HTMLElement | null {
+/**
+ * The editable rich-text region containing `node`, if it belongs to `editor`.
+ * (Next keeps recently visited pages mounted but hidden, so the document can
+ * hold other notes' regions too.)
+ */
+function regionOf(editor: Element, node: Node | null): HTMLElement | null {
   const el = node instanceof Element ? node : (node?.parentElement ?? null);
-  return el?.closest<HTMLElement>(RICH_TEXT_SELECTOR) ?? null;
+  const region = el?.closest<HTMLElement>(RICH_TEXT_SELECTOR) ?? null;
+  return region && editor.contains(region) ? region : null;
 }
 
-/** The live selection, when it sits inside the note body. */
-function bodyRange(): Range | null {
+/** The live selection, when it sits inside this editor's note body. */
+function bodyRange(editor: Element): Range | null {
   const sel = document.getSelection();
   if (!sel || sel.rangeCount === 0) return null;
   const range = sel.getRangeAt(0);
-  return regionOf(range.commonAncestorContainer) ? range : null;
+  return regionOf(editor, range.commonAncestorContainer) ? range : null;
 }
 
 /**
@@ -53,11 +58,11 @@ function bodyRange(): Range | null {
  * live one if it is still there, else the last one the user made (focus may
  * have moved to the toolbar), else the end of the first region.
  */
-function restoreSelection(saved: Range | null): Range | null {
-  const live = bodyRange();
+function restoreSelection(editor: Element, saved: Range | null): Range | null {
+  const live = bodyRange(editor);
   if (live) return live;
-  let range = saved && saved.startContainer.isConnected && regionOf(saved.startContainer) ? saved : null;
-  const region = range ? regionOf(range.startContainer) : document.querySelector<HTMLElement>(RICH_TEXT_SELECTOR);
+  let range = saved && saved.startContainer.isConnected && regionOf(editor, saved.startContainer) ? saved : null;
+  const region = range ? regionOf(editor, range.startContainer) : editor.querySelector<HTMLElement>(RICH_TEXT_SELECTOR);
   if (!region) return null;
   region.focus({ preventScroll: true });
   if (!range) {
@@ -109,11 +114,13 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed }) {
   const [pressed, setPressed] = useState(NONE);
   const [focusIndex, setFocusIndex] = useState(0);
   const [status, setStatus] = useState("");
+  /** The editor this toolbar belongs to. */
+  const editor = (): Element => toolbar.current?.closest("main") ?? document.body;
 
   useEffect(() => {
     document.execCommand("defaultParagraphSeparator", false, "p");
     const onSelection = () => {
-      const range = bodyRange();
+      const range = bodyRange(toolbar.current?.closest("main") ?? document.body);
       if (range) {
         saved.current = range.cloneRange();
         const next = {
@@ -128,8 +135,10 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed }) {
     };
     document.addEventListener("selectionchange", onSelection);
     return () => {
+      // Also runs when the page is hidden on navigation: drop transient UI.
       document.removeEventListener("selectionchange", onSelection);
       window.clearTimeout(timer.current);
+      setStatus("");
     };
   }, []);
 
@@ -140,11 +149,11 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed }) {
   };
 
   const toggleLink = () => {
-    const range = restoreSelection(saved.current);
+    const range = restoreSelection(editor(), saved.current);
     if (!range) return;
     const node = range.commonAncestorContainer;
     const anchor = (node instanceof Element ? node : node.parentElement)?.closest("a");
-    if (anchor && regionOf(anchor)) {
+    if (anchor && regionOf(editor(), anchor)) {
       // Already in a link: remove it.
       const all = document.createRange();
       all.selectNodeContents(anchor);
@@ -157,7 +166,7 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed }) {
     const input = window.prompt("Link address (a URL or an app path like /screener)", "https://");
     const href = safeHref(input);
     if (!href) return;
-    const target = restoreSelection(keep);
+    const target = restoreSelection(editor(), keep);
     if (!target) return;
     if (target.collapsed) {
       document.execCommand("insertHTML", false, `<a href="${esc(href)}">${esc(input?.trim() ?? href)}</a>`);
@@ -181,7 +190,7 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed }) {
       void share();
     } else if (action === "link") {
       toggleLink();
-    } else if (restoreSelection(saved.current)) {
+    } else if (restoreSelection(editor(), saved.current)) {
       if (action === "chart") document.execCommand("insertHTML", false, chartHtml(chart));
       else document.execCommand(COMMANDS[action]);
     }

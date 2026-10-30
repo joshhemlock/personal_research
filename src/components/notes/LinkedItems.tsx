@@ -4,10 +4,10 @@ import { Icon } from "@/components/ui/Icon";
 import { LINK_ICONS } from "./constants";
 
 /** Transcripts, statements, screens and notes this note refers to. */
-export function LinkedItems({ items }: { items: LinkedItem[] }) {
+export function LinkedItems({ items, headingId }: { items: LinkedItem[]; headingId: string }) {
   return (
-    <section aria-labelledby="ln-h" className="glass rounded-[24px] px-[18px] pt-[14px] pb-2">
-      <h2 id="ln-h" className="mb-1 text-[19px] font-normal">
+    <section aria-labelledby={headingId} className="glass rounded-[24px] px-[18px] pt-[14px] pb-2">
+      <h2 id={headingId} className="mb-1 text-[19px] font-normal">
         Linked
       </h2>
       <ul>

@@ -10,7 +10,7 @@ export default function NotesIndexPage() {
   const note = latestNote();
   return (
     <AppShell active="notes" symbol={note.symbol} askLabel="Ask about this note">
-      <NotesScreen note={note} />
+      <NotesScreen note={note} idPrefix="latest" />
     </AppShell>
   );
 }

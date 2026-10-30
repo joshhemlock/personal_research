@@ -208,7 +208,7 @@ export const NOTES: Note[] = [
     ],
     metrics: [
       { metric: "Forward P/E", then: "49.8", now: "47.6" },
-      { metric: "Comparable sales", then: "+6.4%", now: "+6.1%" },
+      { metric: "Comp sales", then: "+6.4%", now: "+6.1%" },
       { metric: "Renewal rate", then: "90.2%", now: "90.1%" },
     ],
     checklist: checklist(EARNINGS_CHECKLIST, [1, 2, 3, 4, 6]),
@@ -332,7 +332,7 @@ export const NOTES: Note[] = [
     metrics: [
       { metric: "Forward P/E", then: "32.1", now: "33.0" },
       { metric: "Azure growth", then: "+35%", now: "+39%" },
-      { metric: "Operating margin", then: "45.7%", now: "47.1%" },
+      { metric: "Op margin", then: "45.7%", now: "47.1%" },
     ],
     checklist: checklist(EARNINGS_CHECKLIST, [1, 2, 3, 4, 5, 6]),
     linked: [

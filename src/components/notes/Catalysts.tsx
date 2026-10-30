@@ -2,10 +2,10 @@ import type { Catalyst } from "@/lib/mock/notes";
 import { dateParts } from "@/lib/mock/notes";
 
 /** Upcoming events as date cards; the first (next) one has a dark date. */
-export function Catalysts({ items }: { items: Catalyst[] }) {
+export function Catalysts({ items, headingId }: { items: Catalyst[]; headingId: string }) {
   return (
-    <section aria-labelledby="note-catalysts-h" className="flex flex-col gap-2">
-      <h2 id="note-catalysts-h" className="text-[17px] font-medium">
+    <section aria-labelledby={headingId} className="flex flex-col gap-2">
+      <h2 id={headingId} className="text-[17px] font-medium">
         Catalysts
       </h2>
       <ul className="flex flex-wrap gap-2">

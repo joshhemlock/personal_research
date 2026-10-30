@@ -27,23 +27,34 @@ import { SinceNote } from "./SinceNote";
 
 const CHIP = "inline-flex h-7 items-center rounded-full bg-track text-[13px]";
 
+type NotesScreenProps = {
+  note: Note;
+  /**
+   * Prefix for element ids. Next keeps recently visited pages mounted (hidden),
+   * so two note pages can share the document: each route passes its own.
+   */
+  idPrefix: string;
+};
+
 /**
  * The research notes screen for one note: notes list, editor and context
- * column. Rendered as the shell's columns (inside <AppShell>).
+ * column, rendered as the shell's columns (inside <AppShell>). Below the
+ * `split` breakpoint the context column moves under the list and editor as
+ * a row of panels, so the editor keeps its room.
  */
-export function NotesScreen({ note }: { note: Note }) {
+export function NotesScreen({ note, idPrefix }: NotesScreenProps) {
   const title = noteTitle(note);
   const price = notePrice(note);
   const change = sinceChangePct(note);
-  const up = change >= 0;
   const t = tone(change);
   const paths = sincePaths(note);
+  const id = (part: string) => `${idPrefix}-${part}`;
 
   return (
     <NoteDraftProvider noteId={note.id} symbol={note.symbol} title={title} conviction={note.conviction}>
-      <aside aria-labelledby="nl-h" className="glass flex min-w-0 flex-[1_1_280px] flex-col gap-3 rounded-[24px] p-4">
+      <aside aria-labelledby={id("list-h")} className="glass flex min-w-0 flex-[1_1_280px] flex-col gap-3 rounded-[24px] p-4">
         <div className="flex items-center justify-between gap-2">
-          <h2 id="nl-h" className="text-[21px] font-normal tracking-[-0.01em]">
+          <h2 id={id("list-h")} className="text-[21px] font-normal tracking-[-0.01em]">
             Research notes
           </h2>
           {/* Creating notes arrives with persistence (build step 5). */}
@@ -59,10 +70,9 @@ export function NotesScreen({ note }: { note: Note }) {
         <NotesList notes={NOTE_LIST} />
       </aside>
 
-      {/* Basis 520px (560px in the design) so the row still fits at 1280px wide; same size at 1512px. */}
       <main
-        aria-labelledby="note-title"
-        className="glass flex min-w-0 flex-[999_1_520px] flex-col gap-[14px] rounded-[24px] px-6 pt-4 pb-5"
+        aria-labelledby={id("title")}
+        className="glass flex min-w-0 flex-[999_1_560px] flex-col gap-[14px] rounded-[24px] px-6 pt-4 pb-5 max-sm:px-4"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="text-[13px] text-muted">
@@ -92,7 +102,7 @@ export function NotesScreen({ note }: { note: Note }) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <NoteTitle id="note-title" />
+          <NoteTitle id={id("title")} />
           <div className="flex flex-wrap items-center gap-[6px]">
             <Link
               href={`/stock/${note.symbol}`}
@@ -107,7 +117,7 @@ export function NotesScreen({ note }: { note: Note }) {
             </span>
             <span
               className={`inline-flex h-7 items-center rounded-full px-[10px] text-[13px] ${
-                up ? "bg-up-pill text-up-pill-text" : "bg-down-pill text-down-pill-text"
+                change >= 0 ? "bg-up-pill text-up-pill-text" : "bg-down-pill text-down-pill-text"
               }`}
             >
               {pct(change, 1)} since
@@ -117,14 +127,19 @@ export function NotesScreen({ note }: { note: Note }) {
 
         <ConvictionPicker />
         <Scenarios initial={note.scenarios} price={price} />
-        <NoteBody note={note} />
-        <Catalysts items={note.catalysts} />
+        <NoteBody note={note} idPrefix={idPrefix} />
+        <Catalysts items={note.catalysts} headingId={id("catalysts-h")} />
       </main>
 
-      <aside aria-label="Note context" className="flex min-w-0 flex-[1_1_300px] flex-col gap-3">
-        <SinceNote note={note} />
-        <Checklist items={note.checklist} />
-        <LinkedItems items={note.linked} />
+      {/* No grow (the design has 1, worth 0.2px): with the shell's fixed rail
+          column this puts every column within 0.01px of the design at 1512px. */}
+      <aside
+        aria-label="Note context"
+        className="flex min-w-0 flex-[0_1_300px] flex-col gap-3 max-split:grid max-split:basis-full max-split:grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] max-split:content-start"
+      >
+        <SinceNote note={note} headingId={id("since-h")} />
+        <Checklist items={note.checklist} headingId={id("checklist-h")} />
+        <LinkedItems items={note.linked} headingId={id("linked-h")} />
       </aside>
     </NoteDraftProvider>
   );
