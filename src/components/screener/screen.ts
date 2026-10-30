@@ -184,9 +184,12 @@ export function fmtCount(n: number): string {
   return n.toLocaleString("en-US");
 }
 
-/** "4.59T" / "143.1B" from $B. */
+/** "4.59T" / "143.1B" / "745M" / "8.2M" from $B. */
 export function fmtCap(b: number): string {
-  return b >= 1000 ? (b / 1000).toFixed(2) + "T" : b.toFixed(1) + "B";
+  if (b >= 1000) return (b / 1000).toFixed(2) + "T";
+  if (b >= 1) return b.toFixed(1) + "B";
+  const m = b * 1000;
+  return m.toFixed(m >= 10 ? 0 : 1) + "M";
 }
 
 /** "72.9%", "−1.8%". */

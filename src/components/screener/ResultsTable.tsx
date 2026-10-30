@@ -139,7 +139,7 @@ function Cell({
     }
     case "industry":
       return (
-        <span role="cell" data-col={col} className="truncate text-[13px] text-ink-3">
+        <span role="cell" data-col={col} title={s.industry ?? undefined} className="truncate text-[13px] text-ink-3">
           {s.industry ?? MISSING}
         </span>
       );
