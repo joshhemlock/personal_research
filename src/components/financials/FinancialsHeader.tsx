@@ -58,20 +58,22 @@ export function FinancialsHeader({ data, changePct }: FinancialsHeaderProps) {
           ),
         )}
       </nav>
-      <span className="flex-1" />
-      <ExportButton
-        symbol={symbol}
-        quarters={data.quarters.slice(4)}
-        years={data.years}
-        statements={data.statements}
-      />
-      <Link
-        href={data.thesisHref}
-        className="inline-flex h-11 items-center gap-2 rounded-full bg-ink px-5 text-[15px] font-medium text-white transition-colors duration-150 hover:bg-[#2A2A2E]"
-      >
-        <Icon d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" size={18} linejoin="round" />
-        Add to thesis
-      </Link>
+      {/* Actions stay together and right-aligned, also when they wrap to their own line. */}
+      <div className="ml-auto flex items-center gap-3">
+        <ExportButton
+          symbol={symbol}
+          quarters={data.quarters.slice(4)}
+          years={data.years}
+          statements={data.statements}
+        />
+        <Link
+          href={data.thesisHref}
+          className="inline-flex h-11 items-center gap-2 rounded-full bg-ink px-5 text-[15px] font-medium text-white transition-colors duration-150 hover:bg-[#2A2A2E]"
+        >
+          <Icon d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" size={18} linejoin="round" />
+          Add to thesis
+        </Link>
+      </div>
     </div>
   );
 }

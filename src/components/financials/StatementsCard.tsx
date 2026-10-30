@@ -17,8 +17,10 @@ const PERIODS = [
   { value: "annual", label: "Annual" },
 ] as const satisfies readonly { value: PeriodKey; label: string }[];
 
-const SEG = "h-8 px-[14px] text-[14px] leading-[normal]";
-const GRID = "grid grid-cols-[minmax(200px,2fr)_repeat(5,minmax(84px,1fr))_74px] gap-x-3";
+const SEG = "h-8 px-[14px] text-[14px]";
+// Same tracks as the design (2fr label, 1fr numbers, 74px YoY) with lower minimums,
+// so the table still fits its card at a 1280px-wide window; it scrolls below that.
+const GRID = "grid grid-cols-[minmax(196px,2fr)_repeat(5,minmax(80px,1fr))_minmax(64px,74px)] gap-x-3";
 
 type StatementsCardProps = {
   /** The four quarters the quarterly columns show, oldest first. */
@@ -54,12 +56,13 @@ export function StatementsCard({ quarters, years, statements }: StatementsCardPr
         </div>
       </div>
       <div className="max-h-[360px] overflow-auto">
-        <div role="table" aria-label={`${title}, ${period}`} className="min-w-[760px]">
+        <div role="table" aria-label={`${title}, ${period}`} className="min-w-[748px]">
           <div role="row" className={`${GRID} items-end px-2 py-1.5 text-[12px] text-muted`}>
             <span role="columnheader">{title}</span>
             {cols.map((c) => (
               <span key={c.key} role="columnheader" className="text-right leading-[1.25]">
-                {c.a} {c.b && <span className="text-[#8A8A92]">{c.b}</span>}
+                <span className="whitespace-nowrap">{c.a}</span>{" "}
+                {c.b && <span className="whitespace-nowrap text-[#8A8A92]">{c.b}</span>}
               </span>
             ))}
             <span role="columnheader" className="text-right leading-[1.25] text-ink">

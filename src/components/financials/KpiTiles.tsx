@@ -14,22 +14,24 @@ function MiniBars({ values }: { values: number[] }) {
   };
   const last = values.length - 1;
   return (
-    <svg width="60" height="30" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden="true" className="flex-none">
+    <svg width="60" height="30" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden="true" className="min-w-9">
       <path d={values.slice(0, last).map(bar).join("")} fill="#D4D4D9" />
       <path d={bar(values[last], last)} fill="#111113" />
     </svg>
   );
 }
 
+// Five in a row from 840px (as designed); narrower, wrap 3 + 2, then 2 + 2 + 1,
+// then one per row, rather than leaving a single stretched tile on its own line.
+const TILE =
+  "glass-tile flex min-w-0 flex-[1_1_160px] flex-col gap-1 rounded-[20px] px-4 py-3 @max-[840px]:basis-[30%] @max-[500px]:basis-[40%] @max-[340px]:basis-full";
+
 /** The five headline tiles above the charts. */
 export function KpiTiles({ kpis }: { kpis: Kpi[] }) {
   return (
-    <section aria-label="Headline numbers" className="flex flex-wrap gap-2.5">
+    <section aria-label="Headline numbers" className="@container flex flex-wrap gap-2.5">
       {kpis.map((k) => (
-        <div
-          key={k.label}
-          className="glass-tile flex min-w-0 flex-[1_1_160px] flex-col gap-1 rounded-[20px] px-4 py-3"
-        >
+        <div key={k.label} className={TILE}>
           <span className="text-[13px] whitespace-nowrap text-ink-3">{k.label}</span>
           <div className="flex items-end justify-between gap-2">
             <div className="flex flex-col leading-[1.15]">

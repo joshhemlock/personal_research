@@ -45,7 +45,7 @@ export function RevenueChart({ quarters, revenue, netIncome }: RevenueChartProps
       </div>
       <div className="flex gap-2">
         <YAxis ticks={yTicks} className="w-[34px]" />
-        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <div className="@container flex min-w-0 flex-1 flex-col gap-1.5">
           <div className="relative h-[150px]">
             <Gridlines ticks={yTicks} />
             <svg
@@ -61,7 +61,10 @@ export function RevenueChart({ quarters, revenue, netIncome }: RevenueChartProps
           </div>
           <div aria-hidden="true" className="flex">
             {quarters.map((q) => (
-              <span key={`${q.q}${q.fy}`} className="flex-1 text-center text-[12px] leading-[1.2] text-muted">
+              <span
+                key={`${q.q}${q.fy}`}
+                className="flex-1 text-center text-[12px] leading-[1.2] text-muted @max-[300px]:text-[10px]"
+              >
                 {q.q}
                 <br />
                 {q.fy}

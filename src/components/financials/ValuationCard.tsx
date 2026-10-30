@@ -47,7 +47,7 @@ export function ValuationCard({ symbols, values }: ValuationCardProps) {
         options={MULTIPLES}
         value={metric}
         onChange={setMetric}
-        buttonClassName="h-[34px] flex-1 text-[14px] leading-[normal]"
+        buttonClassName="h-[34px] flex-1 text-[14px]"
       />
       <p aria-live="polite" className="m-0 text-[14px] text-ink-2">
         {symbols[0]} at {vals[0].toFixed(1)}× is {verdict} the peer median.
