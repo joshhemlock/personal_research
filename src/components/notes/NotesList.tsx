@@ -80,7 +80,8 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
                 <Link
                   href={`/notes/${n.id}`}
                   aria-current={on ? "page" : undefined}
-                  className={`flex w-full items-start gap-[10px] rounded-[16px] p-[10px] text-left leading-[normal] text-ink transition-[background-color,box-shadow] duration-150 ${
+                  // Rows were <button>s in the design: browser line height, proportional digits.
+                  className={`flex w-full items-start gap-[10px] rounded-[16px] p-[10px] text-left leading-[normal] text-ink normal-nums transition-[background-color,box-shadow] duration-150 ${
                     on ? RAISED : "hover:bg-white/70"
                   }`}
                 >

@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
 import { AppShell } from "@/components/shell/AppShell";
-import { NOTE_INDEX } from "@/lib/mock/note-index";
+import { NotesScreen } from "@/components/notes/NotesScreen";
+import { latestNote } from "@/lib/mock/notes";
 
 export const metadata: Metadata = { title: "Research notes" };
 
-// /notes opens the most recent note.
+// /notes opens the most recently saved note.
 export default function NotesIndexPage() {
-  const note = NOTE_INDEX[0];
+  const note = latestNote();
   return (
-    <AppShell active="notes" askLabel="Ask about this note">
-      <aside className="flex min-w-0 flex-[1_1_280px] flex-col" />
-      <main className="flex min-w-0 flex-[999_1_560px] flex-col">{note.title}</main>
-      <aside className="flex min-w-0 flex-[1_1_300px] flex-col gap-3" />
+    <AppShell active="notes" symbol={note.symbol} askLabel="Ask about this note">
+      <NotesScreen note={note} />
     </AppShell>
   );
 }

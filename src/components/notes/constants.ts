@@ -34,7 +34,7 @@ export const LINK_ICONS: Record<LinkKind, string> = {
  * chart embeds. A softer focus ring than the global one suits a text body.
  */
 export const RICH_TEXT =
-  "min-h-[1.4em] rounded-[6px] focus-visible:outline-offset-[6px] focus-visible:outline-[rgba(47,95,204,0.45)] " +
+  "min-h-[1.4em] rounded-[6px] focus-visible:outline-offset-4 focus-visible:outline-[rgba(47,95,204,0.45)] " +
   "[&_b]:font-semibold [&_strong]:font-semibold [&_a]:underline [&_a]:underline-offset-2 " +
   "[&_ul]:list-disc [&_ul]:pl-[18px] [&_ol]:list-decimal [&_ol]:pl-[18px]";
 
