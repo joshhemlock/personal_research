@@ -405,8 +405,9 @@ function withLiveBar(bars: Bar[], q: Snapshot): Bar[] {
     const updated = { ...last, o, h: Math.max(q.high ?? last.h, o, c), l: Math.min(q.low ?? last.l, o, c), c, v: v ?? last.v };
     return [...bars.slice(0, -1), updated];
   }
-  if (q.sessionStart != null && (!last || last.time < session)) {
-    const o = q.open ?? c;
+  // Only a session that has opened (it has an opening price) gets a new bar.
+  if (q.sessionStart != null && q.open != null && (!last || last.time < session)) {
+    const o = q.open;
     return [...bars, { time: session, o, h: Math.max(q.high ?? c, o, c), l: Math.min(q.low ?? c, o, c), c, v: v ?? 0 }];
   }
   return bars;
