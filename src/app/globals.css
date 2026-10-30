@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/*
+ * Compound theme tokens. Values come from design/DESIGN_BRIEF.md and the
+ * static snapshots in design/static. Utilities: text-ink, bg-up-pill, etc.
+ */
+@theme {
+  --font-sans: var(--font-outfit), system-ui, sans-serif;
+
+  --color-page: #e7e7ea;
+  --color-shell: #f7f7f8;
+
+  --color-ink: #111113;
+  --color-ink-2: #3f3f46;
+  --color-ink-3: #55555c;
+  --color-muted: #6e6e76;
+  --color-hairline: rgba(17, 17, 19, 0.05);
+  --color-track: rgba(17, 17, 19, 0.05);
+  --color-account: #1c1c1f;
+  --color-tag: #3a3a40;
+  --color-focus: #2f5fcc;
+
+  --color-up: #4db07f;
+  --color-up-text: #1a7f4e;
+  --color-up-line: #2e9b63;
+  --color-up-pill: #ddf3e6;
+  --color-up-pill-text: #1a6b45;
+  --color-down: #ea5b52;
+  --color-down-text: #c2362d;
+  --color-down-line: #e5484d;
+  --color-down-pill: #fce4e2;
+  --color-down-pill-text: #a82c24;
+
+  --color-go: #2a855a;
+  --color-purple: #a033e8;
+  --color-blue: #3b6fe0;
+  --color-amber: #f5a524;
+  --color-alert: #d93c42;
+
+  --shadow-shell: 0 40px 80px -40px rgba(17, 17, 19, 0.28), 0 2px 6px rgba(17, 17, 19, 0.04);
+  --shadow-seg: 0 1px 3px rgba(17, 17, 19, 0.1);
+  --shadow-chip: 0 1px 2px rgba(17, 17, 19, 0.05);
+}
+
+:root {
+  /* Opacity of every frosted-glass surface. One knob for the whole app. */
+  --glass-alpha: 0.72;
+  --glass-border: rgba(255, 255, 255, 0.95);
+}
+
+/* Panels: watchlist, movers, alerts… (radius set per use, usually 24px). */
+@utility glass {
+  background: rgba(255, 255, 255, var(--glass-alpha));
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 1px 2px rgba(17, 17, 19, 0.04), 0 14px 34px -18px rgba(17, 17, 19, 0.16);
+}
+
+/* Small tiles (index tiles, KPI tiles): same recipe, tighter shadow. */
+@utility glass-tile {
+  background: rgba(255, 255, 255, var(--glass-alpha));
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 1px 2px rgba(17, 17, 19, 0.04), 0 14px 34px -20px rgba(17, 17, 19, 0.16);
+}
+
+/* Buttons and rail icons that sit on glass. */
+@utility glass-chip {
+  background: rgba(255, 255, 255, var(--glass-alpha));
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 1px 2px rgba(17, 17, 19, 0.05);
+}
+
+@layer base {
+  html {
+    background: var(--color-page);
+  }
+  body {
+    margin: 0;
+    background: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  select,
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+}
+
+/* Underlined inline links ("Transcripts", "Reset"). */
+@utility link {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  &:hover {
+    color: var(--color-focus);
+  }
+}
