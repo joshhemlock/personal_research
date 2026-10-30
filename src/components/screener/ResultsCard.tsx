@@ -20,21 +20,30 @@ function ColumnsMenu() {
       buttonClassName={ICON_BUTTON}
       panelLabel="Columns"
       className="inline-flex"
-      panelClassName="top-full right-0 mt-1 w-[200px]"
+      panelClassName="top-full right-0 mt-1 w-[224px]"
     >
-      {() =>
-        COLUMNS.filter((c) => !c.fixed).map((c) => (
-          <label key={c.key} className="flex h-9 items-center gap-[10px] rounded-[10px] px-3 hover:bg-track">
-            <input
-              type="checkbox"
-              checked={!state.hiddenColumns.includes(c.key)}
-              onChange={() => dispatch({ type: "toggleColumn", key: c.key })}
-              className="size-4 accent-ink"
-            />
-            {c.label}
-          </label>
-        ))
-      }
+      {() => (
+        <>
+          {COLUMNS.filter((c) => !c.fixed).map((c) => (
+            <label key={c.key} className="flex h-9 items-center gap-[10px] rounded-[10px] px-3 hover:bg-track">
+              <input
+                type="checkbox"
+                checked={!state.hiddenColumns.includes(c.key)}
+                onChange={() => dispatch({ type: "toggleColumn", key: c.key })}
+                className="size-4 accent-ink"
+              />
+              {c.label}
+              {/* Shown by the table's fit stylesheet while the column is hidden for space. */}
+              <span data-no-room={c.key} className="ml-auto hidden text-[12px] text-muted">
+                No room
+              </span>
+            </label>
+          ))}
+          <p data-no-room-note="" className="hidden border-t border-hairline px-3 pt-2 pb-1 text-[12px] leading-[1.35] text-muted">
+            Columns marked “No room” come back when the window is wider.
+          </p>
+        </>
+      )}
     </Popover>
   );
 }
@@ -78,7 +87,8 @@ export function ResultsCard() {
   const screenName = state.screens.find((s) => s.id === state.activeId)?.name ?? "screen";
 
   return (
-    <section aria-labelledby={headingId} className="glass rounded-[24px] px-[18px] pt-[14px] pb-2">
+    // A size container: the table's fit stylesheet queries this card's width.
+    <section aria-labelledby={headingId} className="glass @container/results rounded-[24px] px-[18px] pt-[14px] pb-2">
       <div className="mb-1 flex flex-wrap items-center justify-between gap-[10px]">
         <h2 id={headingId} className="text-[21px] font-normal tracking-[-0.01em]">
           {`${total} ${total === 1 ? "match" : "matches"}`}

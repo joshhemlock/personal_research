@@ -9,17 +9,20 @@ import type { ScreenSort, ScreenStock } from "@/lib/mock/screener";
 import {
   COLUMNS,
   defaultDir,
+  fitSteps,
   fmtCap,
   fmtGrowth,
   fmtPct1,
   fmtPe,
   fmtPrice,
+  gridTemplate,
   type ColumnDef,
   type ColumnKey,
 } from "./screen";
 import { useScreener } from "./ScreenerProvider";
 
-const ROW = "grid items-center gap-x-[10px] px-1";
+// Rows take their tracks from --cols, which the fit stylesheet below sets.
+const ROW = "grid items-center gap-x-[10px] px-1 [grid-template-columns:var(--cols)]";
 const COMPANY = "flex items-center gap-[10px] text-ink";
 
 // Symbols the chart screen has sample data for. Other rows show the same
@@ -29,7 +32,7 @@ const CHARTED = new Set(UNIVERSE.map((s) => s.symbol));
 function SortHeader({ col, sort, onSort }: { col: ColumnDef; sort: ScreenSort; onSort: () => void }) {
   if (col.key === "watch") {
     return (
-      <span role="columnheader">
+      <span role="columnheader" data-col="watch">
         <span className="sr-only">Watch</span>
       </span>
     );
@@ -40,6 +43,7 @@ function SortHeader({ col, sort, onSort }: { col: ColumnDef; sort: ScreenSort; o
   return (
     <span
       role="columnheader"
+      data-col={col.key}
       aria-sort={active ? (sort.dir === "asc" ? "ascending" : "descending") : undefined}
       className={right ? "text-right" : undefined}
     >
@@ -84,7 +88,7 @@ function Cell({ col, s, watched, onWatch }: { col: ColumnKey; s: ScreenStock; wa
         </>
       );
       return (
-        <span role="cell">
+        <span role="cell" data-col={col}>
           {CHARTED.has(s.symbol) ? (
             <Link href={`/stock/${s.symbol}`} className={`${COMPANY} hover:text-focus`}>
               {body}
@@ -97,56 +101,56 @@ function Cell({ col, s, watched, onWatch }: { col: ColumnKey; s: ScreenStock; wa
     }
     case "industry":
       return (
-        <span role="cell" className="truncate text-[13px] text-ink-3">
+        <span role="cell" data-col={col} className="truncate text-[13px] text-ink-3">
           {s.industry}
         </span>
       );
     case "price":
       return (
-        <span role="cell" className="text-right">
+        <span role="cell" data-col={col} className="text-right">
           {fmtPrice(s.price)}
         </span>
       );
     case "today":
       return (
-        <span role="cell" className={`text-right text-[13px] ${s.changePct >= 0 ? "text-up-text" : "text-down-text"}`}>
+        <span role="cell" data-col={col} className={`text-right text-[13px] ${s.changePct >= 0 ? "text-up-text" : "text-down-text"}`}>
           {pct(s.changePct)}
         </span>
       );
     case "cap":
       return (
-        <span role="cell" className="text-right text-ink-2">
+        <span role="cell" data-col={col} className="text-right text-ink-2">
           {fmtCap(s.marketCap)}
         </span>
       );
     case "pe":
       return (
-        <span role="cell" className="text-right text-ink-2">
+        <span role="cell" data-col={col} className="text-right text-ink-2">
           {fmtPe(s.fwdPe)}
         </span>
       );
     case "growth":
       return (
-        <span role="cell" className="text-right text-ink-2">
+        <span role="cell" data-col={col} className="text-right text-ink-2">
           {fmtGrowth(s.revGrowth)}
         </span>
       );
     case "gm":
       return (
-        <span role="cell" className="text-right text-ink-2">
+        <span role="cell" data-col={col} className="text-right text-ink-2">
           {fmtPct1(s.grossMargin)}
         </span>
       );
     case "roic":
       return (
-        <span role="cell" className="text-right font-medium">
+        <span role="cell" data-col={col} className="text-right font-medium">
           {fmtPct1(s.roic)}
         </span>
       );
     case "range": {
       const label = `52-week range ${fmtPrice(s.low52)} to ${fmtPrice(s.high52)}`;
       return (
-        <span role="cell" title={label} className="relative block h-1 rounded-[2px] bg-[rgba(17,17,19,0.08)]">
+        <span role="cell" data-col={col} title={label} className="relative block h-1 rounded-[2px] bg-[rgba(17,17,19,0.08)]">
           <span className="sr-only">{`${label}, at ${s.rangePos}%`}</span>
           <span
             aria-hidden="true"
@@ -158,7 +162,7 @@ function Cell({ col, s, watched, onWatch }: { col: ColumnKey; s: ScreenStock; wa
     }
     case "trend":
       return (
-        <span role="cell">
+        <span role="cell" data-col={col}>
           <span className="sr-only">{s.trend >= 0 ? "Up over 3 months" : "Down over 3 months"}</span>
           {/* Inline (not block) like the design, so it sits on the text baseline. */}
           <svg width="84" height="24" viewBox="0 0 84 24" aria-hidden="true" className="inline align-baseline">
@@ -168,7 +172,7 @@ function Cell({ col, s, watched, onWatch }: { col: ColumnKey; s: ScreenStock; wa
       );
     case "watch":
       return (
-        <span role="cell">
+        <span role="cell" data-col={col}>
           <button
             type="button"
             aria-pressed={watched}
@@ -196,21 +200,40 @@ function Cell({ col, s, watched, onWatch }: { col: ColumnKey; s: ScreenStock; wa
   }
 }
 
+/**
+ * Grid tracks for the shown columns, plus, below the split width (91.5rem,
+ * --breakpoint-split in globals.css), container queries on the results card
+ * that hide AUTO_HIDE columns and then tighten the rest so the table fits
+ * without scrolling. CSS rather than a ResizeObserver: the server-rendered
+ * page already has the right columns, so nothing jumps after hydration.
+ */
+function fitCss(cols: ColumnDef[]): string {
+  const table = "[data-results-table]";
+  const rules = fitSteps(cols).map((step, i) => {
+    let css = `${table}{--cols:${step.template}}`;
+    if (step.hide) css += `${table} [data-col="${step.hide}"]{display:none}[data-no-room="${step.hide}"]{display:inline}`;
+    if (i === 0 && step.hide) css += "[data-no-room-note]{display:block}";
+    return `@container results (width < ${step.below}px){${css}}`;
+  });
+  return `${table}{--cols:${gridTemplate(cols)}}@media (width < 91.5rem){${rules.join("")}}`;
+}
+
 /** The matching stocks: sortable headers, one row per stock on this page. */
 export function ResultsTable() {
   const { state, dispatch, result } = useScreener();
   const cols = COLUMNS.filter((c) => !state.hiddenColumns.includes(c.key));
-  const template = cols.map((c) => c.track).join(" ");
 
   return (
     <div className="overflow-x-auto">
-      <div role="table" aria-label="Matching stocks" aria-rowcount={result.matches.length + 1} className="min-w-[960px]">
-        <div
-          role="row"
-          aria-rowindex={1}
-          className={`${ROW} py-[6px] text-[12px] text-muted`}
-          style={{ gridTemplateColumns: template }}
-        >
+      <style>{fitCss(cols)}</style>
+      <div
+        role="table"
+        aria-label="Matching stocks"
+        aria-rowcount={result.matches.length + 1}
+        data-results-table=""
+        className="min-w-[960px] max-split:min-w-0"
+      >
+        <div role="row" aria-rowindex={1} className={`${ROW} py-[6px] text-[12px] text-muted`}>
           {cols.map((c) => (
             <SortHeader
               key={c.key}
@@ -226,7 +249,6 @@ export function ResultsTable() {
             role="row"
             aria-rowindex={result.offset + i + 2}
             className={`${ROW} min-h-[45px] border-t border-hairline text-[14px]`}
-            style={{ gridTemplateColumns: template }}
           >
             {cols.map((c) => (
               <Cell

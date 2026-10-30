@@ -164,25 +164,78 @@ export type ColumnDef = {
   label: string;
   /** grid-template-columns track, as in the design markup. */
   track: string;
+  /** Narrowest width of `track`, px. */
+  min: number;
+  /** Tighter track (and its minimum) for when even the essential columns run out of room. */
+  tight: { track: string; min: number };
   align: "left" | "right";
   /** Always shown (not offered by "Choose columns"). */
   fixed?: boolean;
 };
 
+function col(
+  key: ColumnKey,
+  label: string,
+  track: string,
+  min: number,
+  align: ColumnDef["align"],
+  tight?: [track: string, min: number],
+  fixed?: boolean,
+): ColumnDef {
+  return { key, label, track, min, tight: tight ? { track: tight[0], min: tight[1] } : { track, min }, align, fixed };
+}
+
+// Tight minimums fit the widest value (or header) in the sample universe.
 export const COLUMNS: ColumnDef[] = [
-  { key: "company", label: "Company", track: "minmax(170px,1.6fr)", align: "left", fixed: true },
-  { key: "industry", label: "Industry", track: "minmax(110px,1fr)", align: "left" },
-  { key: "price", label: "Price", track: "72px", align: "right" },
-  { key: "today", label: "Today", track: "70px", align: "right" },
-  { key: "cap", label: "Mkt cap", track: "70px", align: "right" },
-  { key: "pe", label: "Fwd P/E", track: "62px", align: "right" },
-  { key: "growth", label: "Rev growth", track: "76px", align: "right" },
-  { key: "gm", label: "Gross m.", track: "70px", align: "right" },
-  { key: "roic", label: "ROIC", track: "60px", align: "right" },
-  { key: "range", label: "52-week range", track: "112px", align: "left" },
-  { key: "trend", label: "3 months", track: "84px", align: "left" },
-  { key: "watch", label: "Watch", track: "40px", align: "left", fixed: true },
+  col("company", "Company", "minmax(170px,1.6fr)", 170, "left", ["minmax(120px,1.6fr)", 120], true),
+  col("industry", "Industry", "minmax(110px,1fr)", 110, "left"),
+  col("price", "Price", "72px", 72, "right", ["minmax(60px,72px)", 60]),
+  col("today", "Today", "70px", 70, "right", ["minmax(46px,70px)", 46]),
+  col("cap", "Mkt cap", "70px", 70, "right", ["minmax(48px,70px)", 48]),
+  col("pe", "Fwd P/E", "62px", 62, "right", ["minmax(46px,62px)", 46]),
+  col("growth", "Rev growth", "76px", 76, "right", ["minmax(62px,76px)", 62]),
+  col("gm", "Gross m.", "70px", 70, "right", ["minmax(50px,70px)", 50]),
+  col("roic", "ROIC", "60px", 60, "right", ["minmax(42px,60px)", 42]),
+  col("range", "52-week range", "112px", 112, "left"),
+  col("trend", "3 months", "84px", 84, "left"),
+  col("watch", "Watch", "40px", 40, "left", undefined, true),
 ];
+
+/** Row geometry from the design: 10px column gap, 4px side padding. */
+const COLUMN_GAP = 10;
+const ROW_PADDING = 8;
+
+/** Below the split width these columns give way, in this order, when the table runs out of room. */
+export const AUTO_HIDE: ColumnKey[] = ["industry", "range", "trend", "pe"];
+
+export function gridTemplate(cols: readonly ColumnDef[], tight = false): string {
+  return cols.map((c) => (tight ? c.tight.track : c.track)).join(" ");
+}
+
+/** Width the rows need to show `cols` without scrolling, px. */
+function neededWidth(cols: readonly ColumnDef[]): number {
+  return cols.reduce((w, c) => w + c.min, 0) + COLUMN_GAP * (cols.length - 1) + ROW_PADDING;
+}
+
+/**
+ * How the table narrows below the split width. Each step applies while the
+ * table is narrower than `below` px (steps are cumulative): first the
+ * AUTO_HIDE columns go, one per step, then the remaining columns tighten.
+ */
+export type FitStep = { below: number; hide?: ColumnKey; template: string };
+
+export function fitSteps(visible: readonly ColumnDef[]): FitStep[] {
+  const steps: FitStep[] = [];
+  let cols = visible;
+  for (const key of AUTO_HIDE) {
+    if (!cols.some((c) => c.key === key)) continue;
+    const below = neededWidth(cols);
+    cols = cols.filter((c) => c.key !== key);
+    steps.push({ below, hide: key, template: gridTemplate(cols) });
+  }
+  steps.push({ below: neededWidth(cols), template: gridTemplate(cols, true) });
+  return steps;
+}
 
 /** CSV of the matches, for "Export results". */
 export function toCsv(rows: readonly ScreenStock[]): string {
