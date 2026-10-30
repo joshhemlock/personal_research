@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { APP_NAME, APP_TAGLINE } from "@/lib/brand";
-import { HEADER_INDICES, MARKET_STATUS } from "@/lib/mock/market";
+import { fixedMarketLabel, getHeaderIndices } from "@/lib/data/shell";
 import { pct } from "@/lib/format";
 import { Icon } from "@/components/ui/Icon";
 import { ChangePill } from "@/components/ui/Pill";
+import { MarketClock } from "./MarketClock";
 import { SearchTrigger } from "./SearchTrigger";
 
 export type HeaderQuote = {
@@ -32,7 +33,8 @@ export function Logo({ size = 26 }: { size?: number }) {
   );
 }
 
-export function TopBar({ quote }: { quote?: HeaderQuote }) {
+export async function TopBar({ quote }: { quote?: HeaderQuote }) {
+  const indices = await getHeaderIndices();
   return (
     <header className="flex flex-wrap items-center gap-x-5 gap-y-3 px-1">
       <Link href="/" className="flex min-h-12 items-center gap-3 text-ink">
@@ -45,13 +47,10 @@ export function TopBar({ quote }: { quote?: HeaderQuote }) {
         </span>
       </Link>
       <span aria-hidden="true" className="h-8 w-px bg-[rgba(17,17,19,0.1)] max-md:hidden" />
-      <span className="inline-flex items-center gap-2 text-[14px] text-ink-2 max-sm:order-2 max-sm:basis-full">
-        <Icon name="clock" size={20} />
-        {MARKET_STATUS.label}
-      </span>
+      <MarketClock fixedLabel={fixedMarketLabel} />
       <SearchTrigger quote={quote} />
       <div className="ml-auto flex flex-wrap items-center gap-[22px] max-sm:order-4 max-sm:ml-0">
-        {HEADER_INDICES.map((ix) => (
+        {indices.map((ix) => (
           <div key={ix.name} className="flex flex-col leading-[1.3]">
             <span className="flex items-center gap-2 text-[16px] font-medium">
               {ix.value}

@@ -2,6 +2,7 @@
 // design/source/01-overview.dc.html. All numbers are made up. Never ship
 // them as real figures.
 
+import type { EarningsTiming } from "@/lib/data/types";
 import { walk } from "./gen";
 import { AS_OF, findSecurity } from "./market";
 
@@ -60,9 +61,9 @@ export type WatchRow = {
   high52: number;
   /** USD. */
   marketCap: number;
-  forwardPE: number;
+  forwardPE: number | null;
   /** Next earnings date, YYYY-MM-DD. */
-  nextEarnings: string;
+  nextEarnings: string | null;
 };
 
 type WatchSpec = Omit<WatchRow, "name" | "price" | "changePct" | "trend">;
@@ -130,8 +131,8 @@ export type EarningsEvent = {
   /** YYYY-MM-DD */
   date: string;
   period: string;
-  timing: "Before open" | "After close";
-  epsEstimate: number;
+  timing: EarningsTiming;
+  epsEstimate: number | null;
 };
 
 export const EARNINGS_WINDOW_DAYS = 45;

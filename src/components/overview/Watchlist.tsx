@@ -72,7 +72,8 @@ export function Watchlist({ rows }: { rows: WatchRow[] }) {
 }
 
 function WatchlistRow({ row }: { row: WatchRow }) {
-  const rangePos = Math.round(((row.price - row.low52) / (row.high52 - row.low52)) * 100);
+  const span = row.high52 - row.low52;
+  const rangePos = span > 0 ? Math.min(100, Math.max(0, Math.round(((row.price - row.low52) / span) * 100))) : 50;
   return (
     <div role="row" className={`${GRID} relative border-t border-hairline px-1 py-px text-[15px]`}>
       <span role="cell">
@@ -129,10 +130,10 @@ function WatchlistRow({ row }: { row: WatchRow }) {
         {compactUsd(row.marketCap)}
       </span>
       <span role="cell" className="text-right text-ink-2">
-        {row.forwardPE.toFixed(1)}
+        {row.forwardPE == null ? "—" : row.forwardPE.toFixed(1)}
       </span>
       <span role="cell" className="text-right text-ink-2">
-        {monthDay(row.nextEarnings)}
+        {row.nextEarnings ? monthDay(row.nextEarnings) : "—"}
       </span>
     </div>
   );

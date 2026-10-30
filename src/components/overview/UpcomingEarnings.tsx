@@ -17,6 +17,7 @@ export function UpcomingEarnings({ events, today, windowDays, reported }: Upcomi
   return (
     <section aria-labelledby="er-h" className={`${PANEL} pb-[14px]`}>
       <PanelHeading id="er-h" title="Upcoming earnings" note={`Next ${windowDays} days`} className="mb-[2px]" />
+      {events.length === 0 && <p className="py-2 text-[14px] text-muted">No watchlist reports in this window.</p>}
       <ul>
         {events.map((e) => (
           <li key={`${e.symbol}-${e.date}`}>
@@ -33,7 +34,8 @@ export function UpcomingEarnings({ events, today, windowDays, reported }: Upcomi
                   <span className="font-medium">{e.symbol}</span> <span className="text-ink-3">· {e.period}</span>
                 </span>
                 <span className="text-[13px] text-muted">
-                  {e.timing} · EPS est. {e.epsEstimate.toFixed(2)}
+                  {e.timing}
+                  {e.epsEstimate != null && ` · EPS est. ${e.epsEstimate.toFixed(2)}`}
                 </span>
               </span>
               <span className="inline-flex h-6 flex-none items-center rounded-[6px] bg-ink px-[9px] text-[12px] text-white">
@@ -43,13 +45,14 @@ export function UpcomingEarnings({ events, today, windowDays, reported }: Upcomi
           </li>
         ))}
       </ul>
-      <p className="mt-[6px] text-[13px] text-ink-3">
-        Reported this week: {reported.join(", ")} ·{" "}
-        {/* Plain underline: the design uses the browser's default offset (the `link` utility adds 2px). */}
-        <Link href="/notes" className="text-ink underline hover:text-focus">
-          Transcripts
-        </Link>
-      </p>
+      {reported.length > 0 && (
+        <p className="mt-[6px] text-[13px] text-ink-3">
+          Reported this week: {reported.join(", ")} ·{" "}
+          <Link href="/notes" className="link text-ink">
+            Transcripts
+          </Link>
+        </p>
+      )}
     </section>
   );
 }
