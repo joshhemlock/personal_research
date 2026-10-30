@@ -282,6 +282,10 @@ export function ChartCanvas({
       series.applyOptions({ color: line.stroke, lineWidth: width(line.width), visible: line.visible });
       series.setData(line.values.map((value, i) => ({ time: bars[i].time, value })));
     }
+    // A symbol without a sector index has only the market line.
+    for (const key of Object.keys(api.lines) as CompareKey[]) {
+      if (!lines.some((l) => l.key === key)) api.lines[key].setData([]);
+    }
   }, [bars, lines]);
 
   useEffect(() => {

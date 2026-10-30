@@ -1,23 +1,19 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
-import { MINUS } from "@/lib/format";
-import { PINNED, WATCH_GROUPS, type WatchRow } from "@/lib/mock/chart";
-import { findSecurity } from "@/lib/mock/market";
+import { MINUS, num } from "@/lib/format";
 import { CHART_ICONS } from "./icons";
 import { OpenPaletteButton } from "./OpenPaletteButton";
+import type { GroupLinks, PinnedLink } from "./types";
 import { WatchlistGroups } from "./WatchlistGroups";
 
 const COLS = "grid grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_64px_64px] gap-2";
 const ICON_BUTTON =
   "inline-flex size-9 items-center justify-center rounded-[10px] transition-colors hover:bg-[rgba(17,17,19,0.05)] hover:text-ink";
 
-/** Symbols that have a chart page link to it; indexes don't. */
-export const chartHref = (symbol: string) => (findSecurity(symbol) ? `/stock/${symbol}` : null);
-
-const abs = (v: number) => (v < 0 ? MINUS : "") + Math.abs(v).toFixed(2);
+const abs = (v: number) => (v < 0 ? MINUS : "") + num(Math.abs(v));
 
 /** Watchlist panel: pinned symbols, then collapsible groups. */
-export function WatchlistPanel() {
+export function WatchlistPanel({ pinned, groups }: { pinned: readonly PinnedLink[]; groups: readonly GroupLinks[] }) {
   return (
     <section aria-labelledby="wl-h" className="glass rounded-[24px] px-[18px] pt-4 pb-1.5">
       <div className="mb-1 flex items-center justify-between gap-2">
@@ -49,16 +45,17 @@ export function WatchlistPanel() {
             Chg %
           </span>
         </div>
-        {PINNED.map((row) => (
-          <PinnedRow key={row.symbol} row={row} href={chartHref(row.symbol)} />
+        {pinned.map((row) => (
+          <PinnedRow key={row.symbol} row={row} />
         ))}
       </div>
-      <WatchlistGroups groups={WATCH_GROUPS.map((g) => ({ ...g, items: g.items.map((w) => ({ ...w, href: chartHref(w.symbol) })) }))} />
+      <WatchlistGroups groups={groups} />
     </section>
   );
 }
 
-function PinnedRow({ row, href }: { row: WatchRow; href: string | null }) {
+function PinnedRow({ row }: { row: PinnedLink }) {
+  const { href } = row;
   const tone = row.change < 0 ? "text-down-text" : "text-up-text";
   return (
     <div

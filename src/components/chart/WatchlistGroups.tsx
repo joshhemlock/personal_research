@@ -4,14 +4,12 @@ import Link from "next/link";
 import { useId, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { pct } from "@/lib/format";
-import type { WatchGroup } from "@/lib/mock/chart";
-
-type Group = Omit<WatchGroup, "items"> & { items: (WatchGroup["items"][number] & { href: string | null })[] };
+import type { GroupLinks } from "./types";
 
 const ROW = "grid min-h-[34px] grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_64px] items-center gap-2 text-[14px] text-ink";
 
 /** Collapsible watchlist groups ("Semiconductors 4", "Mega-cap tech 5"). */
-export function WatchlistGroups({ groups }: { groups: Group[] }) {
+export function WatchlistGroups({ groups }: { groups: readonly GroupLinks[] }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const baseId = useId();
   return (

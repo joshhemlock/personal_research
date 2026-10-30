@@ -42,6 +42,17 @@ export type ChartEvents = {
   earnings: number[];
   dividends: number[];
   alerts: number[];
+  /** The next earnings report or ex-dividend date after the last bar (live data only). */
+  next?: UpcomingEvent | null;
+};
+
+/** A scheduled event past the end of the chart, shown beside the time axis. */
+export type UpcomingEvent = {
+  letter: "E" | "D";
+  /** "Nov 17" */
+  date: string;
+  /** "Next earnings · Tue, Nov 17, after close" */
+  label: string;
 };
 
 export type ChartData = {
@@ -98,8 +109,9 @@ const SECTOR_INDEX: Record<string, IndexInfo> = {
   "Health equipment": { symbol: "XLV", name: "Health care", badge: "60", last: "148.85", change: "−0.52 (−0.35%)", up: false },
 };
 
-const SECTOR_STYLE = { color: "#8A8A92", stroke: "#9A9AA2", width: 1.6 } as const;
-const MARKET_STYLE = { color: "#A033E8", stroke: "#A033E8", width: 1.8 } as const;
+/** Line styles of the two comparison series (sector index, S&P 500). */
+export const SECTOR_STYLE = { color: "#8A8A92", stroke: "#9A9AA2", width: 1.6 } as const;
+export const MARKET_STYLE = { color: "#A033E8", stroke: "#A033E8", width: 1.8 } as const;
 
 /** SOX and S&P 500 walks from the design (one RNG, interleaved). */
 function designIndexes(n: number): { sox: number[]; spx: number[] } {

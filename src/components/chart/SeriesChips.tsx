@@ -9,6 +9,8 @@ type SeriesChipsProps = {
   show: Visibility;
   onToggle: (key: SeriesKey) => void;
   lastTick: string;
+  /** Credit TradingView for the chart and data (live data). */
+  attribution?: boolean;
 };
 
 const CHIP = "inline-flex h-[42px] items-center gap-2 rounded-full border px-4 text-[15px]";
@@ -16,7 +18,7 @@ const ON = "glass-chip text-ink";
 const OFF = "border-transparent bg-[rgba(17,17,19,0.04)] text-muted";
 
 /** Series chips under the chart; each (but the price itself) toggles its series. */
-export function SeriesChips({ symbol, compare, show, onToggle, lastTick }: SeriesChipsProps) {
+export function SeriesChips({ symbol, compare, show, onToggle, lastTick, attribution = false }: SeriesChipsProps) {
   const chips: { key: SeriesKey; label: string; dot: string }[] = [
     { key: "volume", label: "Volume", dot: "#111113" },
     { key: "sma", label: "SMA 50", dot: "#7FA6F2" },
@@ -43,7 +45,18 @@ export function SeriesChips({ symbol, compare, show, onToggle, lastTick }: Serie
       </span>
       {chips.slice(1).map(chip)}
       <span className="flex-1" />
-      <span className="text-[12px] text-muted">Last tick {lastTick}</span>
+      <span className="text-[12px] text-muted">
+        {attribution ? (
+          <>
+            Chart and data:{" "}
+            <a href="https://www.tradingview.com/" target="_blank" rel="noreferrer" className="link">
+              TradingView
+            </a>
+            {" · "}
+          </>
+        ) : null}
+        Last tick {lastTick}
+      </span>
     </div>
   );
 }

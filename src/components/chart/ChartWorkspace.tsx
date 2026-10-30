@@ -33,6 +33,8 @@ type ChartWorkspaceProps = {
   addNoteHref: string;
   /** "Oct 30, 2026 at 11:51 AM" */
   lastTick: string;
+  /** Credit TradingView for the chart and data (live data). */
+  attribution?: boolean;
   /** Rendered last, pushed to the bottom (the open-ticker tabs). */
   children?: ReactNode;
 };
@@ -47,7 +49,7 @@ const restingCross = (win: BarWindow): Cross => ({ index: win.from + Math.round(
  * The chart screen's main column: header, toolbar, price chart with its
  * overlays, series chips, volume, timeline. Owns the chart state.
  */
-export function ChartWorkspace({ security, data, addNoteHref, lastTick, children }: ChartWorkspaceProps) {
+export function ChartWorkspace({ security, data, addNoteHref, lastTick, attribution = false, children }: ChartWorkspaceProps) {
   const { bars, compare } = data;
   const N = bars.length;
   const { symbol } = security;
@@ -244,7 +246,7 @@ export function ChartWorkspace({ security, data, addNoteHref, lastTick, children
         />
       </ChartStage>
 
-      <SeriesChips symbol={symbol} compare={compare} show={show} onToggle={toggle} lastTick={lastTick} />
+      <SeriesChips symbol={symbol} compare={compare} show={show} onToggle={toggle} lastTick={lastTick} attribution={attribution} />
       {show.volume ? <VolumeStrip bars={bars} geometry={g} crossIndex={cross.index} /> : null}
       <Timeline bars={bars} geometry={g} crossIndex={cross.index} events={data.events} />
       {fullscreen ? null : children}

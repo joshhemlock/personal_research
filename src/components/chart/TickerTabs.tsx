@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
-import { findSecurity } from "@/lib/mock/market";
-import { OPEN_TABS } from "@/lib/mock/chart";
 import { OpenPaletteButton } from "./OpenPaletteButton";
+import type { OpenTab } from "./types";
 
 /** Browser-style tabs for the tickers the user has open; the current one is raised. */
-export function TickerTabs({ current }: { current: string }) {
-  const symbols = OPEN_TABS.includes(current) ? OPEN_TABS : [...OPEN_TABS, current];
+export function TickerTabs({ current, tabs }: { current: string; tabs: readonly OpenTab[] }) {
   return (
     <nav aria-label="Open tickers" className="mt-auto flex flex-wrap items-end gap-1 pt-1">
       <OpenPaletteButton
@@ -15,7 +13,7 @@ export function TickerTabs({ current }: { current: string }) {
       >
         <Icon name="plus" size={22} />
       </OpenPaletteButton>
-      {symbols.map((symbol) => {
+      {tabs.map(({ symbol, name }) => {
         const on = symbol === current;
         return (
           <Link
@@ -34,7 +32,7 @@ export function TickerTabs({ current }: { current: string }) {
             >
               {symbol.charAt(0)}
             </span>
-            {findSecurity(symbol)?.name ?? symbol}
+            {name}
           </Link>
         );
       })}

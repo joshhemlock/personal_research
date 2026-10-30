@@ -7,9 +7,8 @@ import { ASIDE, FLUSH_BOTTOM } from "@/components/chart/layout";
 import { TickerCard } from "@/components/chart/TickerCard";
 import { TickerTabs } from "@/components/chart/TickerTabs";
 import { WatchlistPanel } from "@/components/chart/WatchlistPanel";
-import { ALERTS, LAST_TICK, getChartData, isWatched } from "@/lib/mock/chart";
-import { findSecurity, UNIVERSE, AS_OF } from "@/lib/mock/market";
-import { num, pct, signed } from "@/lib/format";
+import { getChartPage } from "@/lib/data/chart";
+import { UNIVERSE } from "@/lib/mock/market";
 
 // Sample symbols are prerendered; other params render on request, so
 // navigations into this route may block until the page is ready.
@@ -26,33 +25,23 @@ export async function generateMetadata({ params }: PageProps<"/stock/[symbol]">)
 
 export default async function StockChartPage({ params }: PageProps<"/stock/[symbol]">) {
   const { symbol } = await params;
-  const sec = findSecurity(symbol);
-  if (!sec) notFound();
+  const page = await getChartPage(symbol);
+  if (!page) notFound();
   return (
-    <AppShell
-      active="chart"
-      symbol={sec.symbol}
-      railClassName="pb-4"
-      quote={{
-        symbol: sec.symbol,
-        price: num(sec.price),
-        change: `${signed(sec.change)} (${pct(sec.changePct)})`,
-        up: sec.change >= 0,
-        asOf: `${AS_OF.date} · ${AS_OF.time}`,
-      }}
-    >
+    <AppShell active="chart" symbol={page.symbol} railClassName="pb-4" quote={page.quote}>
       <ChartWorkspace
-        security={{ symbol: sec.symbol, name: sec.name, exchange: sec.exchange, changePct: sec.changePct, watched: isWatched(sec.symbol) }}
-        data={getChartData(sec)}
-        addNoteHref={sec.symbol === "NVDA" ? "/notes/nvda-core-thesis" : "/notes"}
-        lastTick={LAST_TICK}
+        security={page.security}
+        data={page.chart}
+        addNoteHref={page.addNoteHref}
+        lastTick={page.lastTick}
+        attribution={page.live}
       >
-        <TickerTabs current={sec.symbol} />
+        <TickerTabs current={page.symbol} tabs={page.tabs} />
       </ChartWorkspace>
       <aside aria-label="Watchlist, alerts and details" className={`${ASIDE} ${FLUSH_BOTTOM}`}>
-        <WatchlistPanel />
-        <AlertsPanel alerts={ALERTS} />
-        <TickerCard sec={sec} />
+        <WatchlistPanel pinned={page.pinned} groups={page.groups} />
+        <AlertsPanel alerts={page.alerts} />
+        <TickerCard card={page.card} />
       </aside>
     </AppShell>
   );

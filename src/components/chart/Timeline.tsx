@@ -128,6 +128,26 @@ export function Timeline({ bars, geometry: g, crossIndex, events }: TimelineProp
       >
         {pillDate(bars[crossIndex].time)}
       </span>
+      {events.next ? (
+        // The next report or ex-dividend date is past the last bar: it sits
+        // in the price-axis gutter, outlined.
+        <span
+          role="img"
+          aria-label={events.next.label}
+          title={events.next.label}
+          className="absolute top-1 left-full ml-2 flex items-center gap-1 text-[12px] whitespace-nowrap text-ink-2"
+        >
+          <span
+            aria-hidden="true"
+            className={`flex size-[22px] items-center justify-center rounded-full border-[1.5px] bg-white text-[11px] font-semibold ${
+              events.next.letter === "E" ? "border-amber text-[#3D2400]" : "border-blue text-blue"
+            }`}
+          >
+            {events.next.letter}
+          </span>
+          <span aria-hidden="true">{events.next.date}</span>
+        </span>
+      ) : null}
     </div>
   );
 }
