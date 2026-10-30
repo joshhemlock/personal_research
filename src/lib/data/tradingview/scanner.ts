@@ -10,7 +10,21 @@ const TIMEOUT_MS = 12_000;
 
 export type ScanFilter = {
   left: string;
-  operation: "equal" | "nequal" | "greater" | "egreater" | "less" | "eless" | "in_range" | "not_in_range" | "match";
+  operation:
+    | "equal"
+    | "nequal"
+    | "greater"
+    | "egreater"
+    | "less"
+    | "eless"
+    | "in_range"
+    | "not_in_range"
+    | "match"
+    | "has"
+    | "has_none_of"
+    | "above%"
+    | "below%"
+    | "in_range%";
   right: unknown;
 };
 

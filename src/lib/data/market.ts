@@ -154,7 +154,7 @@ export async function getFundamentals(ids: string[]): Promise<Record<string, Fun
       dividendYieldPct: numOrNull(v.dividends_yield_current),
       epsDilutedTtm: numOrNull(v.earnings_per_share_diluted_ttm),
       nextEarnings: numOrNull(v.earnings_release_next_date),
-      nextEarningsTiming: earningsTiming(numOrNull(v.earnings_release_next_time), numOrNull(v.earnings_release_next_date)),
+      nextEarningsTiming: earningsTiming(numOrNull(v.earnings_release_next_time)),
       nextEarningsQuarter: quarter ? (Number(quarter[1]) % 4) + 1 : null,
       nextEpsEstimate: numOrNull(v.earnings_per_share_forecast_next_fq),
       nextRevenueEstimate: numOrNull(v.revenue_forecast_next_fq),
@@ -172,24 +172,21 @@ export async function getFundamentals(ids: string[]): Promise<Record<string, Fun
   return out;
 }
 
-/** TradingView codes: -1 before the open, 1 after the close, 0 not confirmed. */
-function earningsTiming(code: number | null, when: number | null): EarningsTiming {
+/**
+ * TradingView codes: -1 before the open, 1 after the close, 0 not confirmed.
+ * With 0 the release time is a placeholder, so it isn't used to guess.
+ */
+function earningsTiming(code: number | null): EarningsTiming {
   if (code === -1) return "Before open";
   if (code === 1) return "After close";
-  if (when != null) {
-    const hour = Number(new Date(when * 1000).toLocaleString("en-US", { timeZone: "America/New_York", hour: "numeric", hour12: false }));
-    if (hour < 9) return "Before open";
-    if (hour >= 16) return "After close";
-  }
   return "Time not confirmed";
 }
 
-/** "NVIDIA Corporation" → "NVIDIA", "Apple Inc." → "Apple". */
+/** "NVIDIA Corporation" → "NVIDIA", "JPMorgan Chase & Co." → "JPMorgan Chase". */
 export function shortName(name: string): string {
-  return name
-    .replace(/\s+Sponsored ADR.*$/i, "")
-    .replace(/,?\s+(Inc\.?|Incorporated|Corporation|Corp\.?|Co\.?,? Ltd\.?|Ltd\.?|Limited|plc|N\.V\.|S\.A\.|AG|SE|Holdings?,? Inc\.?|Class [A-C].*)$/i, "")
-    .replace(/,?\s+(Inc\.?|Corporation|Corp\.?|Co\.?)$/i, "")
-    .replace(/\.com$/i, "")
-    .trim();
+  const SUFFIX =
+    /,?\s+(Sponsored ADR.*|Class [A-C]\b.*|Inc\.?|Incorporated|Corporation|Corp\.?|Company|& Co\.?|Co\.?|Ltd\.?|Limited|plc|PLC|N\.?V\.?|S\.A\.|A\/S|AG|SE|Holdings?|Group)$/i;
+  let out = name.trim();
+  for (let i = 0; i < 4 && SUFFIX.test(out); i++) out = out.replace(SUFFIX, "").trim();
+  return out.replace(/\.com$/i, "").replace(/[,&]$/, "").trim() || name;
 }
