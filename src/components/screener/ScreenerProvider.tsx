@@ -30,6 +30,8 @@ export type ScreenerState = {
   hiddenColumns: ColumnKey[];
   /** How many "Untitled screen"s were created, for naming the next one. */
   created: number;
+  /** Threshold row just added with "Add filter"; its input takes focus. */
+  lastAdded: MetricKey | null;
 };
 
 export type ScreenerAction =
@@ -60,6 +62,7 @@ const initialState: ScreenerState = {
   watched: DEFAULT_WATCHED,
   hiddenColumns: [],
   created: 0,
+  lastAdded: null,
 };
 
 function toggle<T>(list: readonly T[], item: T): T[] {
@@ -71,6 +74,12 @@ function withFilters(state: ScreenerState, filters: ScreenFilters): ScreenerStat
 }
 
 function reducer(state: ScreenerState, action: ScreenerAction): ScreenerState {
+  const next = reduce(state, action);
+  // Focus only follows the action that added the row.
+  return action.type === "addThreshold" || next.lastAdded === null ? next : { ...next, lastAdded: null };
+}
+
+function reduce(state: ScreenerState, action: ScreenerAction): ScreenerState {
   const f = state.filters;
   switch (action.type) {
     case "openScreen": {
@@ -115,7 +124,10 @@ function reducer(state: ScreenerState, action: ScreenerAction): ScreenerState {
       });
     case "addThreshold":
       if (f.thresholds.some((t) => t.key === action.key)) return state;
-      return withFilters(state, { ...f, thresholds: [...f.thresholds, { key: action.key, value: "" }] });
+      return {
+        ...withFilters(state, { ...f, thresholds: [...f.thresholds, { key: action.key, value: "" }] }),
+        lastAdded: action.key,
+      };
     case "removeThreshold":
       return withFilters(state, { ...f, thresholds: f.thresholds.filter((t) => t.key !== action.key) });
     case "reset":

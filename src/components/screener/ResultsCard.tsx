@@ -9,7 +9,7 @@ import { ResultsTable } from "./ResultsTable";
 import { useScreener } from "./ScreenerProvider";
 
 const ICON_BUTTON =
-  "inline-flex size-10 items-center justify-center rounded-[12px] border-0 bg-transparent p-0 text-ink-3 hover:bg-track hover:text-ink";
+  "inline-flex size-10 items-center justify-center rounded-[12px] border-0 bg-transparent p-0 text-ink-3 hover:bg-track hover:text-ink disabled:opacity-40 disabled:hover:bg-transparent";
 
 function ColumnsMenu() {
   const { state, dispatch } = useScreener();
@@ -86,10 +86,13 @@ export function ResultsCard() {
         <div className="flex flex-wrap items-center gap-2">
           <label className="inline-flex items-center gap-2 text-[13px] text-ink-3">
             Sort by
+            {/* Fixed width: the design's auto width for "Revenue growth", so the
+                extra options don't widen it. pb-[2px] puts the text where the
+                snapshot shows it (1px above center). */}
             <select
               value={state.sort.key}
               onChange={(e) => dispatch({ type: "sortBy", key: e.target.value as SortKey })}
-              className="h-[38px] w-[147px] rounded-full border border-[rgba(17,17,19,0.08)] bg-[rgba(255,255,255,0.9)] px-3 text-[14px] text-ink"
+              className="h-[38px] w-[147px] rounded-full border border-[rgba(17,17,19,0.08)] bg-[rgba(255,255,255,0.9)] px-3 pb-[2px] text-[14px] text-ink"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>

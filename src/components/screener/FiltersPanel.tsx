@@ -13,8 +13,6 @@ import { EXTRA_METRICS, METRICS, thresholdAria } from "./screen";
 import { Popover } from "./Popover";
 import { useScreener } from "./ScreenerProvider";
 
-const inputId = (key: MetricKey) => `screen-threshold-${key}`;
-
 function ChipGroup<T extends string>({
   label,
   options,
@@ -56,7 +54,7 @@ function ChipGroup<T extends string>({
   );
 }
 
-function ThresholdRow({ metric, value }: { metric: MetricKey; value: string }) {
+function ThresholdRow({ metric, value, autoFocus }: { metric: MetricKey; value: string; autoFocus: boolean }) {
   const { dispatch } = useScreener();
   const m = METRICS[metric];
   const removable = !BASE_METRICS.includes(metric);
@@ -66,13 +64,13 @@ function ThresholdRow({ metric, value }: { metric: MetricKey; value: string }) {
       <span className="text-[13px] text-muted">{m.bound === "min" ? "≥" : "≤"}</span>
       <span className="inline-flex h-[38px] items-center rounded-[10px] border border-[rgba(17,17,19,0.08)] bg-[rgba(255,255,255,0.9)] px-[10px] outline-offset-2 outline-focus focus-within:outline-2">
         <input
-          id={inputId(metric)}
           type="number"
           inputMode="decimal"
           step={m.step}
           value={value}
           placeholder="–"
           aria-label={thresholdAria(metric)}
+          autoFocus={autoFocus}
           onChange={(e) => dispatch({ type: "threshold", key: metric, value: e.target.value })}
           className="w-[38px] border-0 bg-transparent px-[2px] py-px text-right text-[14px] text-ink [appearance:textfield] placeholder:text-muted focus-visible:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
@@ -118,13 +116,11 @@ function AddFilter() {
             onClick={() => {
               dispatch({ type: "addThreshold", key });
               close();
-              // Focus the new row's input once it has rendered.
-              setTimeout(() => document.getElementById(inputId(key))?.focus(), 0);
             }}
             className="flex h-9 w-full items-center justify-between gap-3 rounded-[10px] px-3 text-left hover:bg-track"
           >
-            {METRICS[key].label}
-            <span className="text-[13px] text-muted">
+            {METRICS[key].menuLabel ?? METRICS[key].label}
+            <span className="text-[13px] whitespace-nowrap text-muted">
               {METRICS[key].bound === "min" ? "≥" : "≤"} {METRICS[key].unit}
             </span>
           </button>
@@ -215,7 +211,7 @@ export function FiltersPanel() {
       />
       <div className="flex flex-col gap-[2px] border-t border-[rgba(17,17,19,0.06)] pt-2">
         {filters.thresholds.map((t) => (
-          <ThresholdRow key={t.key} metric={t.key} value={t.value} />
+          <ThresholdRow key={t.key} metric={t.key} value={t.value} autoFocus={t.key === state.lastAdded} />
         ))}
       </div>
       <AddFilter />

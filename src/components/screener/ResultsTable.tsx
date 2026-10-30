@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ICONS } from "@/components/ui/Icon";
 import { TickerDot } from "@/components/ui/Pill";
 import { pct, tone } from "@/lib/format";
+import { UNIVERSE } from "@/lib/mock/market";
 import type { ScreenSort, ScreenStock } from "@/lib/mock/screener";
 import {
   COLUMNS,
@@ -19,6 +20,11 @@ import {
 import { useScreener } from "./ScreenerProvider";
 
 const ROW = "grid items-center gap-x-[10px] px-1";
+const COMPANY = "flex items-center gap-[10px] text-ink";
+
+// Symbols the chart screen has sample data for. Other rows show the same
+// cell without a link (their /stock page would 404) until that data exists.
+const CHARTED = new Set(UNIVERSE.map((s) => s.symbol));
 
 function SortHeader({ col, sort, onSort }: { col: ColumnDef; sort: ScreenSort; onSort: () => void }) {
   if (col.key === "watch") {
@@ -67,18 +73,28 @@ function SortHeader({ col, sort, onSort }: { col: ColumnDef; sort: ScreenSort; o
 
 function Cell({ col, s, watched, onWatch }: { col: ColumnKey; s: ScreenStock; watched: boolean; onWatch: () => void }) {
   switch (col) {
-    case "company":
+    case "company": {
+      const body = (
+        <>
+          <TickerDot symbol={s.symbol} size={28} fontSize={12} />
+          <span className="flex min-w-0 flex-col leading-[1.15]">
+            <span className="font-medium">{s.symbol}</span>
+            <span className="truncate text-[12px] text-muted">{s.name}</span>
+          </span>
+        </>
+      );
       return (
         <span role="cell">
-          <Link href={`/stock/${s.symbol}`} className="flex items-center gap-[10px] text-ink hover:text-focus">
-            <TickerDot symbol={s.symbol} size={28} fontSize={12} />
-            <span className="flex min-w-0 flex-col leading-[1.15]">
-              <span className="font-medium">{s.symbol}</span>
-              <span className="truncate text-[12px] text-muted">{s.name}</span>
-            </span>
-          </Link>
+          {CHARTED.has(s.symbol) ? (
+            <Link href={`/stock/${s.symbol}`} className={`${COMPANY} hover:text-focus`}>
+              {body}
+            </Link>
+          ) : (
+            <span className={COMPANY}>{body}</span>
+          )}
         </span>
       );
+    }
     case "industry":
       return (
         <span role="cell" className="truncate text-[13px] text-ink-3">

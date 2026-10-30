@@ -12,7 +12,10 @@ import {
 } from "@/lib/mock/screener";
 
 export type MetricDef = {
+  /** Row label. Added rows also carry a remove button, so keep theirs short. */
   label: string;
+  /** Longer name for the "Add filter" menu, when the label leaves things out. */
+  menuLabel?: string;
   /** "min" rows keep stocks at or above the value (≥), "max" at or below (≤). */
   bound: "min" | "max";
   unit: "%" | "×";
@@ -27,9 +30,16 @@ export const METRICS: Record<MetricKey, MetricDef> = {
   fwdPe: { label: "Forward P/E", bound: "max", unit: "×", step: 1, get: (s) => s.fwdPe },
   netDebtEbitda: { label: "Net debt / EBITDA", bound: "max", unit: "×", step: 0.1, get: (s) => s.netDebtEbitda },
   dividendYield: { label: "Dividend yield", bound: "min", unit: "%", step: 0.1, get: (s) => s.dividendYield },
-  dividendGrowth: { label: "Dividend growth (5y)", bound: "min", unit: "%", step: 1, get: (s) => s.dividendGrowth },
+  dividendGrowth: {
+    label: "Dividend growth",
+    menuLabel: "Dividend growth (5-yr)",
+    bound: "min",
+    unit: "%",
+    step: 1,
+    get: (s) => s.dividendGrowth,
+  },
   offHigh: {
-    label: "Below 52-week high",
+    label: "Off 52-week high",
     bound: "max",
     unit: "%",
     step: 1,
