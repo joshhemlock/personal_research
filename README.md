@@ -4,7 +4,7 @@ A personal stock-research web app for one user. "Compound" is a placeholder name
 
 The design handoff lives in [`design/`](design/): the brief ([`design/DESIGN_BRIEF.md`](design/DESIGN_BRIEF.md)), target screenshots at 1512 × 982, static HTML snapshots and the original design files.
 
-**Status:** all five screens are built and matched to the design at 1512 × 982, and they reflow below that width. Live market data from TradingView is in progress (see [Data](#data)): the top bar, Overview and ⌘K search are live. Persistence, login and deploy (steps 5–6) are not started.
+**Status:** all five screens are built, matched to the design at 1512 × 982 (sample mode, within 0.2% of pixels) and reflow below that width. Every screen runs on live market data from TradingView (see [Data](#data)), and ⌘K finds any US ticker. Persistence, login and deploy (steps 5–6) are not started, so your own data (watchlists, alerts, notes, saved screens, tasks) is still sample data.
 
 ## Getting started
 
@@ -91,6 +91,6 @@ To run a live server next to a sample one, give the second its own build folder:
 
 ## Next steps (from the brief)
 
-4. **Live data:** finish wiring the chart, financials, screener and notes screens to `src/lib/data` (in progress). If TradingView becomes unreliable, implement the same functions against a paid provider.
+4. **Live data:** done, via TradingView. If it becomes unreliable or blocks requests, implement the functions in `src/lib/data/market.ts` (and the per-screen builders) against a paid provider.
 5. **Persistence** for watchlists, open ticker tabs, alerts, saved screens, research-queue tasks and notes.
 6. **Single-user login**, then deploy (e.g. Vercel with env vars for API keys and the database URL).
