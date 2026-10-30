@@ -10,14 +10,20 @@ const TAB_ON = "bg-white text-ink shadow-seg";
 const TAB_OFF = "text-ink-3 hover:text-ink";
 
 type FinancialsHeaderProps = {
-  data: FinancialsData;
-  changePct: number;
+  symbol: string;
+  name: string;
+  /** Today's change, %; null hides the pill. */
+  changePct: number | null;
+  /** The statements to export; null hides Export. */
+  data: FinancialsData | null;
+  thesisHref: string;
+  /** Where the figures come from, for the export file. */
+  source: string;
 };
 
 /** Ticker chip, stock section tabs, Export and "Add to thesis". */
-export function FinancialsHeader({ data, changePct }: FinancialsHeaderProps) {
-  const { symbol, name } = data;
-  const up = changePct >= 0;
+export function FinancialsHeader({ symbol, name, changePct, data, thesisHref, source }: FinancialsHeaderProps) {
+  const up = (changePct ?? 0) >= 0;
   const tabs = [
     { label: "Chart", href: `/stock/${symbol}` },
     { label: "Financials", href: `/stock/${symbol}/financials`, current: true },
@@ -32,13 +38,15 @@ export function FinancialsHeader({ data, changePct }: FinancialsHeaderProps) {
         <h1 className="m-0 text-[16px] font-medium">
           {name} <span className="text-muted">·</span> Financials
         </h1>
-        <span
-          className={`inline-flex h-[22px] items-center rounded-full px-2 text-[12px] font-semibold ${
-            up ? "bg-up-pill text-up-pill-text" : "bg-down-pill text-down-pill-text"
-          }`}
-        >
-          {pct(changePct)}
-        </span>
+        {changePct != null && (
+          <span
+            className={`inline-flex h-[22px] items-center rounded-full px-2 text-[12px] font-semibold ${
+              up ? "bg-up-pill text-up-pill-text" : "bg-down-pill text-down-pill-text"
+            }`}
+          >
+            {pct(changePct)}
+          </span>
+        )}
       </div>
       <nav aria-label="Stock sections" className="flex flex-wrap gap-[2px] rounded-full bg-track p-1">
         {tabs.map((t) =>
@@ -60,14 +68,18 @@ export function FinancialsHeader({ data, changePct }: FinancialsHeaderProps) {
       </nav>
       {/* Actions stay together and right-aligned, also when they wrap to their own line. */}
       <div className="ml-auto flex items-center gap-3">
-        <ExportButton
-          symbol={symbol}
-          quarters={data.quarters.slice(4)}
-          years={data.years}
-          statements={data.statements}
-        />
+        {data && (
+          <ExportButton
+            symbol={symbol}
+            quarters={data.quarters.slice(-4)}
+            years={data.years}
+            statements={data.statements}
+            currency={data.currency}
+            source={source}
+          />
+        )}
         <Link
-          href={data.thesisHref}
+          href={thesisHref}
           className="inline-flex h-11 items-center gap-2 rounded-full bg-ink px-5 text-[15px] font-medium text-white transition-colors duration-150 hover:bg-[#2A2A2E]"
         >
           <Icon d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" size={18} linejoin="round" />

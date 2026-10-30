@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Segmented } from "@/components/ui/Segmented";
 import { pct } from "@/lib/format";
 import type { PeriodKey, Quarter, StatementKey, StatementRow } from "@/lib/mock/financials";
-import { H2, PANEL, statementCell } from "./helpers";
+import { H2, PANEL, statementCell, statementTotal } from "./helpers";
 
 const STATEMENTS = [
   { value: "income", label: "Income statement" },
@@ -27,10 +27,12 @@ type StatementsCardProps = {
   quarters: Quarter[];
   years: string[];
   statements: Record<StatementKey, StatementRow[]>;
+  /** Reporting currency; USD when absent. */
+  currency?: string;
 };
 
 /** Income statement / balance sheet / cash flow, quarterly or annual, with TTM and YoY. */
-export function StatementsCard({ quarters, years, statements }: StatementsCardProps) {
+export function StatementsCard({ quarters, years, statements, currency = "USD" }: StatementsCardProps) {
   const [stmt, setStmt] = useState<StatementKey>("income");
   const [period, setPeriod] = useState<PeriodKey>("quarterly");
   const title = STATEMENTS.find((s) => s.value === stmt)!.label;
@@ -52,7 +54,7 @@ export function StatementsCard({ quarters, years, statements }: StatementsCardPr
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
           <Segmented label="Period" options={PERIODS} value={period} onChange={setPeriod} buttonClassName={SEG} />
-          <span className="text-[12px] text-muted">USD millions, except per share</span>
+          <span className="text-[12px] text-muted">{currency} millions, except per share</span>
         </div>
       </div>
       <div className="max-h-[360px] overflow-auto">
@@ -75,8 +77,7 @@ export function StatementsCard({ quarters, years, statements }: StatementsCardPr
           {statements[stmt].map((r) => {
             const digits = r.kind === "eps" ? 2 : 0;
             const series = annual ? r.annual : r.quarterly;
-            const agg =
-              r.agg === "last" ? r.quarterly[r.quarterly.length - 1] : r.quarterly.reduce((s, v) => s + v, 0);
+            const agg = statementTotal(r);
             const total = r.kind === "total";
             const item = r.kind === "item";
             return (
@@ -91,15 +92,20 @@ export function StatementsCard({ quarters, years, statements }: StatementsCardPr
                   {r.label}
                 </span>
                 {series.map((v, k) => (
-                  <span key={cols[k]?.key ?? k} role="cell" className="text-right">
+                  <span key={cols[k]?.key ?? k} role="cell" className={v == null ? "text-right text-muted" : "text-right"}>
                     {statementCell(v, digits)}
                   </span>
                 ))}
-                <span role="cell" className="text-right">
-                  {statementCell(digits ? Math.round(agg * 100) / 100 : agg, digits)}
+                <span role="cell" className={agg == null ? "text-right text-muted" : "text-right"}>
+                  {statementCell(digits && agg != null ? Math.round(agg * 100) / 100 : agg, digits)}
                 </span>
-                <span role="cell" className={`text-right text-[13px] ${r.yoy >= 0 ? "text-up-text" : "text-down-text"}`}>
-                  {pct(r.yoy, 1)}
+                <span
+                  role="cell"
+                  className={`text-right text-[13px] ${
+                    r.yoy == null ? "text-muted" : r.yoy >= 0 ? "text-up-text" : "text-down-text"
+                  }`}
+                >
+                  {r.yoy == null ? "—" : pct(r.yoy, 1)}
                 </span>
               </div>
             );

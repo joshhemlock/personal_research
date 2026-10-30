@@ -1,15 +1,28 @@
 import type { Kpi } from "@/lib/mock/financials";
 
-/** Mini bar chart: eight bars scaled to the largest, the latest one dark. */
-function MiniBars({ values }: { values: number[] }) {
+/**
+ * Mini bar chart: eight bars scaled to the largest, the latest one dark.
+ * With negative values the bars hang from a zero line instead; missing values leave a gap.
+ */
+function MiniBars({ values }: { values: (number | null)[] }) {
   const w = 72;
   const h = 34;
-  const mx = Math.max(...values, 0) || 1;
+  const nums = values.filter((v): v is number => v != null);
+  const top = Math.max(...nums, 0);
+  const mx = top || 1;
+  const mn = Math.min(...nums, 0);
   const slot = w / values.length;
   const bw = slot * 0.62;
-  const bar = (v: number, k: number) => {
-    const bh = (Math.max(v, 0) / mx) * (h - 2);
+  const scale = (h - 2) / (top - mn);
+  const zero = 2 + top * scale;
+  const bar = (v: number | null, k: number) => {
+    if (v == null) return "";
     const x = k * slot + (slot - bw) / 2;
+    if (mn < 0) {
+      const [y0, y1] = v >= 0 ? [zero - v * scale, zero] : [zero, zero - v * scale];
+      return `M${x.toFixed(1)} ${y0.toFixed(1)}h${bw.toFixed(1)}V${y1.toFixed(1)}h${(-bw).toFixed(1)}Z`;
+    }
+    const bh = (Math.max(v, 0) / mx) * (h - 2);
     return `M${x.toFixed(1)} ${(h - bh).toFixed(1)}h${bw.toFixed(1)}V${h}h${(-bw).toFixed(1)}Z`;
   };
   const last = values.length - 1;
@@ -36,11 +49,15 @@ export function KpiTiles({ kpis }: { kpis: Kpi[] }) {
           <div className="flex items-end justify-between gap-2">
             <div className="flex flex-col leading-[1.15]">
               <span className="text-[24px] font-normal tracking-[-0.02em]">{k.value}</span>
-              <span className={`text-[12px] whitespace-nowrap ${k.up ? "text-up-text" : "text-down-text"}`}>
-                {k.delta}
-              </span>
+              {k.delta ? (
+                <span className={`text-[12px] whitespace-nowrap ${k.up ? "text-up-text" : "text-down-text"}`}>
+                  {k.delta}
+                </span>
+              ) : (
+                <span className="text-[12px] whitespace-nowrap text-muted">TTM</span>
+              )}
             </div>
-            <MiniBars values={k.bars} />
+            {k.bars.some((v) => v != null) && <MiniBars values={k.bars} />}
           </div>
         </div>
       ))}

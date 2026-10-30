@@ -5,8 +5,13 @@ export function NextReport({ report }: { report: FinancialsData["nextReport"] })
   const stats = [
     { label: "Revenue est.", value: report.revenueEst },
     { label: "EPS est.", value: report.epsEst },
-    { label: "Implied move", value: report.impliedMove },
-  ];
+    // Implied move needs options data; without it, show the growth the revenue estimate implies.
+    report.impliedMove !== undefined
+      ? { label: "Implied move", value: report.impliedMove }
+      : report.revenueGrowthEst !== undefined
+        ? { label: "Rev. est. YoY", value: report.revenueGrowthEst }
+        : null,
+  ].filter((s) => s !== null);
   return (
     <section
       aria-labelledby="nx-h"

@@ -12,7 +12,7 @@ type Column = {
   a: string;
   b: string;
   label: string;
-  est: number;
+  est?: number;
   actual?: number;
   beat?: boolean;
   surprise: string;
@@ -21,9 +21,11 @@ type Column = {
   bg: string;
 };
 
+const eps2 = (v: number | null) => (v == null ? "not available" : v.toFixed(2));
+
 /** Estimate (ring) vs actual (dot) EPS per quarter, plus the upcoming quarter. */
 export function EpsCard({ quarters, eps }: EpsCardProps) {
-  const all = [...eps.est, ...eps.actual, eps.next.est];
+  const all = [...eps.est, ...eps.actual, eps.next?.est ?? null].filter((v): v is number => v != null);
   const min = Math.min(...all);
   const max = Math.max(...all);
   const span = max - min || Math.abs(max) || 1;
@@ -33,35 +35,47 @@ export function EpsCard({ quarters, eps }: EpsCardProps) {
   const pos = (v: number) => (((v - lo) / (hi - lo)) * 100).toFixed(1);
 
   const cols: Column[] = quarters.map((q, k) => {
-    // Rounded first, so a tiny miss that shows as 0.0 reads as in line, not "−0.0".
-    const s = +((eps.actual[k] / eps.est[k] - 1) * 100).toFixed(1);
-    const beat = s >= 0;
+    const est = eps.est[k];
+    const actual = eps.actual[k];
     const label = `${q.q} ${q.fy.replace("FY", "’")}`;
-    return {
+    const base = {
       key: `${q.q}${q.fy}`,
       a: q.q,
       b: q.fy.replace("FY", "’"),
-      label: `${label}: estimate ${eps.est[k].toFixed(2)}, actual ${eps.actual[k].toFixed(2)}`,
-      est: eps.est[k],
-      actual: eps.actual[k],
+      label: `${label}: estimate ${eps2(est)}, actual ${eps2(actual)}`,
+      est: est ?? undefined,
+      actual: actual ?? undefined,
+      bg: "rgba(17,17,19,0.04)",
+    };
+    if (est == null || actual == null || est === 0) {
+      return { ...base, surprise: "—", surpriseClass: "text-muted", dot: "#111113" };
+    }
+    // Relative to the estimate's size, so a smaller loss than expected reads as a beat.
+    // Rounded first, so a tiny miss that shows as 0.0 reads as in line, not "−0.0".
+    const s = +((est > 0 ? actual / est - 1 : (actual - est) / -est) * 100).toFixed(1);
+    const beat = s >= 0;
+    return {
+      ...base,
       beat,
       surprise: (beat ? "+" : MINUS) + Math.abs(s).toFixed(1),
       surpriseClass: beat ? "text-up-text" : "text-down-text",
       dot: beat ? "#111113" : "#E5484D",
-      bg: "rgba(17,17,19,0.04)",
     };
   });
-  cols.push({
-    key: "next",
-    a: eps.next.q,
-    b: eps.next.date,
-    label: `${eps.next.q}, reports ${eps.next.date}: estimate ${eps.next.est.toFixed(2)}`,
-    est: eps.next.est,
-    surprise: "est.",
-    surpriseClass: "text-ink-3",
-    bg: "rgba(245,165,36,0.16)",
-  });
+  if (eps.next) {
+    cols.push({
+      key: "next",
+      a: eps.next.q,
+      b: eps.next.date,
+      label: `${eps.next.q}, reports ${eps.next.date}: estimate ${eps.next.est.toFixed(2)}`,
+      est: eps.next.est,
+      surprise: "est.",
+      surpriseClass: "text-ink-3",
+      bg: "rgba(245,165,36,0.16)",
+    });
+  }
   const beats = cols.filter((c) => c.beat).length;
+  const scored = cols.filter((c) => c.beat !== undefined).length;
 
   return (
     <section id="earnings" aria-labelledby="ea-h" className={`${PANEL} flex flex-col gap-2.5 px-[18px] py-[14px]`}>
@@ -81,7 +95,7 @@ export function EpsCard({ quarters, eps }: EpsCardProps) {
         </span>
       </div>
       <p className="m-0 text-[13px] text-ink-3">
-        Beat in {beats} of the last {quarters.length} quarters · surprise in %
+        Beat in {beats} of the last {scored} quarters · surprise in %
       </p>
       <div className="flex gap-[3px]">
         {cols.map((c) => (
@@ -92,10 +106,12 @@ export function EpsCard({ quarters, eps }: EpsCardProps) {
               className="relative h-[92px] w-full rounded-[9px]"
               style={{ background: c.bg }}
             >
-              <span
-                className="absolute left-1/2 -mb-[6.5px] -ml-[6.5px] size-[13px] rounded-full border-2 border-[#8A8A92] bg-white"
-                style={{ bottom: `${pos(c.est)}%` }}
-              />
+              {c.est !== undefined && (
+                <span
+                  className="absolute left-1/2 -mb-[6.5px] -ml-[6.5px] size-[13px] rounded-full border-2 border-[#8A8A92] bg-white"
+                  style={{ bottom: `${pos(c.est)}%` }}
+                />
+              )}
               {c.actual !== undefined && (
                 <span
                   className="absolute left-1/2 -mb-[5.5px] -ml-[5.5px] size-[11px] rounded-full"

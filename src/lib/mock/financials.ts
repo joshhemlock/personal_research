@@ -28,25 +28,30 @@ export type RowKind = "total" | "item" | "plain" | "eps";
 export type StatementRow = {
   label: string;
   kind: RowKind;
-  /** Last four quarters, oldest first. USD millions (EPS in USD). */
-  quarterly: number[];
+  /** Last four quarters, oldest first. USD millions (EPS in USD); null where the figure isn't available. */
+  quarterly: (number | null)[];
   /** Last four fiscal years, oldest first. */
-  annual: number[];
+  annual: (number | null)[];
   /** TTM column: sum of the four quarters, or the latest one (balance sheet, shares). */
   agg: "sum" | "last";
-  /** Year-over-year change, %. */
-  yoy: number;
+  /** The TTM / latest figure when it is given rather than computed from `quarterly`; null if unknown. */
+  total?: number | null;
+  /** Year-over-year change, %, or null when there is no year-ago figure. */
+  yoy: number | null;
 };
 
 export type Kpi = {
   label: string;
   value: string;
-  /** e.g. "+54.6% YoY" or "+3.1 pt YoY" */
-  delta: string;
+  /** e.g. "+54.6% YoY" or "+3.1 pt YoY"; absent when there is no year-ago figure. */
+  delta?: string;
   up: boolean;
-  /** Eight quarters for the mini bar chart, oldest first; the last bar is dark. */
-  bars: number[];
+  /** Eight quarters for the mini bar chart, oldest first; the last bar is dark. Empty: no chart. */
+  bars: (number | null)[];
 };
+
+/** Margin lines the Margins chart knows how to draw. */
+export type MarginKey = "gross" | "operating" | "ebitda" | "net";
 
 export type Segment = { name: string; share: number; color: string };
 
@@ -58,18 +63,29 @@ export type FinancialsData = {
   /** Four fiscal years, oldest first. */
   years: string[];
   kpis: Kpi[];
-  /** Eight quarters, USD millions. */
-  revenue: number[];
-  netIncome: number[];
-  /** Eight quarters, % of revenue. */
-  margins: { gross: number[]; operating: number[]; net: number[] };
+  /** Eight quarters, USD millions; null where a quarter has no figure. */
+  revenue: (number | null)[];
+  netIncome: (number | null)[];
+  /** Eight quarters, % of revenue; lines without data are left out. */
+  margins: Partial<Record<MarginKey, (number | null)[]>>;
   statements: Record<StatementKey, StatementRow[]>;
-  /** symbols[0] is this company; values are multiples (×) in the same order. */
-  valuation: { symbols: string[]; values: Record<MultipleKey, number[]> };
-  /** Eight quarters of EPS (USD), then the upcoming quarter's consensus. */
-  eps: { est: number[]; actual: number[]; next: { q: string; date: string; est: number } };
-  mix: { period: string; segments: Segment[] };
-  nextReport: { when: string; revenueEst: string; epsEst: string; impliedMove: string };
+  /** Reporting currency of the statements; USD when absent. */
+  currency?: string;
+  /** symbols[0] is this company; values are multiples (×) in the same order, null if not available. */
+  valuation: { symbols: string[]; values: Record<MultipleKey, (number | null)[]> };
+  /**
+   * EPS (USD) per quarter, then the upcoming quarter's consensus. `quarters` when they
+   * differ from the statement quarters; otherwise the eight statement quarters.
+   */
+  eps: {
+    quarters?: Quarter[];
+    est: (number | null)[];
+    actual: (number | null)[];
+    next: { q: string; date: string; est: number } | null;
+  };
+  /** Revenue by segment, or null when the data source has none. */
+  mix: { period: string; segments: Segment[] } | null;
+  nextReport: { when: string; revenueEst: string; epsEst: string; impliedMove?: string; revenueGrowthEst?: string };
   /** The research note behind the "Add to thesis" button. */
   thesisHref: string;
 };
@@ -83,7 +99,8 @@ const billions = (millions: number) => (millions / 1000).toFixed(1) + "B";
 /** Change from `prev` to `cur`, %, signed so that a shrinking negative reads as a fall. */
 const change = (cur: number, prev: number) => (prev === 0 ? 0 : ((cur - prev) / Math.abs(prev)) * 100);
 
-function thesisHref(symbol: string): string {
+/** The user's thesis note for a symbol (user data, not market data). */
+export function thesisHref(symbol: string): string {
   const note = NOTE_INDEX.find((n) => n.symbol === symbol && n.type === "Thesis");
   return note ? `/notes/${note.id}` : "/notes";
 }

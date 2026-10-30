@@ -1,12 +1,12 @@
 import type { Quarter } from "@/lib/mock/financials";
 import { Gridlines, YAxis } from "./Axes";
-import { H2, millionsLabel, PANEL, ticks, zeroAxis } from "./helpers";
+import { H2, millionsLabel, PANEL, rangeAxis, ticks, zeroAxis } from "./helpers";
 
 type RevenueChartProps = {
   quarters: Quarter[];
-  /** USD millions per quarter, oldest first. */
-  revenue: number[];
-  netIncome: number[];
+  /** USD millions per quarter, oldest first; null where not reported. */
+  revenue: (number | null)[];
+  netIncome: (number | null)[];
 };
 
 // Plot coordinates: 100 units per quarter, 220 tall, stretched to the box.
@@ -15,11 +15,20 @@ const SLOT = 100;
 
 /** Grouped bars: revenue (black) and net income (green) for eight quarters. */
 export function RevenueChart({ quarters, revenue, netIncome }: RevenueChartProps) {
-  const axis = zeroAxis(Math.max(...revenue, ...netIncome));
+  const all = [...revenue, ...netIncome].filter((v): v is number => v != null);
+  const min = Math.min(...all, 0);
+  // From zero as designed; with losses the axis extends below zero and those bars hang down.
+  const axis = min < 0 ? rangeAxis(min, Math.max(...all, 0)) : zeroAxis(Math.max(...all));
   const yTicks = ticks(axis, millionsLabel);
-  const bars = (vals: number[], dx: number) =>
+  const y = (v: number) => H - ((v - axis.lo) / (axis.hi - axis.lo)) * H;
+  const bars = (vals: (number | null)[], dx: number) =>
     vals
-      .map((v, i) => `M${i * SLOT + dx} ${(H - (Math.max(v, 0) / axis.hi) * H).toFixed(1)}h28V${H}h-28Z`)
+      .map((v, i) => {
+        if (v == null) return "";
+        if (min >= 0) return `M${i * SLOT + dx} ${(H - (Math.max(v, 0) / axis.hi) * H).toFixed(1)}h28V${H}h-28Z`;
+        const [top, bottom] = v >= 0 ? [y(v), y(0)] : [y(0), y(v)];
+        return `M${i * SLOT + dx} ${top.toFixed(1)}h28V${bottom.toFixed(1)}h-28Z`;
+      })
       .join("");
   const first = quarters[0];
   const last = quarters[quarters.length - 1];

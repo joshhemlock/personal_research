@@ -1,16 +1,27 @@
 // Small presentational helpers shared by the Financials screen components.
 // Kept free of data imports so client components can use them cheaply.
 
+import { MINUS } from "@/lib/format";
+import type { StatementRow } from "@/lib/mock/financials";
+
 /** Glass card: the shared recipe plus the 24px panel radius. */
 export const PANEL = "glass rounded-[24px]";
 
 /** Card heading (h2). */
 export const H2 = "m-0 text-[19px] font-normal tracking-[-0.01em]";
 
-/** Statement cell: thousands separators, negatives in parentheses. */
-export function statementCell(v: number, digits = 0): string {
+/** Statement cell: thousands separators, negatives in parentheses, "—" when not available. */
+export function statementCell(v: number | null, digits = 0): string {
+  if (v == null) return "—";
   const s = Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits });
   return v < 0 ? `(${s})` : s;
+}
+
+/** The TTM column (or latest value for point-in-time lines); null when a quarter is missing. */
+export function statementTotal(r: StatementRow): number | null {
+  if (r.total !== undefined) return r.total;
+  if (r.agg === "last") return r.quarterly[r.quarterly.length - 1];
+  return r.quarterly.every((v) => v != null) ? r.quarterly.reduce<number>((s, v) => s + (v ?? 0), 0) : null;
 }
 
 export type Axis = { lo: number; hi: number; step: number };
@@ -55,5 +66,6 @@ export function ticks(axis: Axis, label: (v: number) => string): Tick[] {
 /** "20B", "2.5B", "500M": axis labels for USD millions. */
 export function millionsLabel(v: number): string {
   if (v === 0) return "0";
-  return v >= 1000 ? `${+(v / 1000).toFixed(1)}B` : `${v}M`;
+  if (v < 0) return MINUS + millionsLabel(-v);
+  return v >= 1000 ? `${+(v / 1000).toFixed(1)}B` : `${+v.toFixed(2)}M`;
 }
