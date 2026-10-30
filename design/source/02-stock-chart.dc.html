@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Compound — NVDA chart</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#E7E7EA}
+a{color:#111113}a:hover{color:#2F5FCC}
+:focus-visible{outline:2px solid #2F5FCC;outline-offset:2px}
+</style>
+</helmet>
+<div style="box-sizing: border-box; min-height: 100vh; padding: 14px; background: #E7E7EA; font-family: Outfit, system-ui, sans-serif; font-variant-numeric: tabular-nums; color: #111113; font-size: 14px; line-height: 1.4">
+<div style="max-width: 1600px; min-height: calc(100vh - 28px); margin: 0 auto; box-sizing: border-box; background: #F7F7F8; border: 1px solid #FFFFFF; border-radius: 32px; box-shadow: 0 40px 80px -40px rgba(17,17,19,0.28), 0 2px 6px rgba(17,17,19,0.04); padding: 16px 16px 0; display: flex; flex-direction: column; gap: 14px; overflow: hidden">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 0 4px">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 48px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 48px; height: 48px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #D4D4D8; display: inline-flex; align-items: center; justify-content: center">
+<svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="#111113"></circle><path d="M6.5 17.5c3.8 0 5.5-2 6.6-4.6C14.2 10.3 15.8 8.2 19 8.2" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path><circle cx="19" cy="8.2" r="2" fill="#4DB07F"></circle></svg>
+</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2">
+<span style="font-size: 19px; font-weight: 600; letter-spacing: -0.01em">Compound</span>
+<span style="font-size: 13px; color: #6E6E76">research that compounds</span>
+</span>
+</a>
+<span aria-hidden="true" style="width: 1px; height: 32px; background: rgba(17,17,19,0.1)"></span>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #3F3F46">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7.5V12l3 2"></path></svg>
+Market open · 11:51 ET</span>
+<button type="button" aria-label="Search tickers, companies and notes — current symbol NVDA" style="flex: 1 1 340px; max-width: 520px; margin: 0 auto; display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 10px 30px -14px rgba(17,17,19,0.14); font-family: inherit; color: #111113; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg>
+<span style="flex: 1; display: flex; flex-direction: column; align-items: center; line-height: 1.25">
+<span style="font-size: 15px; font-weight: 500">NVDA 188.42 <span style="color: #1A7F4E">+3.95 (+2.14%)</span></span>
+<span style="font-size: 12px; color: #6E6E76">Oct 30, 2026 · 11:51:04 AM</span>
+</span>
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"></path></svg>
+</button>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 22px; margin-left: auto">
+<div style="display: flex; flex-direction: column; line-height: 1.3">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500">6,812.45 <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 11px; font-weight: 600">+0.38%</span></span>
+<span style="font-size: 12px; color: #6E6E76">S&amp;P 500, USD</span>
+</div>
+<div style="display: flex; flex-direction: column; line-height: 1.3">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500">25,410.20 <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 11px; font-weight: 600">+0.71%</span></span>
+<span style="font-size: 12px; color: #6E6E76">Nasdaq 100, USD</span>
+</div>
+<button type="button" aria-label="Account menu" style="display: inline-flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px 0 5px; border-radius: 999px; border: 0; background: #1C1C1F; color: #FFFFFF; cursor: pointer; box-shadow: 0 10px 24px -12px rgba(17,17,19,0.5)">
+<span style="width: 42px; height: 42px; border-radius: 50%; background: #3A3A40; display: inline-flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8a4 4 0 1 0 0 8zM4.5 20.5c1.4-3.6 4.2-5.5 7.5-5.5s6.1 1.9 7.5 5.5"></path></svg></span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 8h14M5 12h14M5 16h14"></path></svg>
+</button>
+</div>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+
+<main aria-label="NVIDIA chart" style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px">
+<span style="display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px 0 5px; border-radius: 999px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.05)">
+<span style="width: 34px; height: 34px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600">N</span>
+<h1 style="margin: 0; font-size: 16px; font-weight: 500">NVIDIA <span style="color: #6E6E76">·</span> Nasdaq</h1>
+<span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 12px; font-weight: 600">+2.14%</span>
+</span>
+<a href="Notes.dc.html" style="display: inline-flex; align-items: center; height: 44px; padding: 0 20px; box-sizing: border-box; border-radius: 999px; background: #5E5E66; color: #FFFFFF; font-size: 15px; font-weight: 500; text-decoration: none">Add note</a>
+<button type="button" onClick="{{toggleWatch}}" aria-pressed="{{watching}}" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 999px; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer; border: 1px solid {{watchBorder}}; background: {{watchBg}}; color: {{watchFg}}">
+<svg width="17" height="17" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" fill="{{starFill}}" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"></path></svg>{{watchLabel}}</button>
+<span style="font-size: 15px; color: #3F3F46; padding-left: 4px; word-spacing: 2px">{{ohlc}}</span>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<div role="group" aria-label="Time range" style="display: flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 999px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.05)">
+<sc-for list="{{tfs}}" as="t" hint-placeholder-count="6">
+<button type="button" onClick="{{t.pick}}" aria-pressed="{{t.on}}" style="min-width: 44px; height: 38px; padding: 0 12px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; background: {{t.bg}}; color: {{t.fg}}">{{t.label}}</button>
+</sc-for>
+</div>
+<div role="group" aria-label="Chart type" style="display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.05)">
+<sc-for list="{{ctypes}}" as="c" hint-placeholder-count="2">
+<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.on}}" aria-label="{{c.label}}" style="width: 44px; height: 38px; padding: 0; border: 0; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; background: {{c.bg}}; color: {{c.fg}}"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.icon}}"></path></svg></button>
+</sc-for>
+</div>
+<button type="button" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); font-family: inherit; font-size: 14px; color: #111113; cursor: pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 17l5-5 4 3 7-8M15 7h5v5"></path></svg>Compare</button>
+<button type="button" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); font-family: inherit; font-size: 14px; color: #111113; cursor: pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 12h3l2-6 4 12 2-6h5"></path></svg>Indicators</button>
+<button type="button" aria-label="Chart layers" style="width: 44px; height: 44px; padding: 0; border-radius: 12px; border: 0; background: rgba(17,17,19,0.05); color: #3F3F46; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg></button>
+<span style="flex: 1"></span>
+<span style="display: inline-flex; gap: 2px; color: #55555C">
+<button type="button" aria-label="Save snapshot" style="width: 40px; height: 40px; padding: 0; border: 0; border-radius: 12px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z"></path></svg></button>
+<button type="button" aria-label="Full screen" style="width: 40px; height: 40px; padding: 0; border: 0; border-radius: 12px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"></path></svg></button>
+<button type="button" aria-label="Chart settings" style="width: 40px; height: 40px; padding: 0; border: 0; border-radius: 12px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 5v4M9 15v4"></path></svg></button>
+</span>
+</div>
+
+<div style="position: relative; height: 516px">
+<sc-for list="{{ticks}}" as="t" hint-placeholder-count="7">
+<div style="position: absolute; left: 0; right: 0; top: {{t.top}}%; display: flex; align-items: center; transform: translateY(-50%)">
+<span style="flex: 1; border-top: 1px solid rgba(17,17,19,0.05)"></span>
+<span style="width: 76px; box-sizing: border-box; padding-left: 14px; font-size: 13px; color: #3F3F46">{{t.label}}</span>
+</div>
+</sc-for>
+<div style="position: absolute; left: 0; top: 0; bottom: 0; right: 76px">
+<sc-for list="{{vlines}}" as="m" hint-placeholder-count="5">
+<span style="position: absolute; top: 0; bottom: 0; left: {{m.left}}%; border-left: 1px solid rgba(17,17,19,0.05)"></span>
+</sc-for>
+<svg viewBox="0 0 1000 300" preserveAspectRatio="none" role="img" aria-label="{{chartLabel}}" style="position: absolute; inset: 0; width: 100%; height: 100%">
+<path d="{{soxD}}" fill="none" stroke="#9A9AA2" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+<path d="{{spxD}}" fill="none" stroke="#A033E8" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+<path d="{{s50}}" fill="none" stroke="#7FA6F2" stroke-width="1.4" stroke-dasharray="2 4" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+<path d="{{area}}" fill="rgba(17,17,19,0.05)"></path>
+<path d="{{lineD}}" fill="none" stroke="#111113" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+<path d="{{upW}}" fill="none" stroke="{{upColor}}" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>
+<path d="{{dnW}}" fill="none" stroke="{{downColor}}" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>
+<path d="{{upB}}" fill="{{upColor}}"></path>
+<path d="{{dnB}}" fill="{{downColor}}"></path>
+</svg>
+<sc-if value="{{showAlert}}" hint-placeholder-val="{{ true }}">
+<span style="position: absolute; left: 0; right: 0; top: {{alertTop}}%; border-top: 1.5px dashed rgba(229,72,77,0.7)"></span>
+</sc-if>
+<span style="position: absolute; left: 0; right: 0; top: {{lastTop}}%; border-top: 1px dotted rgba(17,17,19,0.35)"></span>
+<span style="position: absolute; top: 0; bottom: 0; left: {{crossLeft}}%; border-left: 1px dashed #111113"></span>
+<span style="position: absolute; left: 0; right: 0; top: {{crossTop}}%; border-top: 1px dashed #111113"></span>
+<span style="position: absolute; left: {{crossLeft}}%; top: {{crossTop}}%; width: 18px; height: 18px; margin: -9px 0 0 -9px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #111113; background: rgba(255,255,255,0.75); display: flex; align-items: center; justify-content: center"><span style="width: 4px; height: 4px; border-radius: 50%; background: #111113"></span></span>
+
+<div style="position: absolute; left: 4px; top: 6px; display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{legend}}" as="l" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: {{l.textColor}}">
+<span style="width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #FFFFFF; background: {{l.dot}}">{{l.badge}}</span>
+<span style="font-weight: 500">{{l.sym}}</span><span style="color: #6E6E76">·</span><span style="color: #55555C">{{l.name}}</span>
+<span style="font-weight: 500">{{l.value}}</span>
+<span style="color: {{l.chgColor}}">{{l.chg}}</span>
+<button type="button" onClick="{{l.pick}}" aria-pressed="{{l.on}}" aria-label="{{l.aria}}" style="width: 32px; height: 32px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: #8A8A92; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{l.eye}}"></path></svg></button>
+</div>
+</sc-for>
+</div>
+
+<div role="toolbar" aria-label="Drawing tools" style="position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 999px; background: rgba(255,255,255,0.5); backdrop-filter: blur(18px) saturate(1.4); border: 1px solid rgba(255,255,255,0.85); box-shadow: 0 12px 36px -10px rgba(17,17,19,0.22)">
+<sc-for list="{{tools}}" as="t" hint-placeholder-count="6">
+<button type="button" onClick="{{t.pick}}" aria-pressed="{{t.on}}" aria-label="{{t.label}}" style="width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #111113; background: {{t.bg}}; box-shadow: {{t.shadow}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.icon}}"></path></svg></button>
+</sc-for>
+</div>
+</div>
+
+<span style="position: absolute; right: 0; top: {{lastTop}}%; transform: translateY(-50%); display: inline-flex; border-radius: 6px; overflow: hidden; font-size: 12px; font-weight: 500; color: #FFFFFF"><span style="padding: 3px 6px; background: #3A3A40">NVDA</span><span style="padding: 3px 7px; background: #111113">188.42</span></span>
+<sc-for list="{{badges}}" as="b" hint-placeholder-count="2">
+<span style="position: absolute; right: 0; top: {{b.top}}%; transform: translateY(-50%); display: inline-flex; border-radius: 6px; overflow: hidden; font-size: 12px; font-weight: 500; color: #FFFFFF; background: {{b.bg}}"><span style="padding: 3px 6px; background: rgba(255,255,255,0.18)">{{b.sym}}</span><span style="padding: 3px 7px">{{b.value}}</span></span>
+</sc-for>
+<sc-if value="{{showAlert}}" hint-placeholder-val="{{ true }}">
+<span style="position: absolute; right: 0; top: {{alertTop}}%; transform: translateY(-50%); display: inline-flex; border-radius: 6px; overflow: hidden; font-size: 12px; font-weight: 500; color: #FFFFFF; background: #D93C42"><span style="padding: 3px 6px; background: rgba(255,255,255,0.2)">Alert</span><span style="padding: 3px 7px">175.00</span></span>
+</sc-if>
+<span style="position: absolute; right: 0; top: {{crossTop}}%; transform: translateY(-50%); display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px 0 4px; box-sizing: border-box; border-radius: 999px; border: 1px solid #111113; background: #FFFFFF; font-size: 12px; font-weight: 500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 4a8 8 0 1 0 0 16a8 8 0 1 0 0-16zM12 8v8M8 12h8"></path></svg>{{crossVal}}</span>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<sc-for list="{{chips}}" as="c" hint-placeholder-count="4">
+<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.on}}" style="display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 999px; font-family: inherit; font-size: 15px; cursor: pointer; border: 1px solid {{c.border}}; background: {{c.bg}}; color: {{c.fg}}; box-shadow: {{c.shadow}}">
+<span style="width: 7px; height: 7px; border-radius: 50%; background: {{c.dot}}"></span>{{c.label}}
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.eye}}"></path></svg>
+</button>
+</sc-for>
+<span style="flex: 1"></span>
+<span style="font-size: 12px; color: #6E6E76">Last tick Oct 30, 2026 at 11:51 AM</span>
+</div>
+
+<sc-if value="{{vol}}" hint-placeholder-val="{{ true }}">
+<div style="position: relative; height: 56px">
+<svg viewBox="0 0 1000 70" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: calc(100% - 76px); height: 56px"><path d="{{volD}}" fill="#D4D4D9"></path><path d="{{volLast}}" fill="#8E8E96"></path><path d="{{volCross}}" fill="#111113"></path></svg>
+<span style="position: absolute; right: 0; top: 10px; padding: 3px 7px; border-radius: 6px; background: #111113; color: #FFFFFF; font-size: 12px; font-weight: 500">162.4M</span>
+</div>
+</sc-if>
+
+<div style="position: relative; height: 38px; margin-right: 76px; border-bottom: 1px solid rgba(17,17,19,0.08)">
+<svg viewBox="0 0 1000 10" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 8px"><path d="{{tickD}}" fill="none" stroke="#B4B4BA" stroke-width="1" vector-effect="non-scaling-stroke"></path></svg>
+<span style="position: absolute; top: 0; bottom: 0; left: {{crossLeft}}%; border-left: 1px dashed #111113"></span>
+<sc-for list="{{tlabels}}" as="l" hint-placeholder-count="6">
+<span style="position: absolute; top: 6px; left: {{l.left}}%; transform: translateX(-50%); font-size: 13px; color: #3F3F46; white-space: nowrap">{{l.text}}</span>
+</sc-for>
+<sc-for list="{{events}}" as="e" hint-placeholder-count="4">
+<span title="{{e.label}}" style="position: absolute; top: 4px; left: {{e.left}}%; transform: translateX(-50%); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: {{e.bg}}; color: {{e.fg}}">{{e.letter}}</span>
+</sc-for>
+<sc-for list="{{bells}}" as="b" hint-placeholder-count="2">
+<span title="{{b.label}}" style="position: absolute; top: 6px; left: {{b.left}}%; transform: translateX(-50%); color: #8A8A92; display: flex"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"></path></svg></span>
+</sc-for>
+<span style="position: absolute; top: 4px; left: {{crossLeft}}%; transform: translateX(-50%); padding: 3px 10px; border-radius: 999px; background: #111113; color: #FFFFFF; font-size: 12px; font-weight: 500; white-space: nowrap">{{crossDate}}</span>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 4px; margin-top: auto; padding-top: 4px">
+<button type="button" aria-label="Open another ticker" style="width: 48px; height: 48px; padding: 0; border: 0; background: transparent; color: #3F3F46; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+<sc-for list="{{openTabs}}" as="o" hint-placeholder-count="4">
+<a href="Stock.dc.html" aria-current="{{o.current}}" style="display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 18px; box-sizing: border-box; border-radius: 16px 16px 0 0; text-decoration: none; font-size: 15px; background: {{o.bg}}; color: {{o.fg}}; box-shadow: {{o.shadow}}"><span style="width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #FFFFFF; background: {{o.logoBg}}">{{o.letter}}</span>{{o.name}}</a>
+</sc-for>
+</div>
+</main>
+
+<aside aria-label="Watchlist, alerts and details" style="flex: 1 1 330px; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding-bottom: 16px">
+
+<section aria-labelledby="wl-h" style="border-radius: 24px; padding: 16px 18px 6px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px">
+<h2 id="wl-h" style="margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -0.01em">Watchlist</h2>
+<span style="display: inline-flex; color: #55555C">
+<button type="button" aria-label="Add symbol" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+<button type="button" aria-label="Open in new window" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-8 8M18 14v6H4V6h6"></path></svg></button>
+<button type="button" aria-label="Watchlist settings" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 5v4M9 15v4"></path></svg></button>
+</span>
+</div>
+<div role="table" aria-label="Watchlist">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 64px 64px; gap: 8px; padding: 4px 0 8px; font-size: 13px; color: #6E6E76">
+<span role="columnheader">Symbol</span><span role="columnheader" style="text-align: right">Last</span><span role="columnheader" style="text-align: right">Change</span><span role="columnheader" style="text-align: right">Chg %</span>
+</div>
+<sc-for list="{{pinned}}" as="w" hint-placeholder-count="5">
+<a href="Stock.dc.html" role="row" style="display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 64px 64px; gap: 8px; align-items: center; min-height: 33px; text-decoration: none; color: #111113; font-size: 14px">
+<span role="cell" style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: {{w.badgeSize}}px; font-weight: 600; background: {{w.badgeBg}}">{{w.badge}}</span>{{w.sym}}</span>
+<span role="cell" style="text-align: right">{{w.last}}</span>
+<span role="cell" style="text-align: right; color: {{w.color}}">{{w.chg}}</span>
+<span role="cell" style="text-align: right; color: {{w.color}}">{{w.pct}}</span>
+</a>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; margin-top: 6px; border-top: 1px solid rgba(17,17,19,0.06)">
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+<div>
+<button type="button" onClick="{{g.pick}}" aria-expanded="{{g.open}}" style="width: 100%; display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 4px; border: 0; background: transparent; font-family: inherit; font-size: 15px; color: #111113; cursor: pointer; text-align: left">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: {{g.rot}}"><path d="M9 6l6 6-6 6"></path></svg>
+<span style="flex: 1">{{g.name}}</span><span style="font-size: 13px; color: #6E6E76">{{g.count}}</span>
+</button>
+<sc-if value="{{g.open}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 0 0 8px 26px">
+<sc-for list="{{g.items}}" as="w" hint-placeholder-count="3">
+<a href="Stock.dc.html" style="display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) 64px; gap: 8px; align-items: center; min-height: 34px; text-decoration: none; color: #111113; font-size: 14px">
+<span>{{w.sym}}</span><span style="text-align: right">{{w.last}}</span><span style="text-align: right; color: {{w.color}}">{{w.pct}}</span>
+</a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="Alerts" style="border-radius: 24px; padding: 12px 18px 8px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div role="group" aria-label="Alert views" style="display: flex; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(17,17,19,0.05)">
+<sc-for list="{{alertTabs}}" as="t" hint-placeholder-count="3">
+<button type="button" onClick="{{t.pick}}" aria-pressed="{{t.on}}" style="flex: 1; height: 40px; border: 0; border-radius: 999px; font-family: inherit; font-size: 15px; cursor: pointer; background: {{t.bg}}; color: {{t.fg}}; box-shadow: {{t.shadow}}">{{t.label}}</button>
+</sc-for>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; margin: 4px 0 0; color: #55555C">
+<button type="button" aria-label="New alert" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+<span style="display: inline-flex">
+<button type="button" aria-label="Search alerts" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg></button>
+<button type="button" aria-label="Sort alerts" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M4 17l3 3 3-3M14 6h6M14 12h4M14 18h2"></path></svg></button>
+<button type="button" aria-label="Alert settings" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 5v4M9 15v4"></path></svg></button>
+</span>
+</div>
+<sc-for list="{{alerts}}" as="a" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 7px 0">
+<span style="font-size: 15px">{{a.text}}</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #3F3F46">
+<span style="width: 20px; height: 20px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600">{{a.letter}}</span>
+{{a.scope}}<span style="color: #A1A1A8">·</span><span style="color: {{a.stateColor}}">{{a.state}}</span>
+</span>
+</div>
+</sc-for>
+</section>
+
+<section aria-labelledby="tk-h" style="border-radius: 24px; padding: 16px 18px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16); display: flex; flex-direction: column; gap: 9px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 10px">
+<span style="width: 34px; height: 34px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600">N</span>
+<h2 id="tk-h" style="margin: 0; font-size: 22px; font-weight: 500">NVDA</h2>
+</span>
+<span style="display: inline-flex; color: #55555C">
+<a href="Financials.dc.html" aria-label="Open financials" style="width: 36px; height: 36px; border-radius: 10px; color: inherit; display: inline-flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 20h16M7 16v-5M12 16V6M17 16V9"></path></svg></a>
+<a href="Notes.dc.html" aria-label="Open research note" style="width: 36px; height: 36px; border-radius: 10px; color: inherit; display: inline-flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 16h5"></path></svg></a>
+<a href="Notes.dc.html" aria-label="Edit thesis" style="width: 36px; height: 36px; border-radius: 10px; color: inherit; display: inline-flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"></path></svg></a>
+</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 16px">NVIDIA Corp <span style="color: #6E6E76">↗ ·</span> Nasdaq</span>
+<span style="font-size: 13px; color: #55555C">Semiconductors · Technology</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px"><span style="font-size: 28px; font-weight: 400; letter-spacing: -0.02em">188.42</span><span style="font-size: 14px">USD</span><span style="font-size: 18px; color: #1A7F4E">+3.95 (+2.14%)</span></span>
+<span style="font-size: 13px; color: #6E6E76">Last update at 11:51 AM, UTC−4</span>
+</div>
+<span aria-hidden="true" style="height: 1px; background: rgba(17,17,19,0.07)"></span>
+<a href="Notes.dc.html" style="display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: #111113">
+<span style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px"><span style="font-size: 24px; font-weight: 400; letter-spacing: -0.02em">210.00</span><span style="font-size: 14px">USD</span><span style="font-size: 17px; color: #1A7F4E">+11.5% upside</span></span>
+<span style="align-self: flex-start; display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 6px; background: #111113; color: #FFFFFF; font-size: 12px; font-weight: 500">My fair value · base case</span>
+</a>
+</section>
+</aside>
+
+<nav aria-label="Main" style="flex: 1 1 60px; display: flex; flex-wrap: wrap; align-content: flex-start; justify-content: center; gap: 20px; padding-bottom: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 60px; flex-direction: column">
+<button type="button" aria-label="Notifications" style="position: relative; width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"></path></svg>
+<span style="position: absolute; top: 14px; right: 15px; width: 8px; height: 8px; border-radius: 50%; background: #E5484D; border: 2px solid #FFFFFF"></span>
+</button>
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="5">
+<a href="{{n.href}}" aria-current="{{n.current}}" aria-label="{{n.label}}" title="{{n.label}}" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid {{n.border}}; background: {{n.bg}}; backdrop-filter: blur(20px); box-shadow: {{n.shadow}}; color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+</a>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 60px; flex-direction: column">
+<sc-for list="{{nav2}}" as="n" hint-placeholder-count="4">
+<button type="button" aria-label="{{n.label}}" title="{{n.label}}" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+</button>
+</sc-for>
+</div>
+</nav>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"glass":{"editor":"range","min":0.35,"max":1,"step":0.01,"default":0.72,"section":"Look"},"upColor":{"editor":"color","default":"#4DB07F","options":["#4DB07F","#2A855A","#3B6FE0"],"section":"Candles"},"downColor":{"editor":"color","default":"#EA5B52","options":["#EA5B52","#C2362D","#F0A23B"],"section":"Candles"},"$preview":{"width":1512,"height":982}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tf: '6M', ctype: 'candles', sma50: true, sox: true, spx: true, vol: true, watching: true, alertTab: 'Alerts', tool: 'select', open: {} };
+  }
+  rng(seed) {
+    var s = seed >>> 0;
+    return function () {
+      s = (s + 0x6D2B79F5) >>> 0;
+      var t = s;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  data() {
+    if (this._d) return this._d;
+    var r = this.rng(7), N = 520, c = [], noise = 0, i;
+    for (i = 0; i < N; i++) {
+      var t = i / (N - 1);
+      var base = 62 + 126 * Math.pow(t, 1.7);
+      var dip = -16 * Math.exp(-Math.pow((t - 0.83) / 0.045, 2));
+      var wave = 5 * Math.sin(t * 34) + 2.2 * Math.sin(t * 91);
+      noise = noise * 0.86 + (r() - 0.5) * 3.2;
+      c.push(base + dip + wave + noise);
+    }
+    var k = 188.42 / c[N - 1], bars = [];
+    for (i = 0; i < N; i++) {
+      var cl = c[i] * k, op = i ? c[i - 1] * k * (1 + (r() - 0.5) * 0.01) : cl;
+      bars.push({ o: op, h: Math.max(op, cl) * (1 + r() * 0.013), l: Math.min(op, cl) * (1 - r() * 0.013), c: cl, v: 110 + r() * 95 });
+    }
+    var pv = bars[N - 2]; pv.c = 184.47; pv.h = Math.max(pv.h, pv.c, pv.o); pv.l = Math.min(pv.l, pv.c, pv.o);
+    var last = bars[N - 1]; last.o = 185.10; last.h = 189.30; last.l = 184.62; last.c = 188.42; last.v = 162.4;
+    var E = [], D = [];
+    for (i = N - 48; i > 0; i -= 63) { E.push(i); if (i + 1 < N) bars[i + 1].v *= 1.9; }
+    for (i = N - 30; i > 0; i -= 63) D.push(i);
+    var rs = this.rng(99), sox = [], spx = [], a = 100, b = 100;
+    for (i = 0; i < N; i++) { a *= 1 + 0.0011 + (rs() - 0.5) * 0.026; b *= 1 + 0.0005 + (rs() - 0.5) * 0.011; sox.push(a); spx.push(b); }
+    var dates = new Array(N), dt = new Date(2026, 9, 30);
+    for (i = N - 1; i >= 0; i--) {
+      dates[i] = new Date(dt.getTime());
+      do { dt.setDate(dt.getDate() - 1); } while (dt.getDay() === 0 || dt.getDay() === 6);
+    }
+    var s = 0, s50 = [];
+    for (i = 0; i < N; i++) { s += bars[i].c; if (i >= 50) s -= bars[i - 50].c; s50.push(i >= 49 ? s / 50 : null); }
+    this._d = { N: N, bars: bars, dates: dates, s50: s50, sox: sox, spx: spx, E: E, D: D };
+    return this._d;
+  }
+  seg(keys, current, key, soft) {
+    var self = this;
+    return keys.map(function (k) {
+      var on = current === k;
+      return {
+        label: k, on: on,
+        bg: on ? (soft ? '#FFFFFF' : '#111113') : 'transparent', fg: on ? (soft ? '#111113' : '#FFFFFF') : '#55555C',
+        shadow: on && soft ? '0 1px 3px rgba(17,17,19,0.1)' : 'none',
+        pick: function () { var o = {}; o[key] = k; self.setState(o); }
+      };
+    });
+  }
+  renderVals() {
+    var self = this, st = this.state, d = this.data(), N = d.N, bars = d.bars, dates = d.dates, j;
+    var glass = this.props.glass == null ? 0.72 : this.props.glass;
+    var up = this.props.upColor || '#4DB07F', down = this.props.downColor || '#EA5B52';
+    var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    var fd = function (x) { return MON[x.getMonth()] + ' ' + x.getDate(); };
+    var f2 = function (v) { return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+    var NONE = 'M0 0';
+    var EYE = 'M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12zM12 9.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 1 0 0-5z';
+    var EYE_OFF = 'M3 3l18 18M10.6 6.1A9.6 9.6 0 0 1 12 6c6 0 9.5 6 9.5 6a16 16 0 0 1-2.6 3.3M6.4 7.6A16 16 0 0 0 2.5 12s3.5 6 9.5 6a9 9 0 0 0 4.2-1M9.9 10a2.5 2.5 0 0 0 3.5 3.6';
+
+    var NAV = [
+      ['Overview', 'Main.dc.html', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z'],
+      ['Chart', 'Stock.dc.html', 'M7 3v3M7 15v6M5 6h4v9H5zM17 3v5M17 17v4M15 8h4v9h-4z'],
+      ['Financials', 'Financials.dc.html', 'M4 20h16M7 16v-5M12 16V6M17 16V9'],
+      ['Screener', 'Screener.dc.html', 'M4 5h16l-6 7.5V19l-4 2v-8.5z'],
+      ['Research notes', 'Notes.dc.html', 'M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 16h5']
+    ];
+    var nav = NAV.map(function (x) {
+      var on = x[0] === 'Chart';
+      return { label: x[0], href: x[1], icon: x[2], current: on ? 'page' : 'false', bg: on ? 'rgba(17,17,19,0.07)' : 'rgba(255,255,255,' + glass + ')', border: on ? 'transparent' : 'rgba(255,255,255,0.95)', shadow: on ? 'none' : '0 1px 2px rgba(17,17,19,0.05)' };
+    });
+    var nav2 = [
+      ['Settings', 'M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6zM19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z'],
+      ['Ask about this chart', 'M4 5h16v11H9l-5 4z'],
+      ['Learning library', 'M4 5c3-1 5-1 8 1v14c-3-2-5-2-8-1zM20 5c-3-1-5-1-8 1v14c3-2 5-2 8-1z'],
+      ['Custom formulas', 'M14 4h-2a2 2 0 0 0-2 2v12a2 2 0 0 1-2 2H6M7 11h6M15 13l4 5M19 13l-4 5'],
+      ['Favorites', 'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z']
+    ].map(function (x) { return { label: x[0], icon: x[1] }; });
+
+    var ytd = 0; for (j = N - 1; j >= 0 && dates[j].getFullYear() === 2026; j--) ytd++;
+    var TF = { '1M': 22, '3M': 64, '6M': 126, 'YTD': ytd, '1Y': 252, '2Y': 500 };
+    var tfs = this.seg(['1M', '3M', '6M', 'YTD', '1Y', '2Y'], st.tf, 'tf');
+    var n = TF[st.tf], start = N - n;
+
+    var rebase = function (arr) { var b0 = bars[start].c / arr[start], out = []; for (var q = 0; q < n; q++) out.push(arr[start + q] * b0); return out; };
+    var soxV = rebase(d.sox), spxV = rebase(d.spx);
+
+    var lo = Infinity, hi = -Infinity;
+    for (j = start; j < N; j++) { lo = Math.min(lo, bars[j].l); hi = Math.max(hi, bars[j].h); }
+    [[st.sox, soxV], [st.spx, spxV]].forEach(function (p) { if (p[0]) p[1].forEach(function (v) { lo = Math.min(lo, v); hi = Math.max(hi, v); }); });
+    var padv = (hi - lo) * 0.1, ymin = lo - padv * 1.8, ymax = hi + padv * 1.2, span = ymax - ymin;
+    var Yn = function (v) { return 300 * (1 - (v - ymin) / span); };
+    var Y = function (v) { return Yn(v).toFixed(2); };
+    var W = 1000, slot = W / n, bw = Math.max(0.9, slot * 0.6);
+    var upB = '', dnB = '', upW = '', dnW = '', ln = '';
+    for (j = 0; j < n; j++) {
+      var b = bars[start + j], x = j * slot + (slot - bw) / 2, cx = (j * slot + slot / 2).toFixed(2);
+      var yt = Yn(Math.max(b.o, b.c)), yb = Yn(Math.min(b.o, b.c));
+      if (yb - yt < 0.9) yb = yt + 0.9;
+      var body = 'M' + x.toFixed(2) + ' ' + yt.toFixed(2) + 'h' + bw.toFixed(2) + 'V' + yb.toFixed(2) + 'h' + (-bw).toFixed(2) + 'Z';
+      var wick = 'M' + cx + ' ' + Y(b.h) + 'V' + Y(b.l);
+      if (b.c >= b.o) { upB += body; upW += wick; } else { dnB += body; dnW += wick; }
+      ln += (j ? 'L' : 'M') + cx + ' ' + Y(b.c);
+    }
+    var candles = st.ctype === 'candles';
+    var area = candles ? NONE : ln + 'L' + (W - slot / 2).toFixed(2) + ' 300L' + (slot / 2).toFixed(2) + ' 300Z';
+    var path = function (vals) { var p = ''; vals.forEach(function (v, q) { p += (q ? 'L' : 'M') + (q * slot + slot / 2).toFixed(2) + ' ' + Y(v); }); return p || NONE; };
+    var s50 = NONE;
+    if (st.sma50) { var sv = []; for (j = 0; j < n; j++) sv.push(d.s50[start + j]); var p0 = '', started = false; sv.forEach(function (v, q) { if (v == null) return; p0 += (started ? 'L' : 'M') + (q * slot + slot / 2).toFixed(2) + ' ' + Y(v); started = true; }); s50 = p0 || NONE; }
+
+    var raw = span / 8, mag = Math.pow(10, Math.floor(Math.log10(raw))), step = mag * 10, STEPS = [1, 2, 2.5, 5, 10];
+    for (j = 0; j < STEPS.length; j++) { if (Math.abs(STEPS[j] * mag - raw) < Math.abs(step - raw)) step = STEPS[j] * mag; }
+    var ticks = [];
+    for (var v = Math.ceil(ymin / step) * step; v <= ymax; v += step) {
+      var tp = (1 - (v - ymin) / span) * 100;
+      if (tp > 3 && tp < 97) ticks.push({ label: f2(v), top: tp.toFixed(2) });
+    }
+
+    var vmax = 0; for (j = start; j < N; j++) vmax = Math.max(vmax, bars[j].v);
+    var cj = Math.round(n * 0.64), cb = bars[start + cj];
+    var volD = '', volLast = '', volCross = '';
+    for (j = 0; j < n; j++) {
+      var vb = bars[start + j], h = vb.v / vmax * 62, vx = j * slot + (slot - bw) / 2;
+      var rect = 'M' + vx.toFixed(2) + ' ' + (70 - h).toFixed(2) + 'h' + bw.toFixed(2) + 'V70h' + (-bw).toFixed(2) + 'Z';
+      if (j === n - 1) volLast = rect; else if (j === cj) volCross = rect; else volD += rect;
+    }
+
+    var vlines = [], tlabels = [], tickD = '', every = Math.max(1, Math.round(n / 120));
+    for (j = 0; j < n; j += every) { var tx = (j * slot + slot / 2).toFixed(1); tickD += 'M' + tx + ' ' + (j % (every * 5) === 0 ? 2 : 5) + 'V10'; }
+    var pos = function (ix) { return ((ix - start + 0.5) / n * 100); };
+    if (n <= 70) {
+      for (j = 0; j < 6; j++) { var ix = start + Math.round((j + 0.5) * (n - 1) / 6); tlabels.push({ left: pos(ix), text: fd(dates[ix]) }); }
+    } else {
+      var ms = [];
+      for (j = 1; j < n; j++) { if (dates[start + j].getMonth() !== dates[start + j - 1].getMonth()) ms.push(j); }
+      var ev = Math.ceil(ms.length / 9);
+      ms.forEach(function (q, k) {
+        var dd = dates[start + q];
+        vlines.push({ left: ((q + 0.5) / n * 100).toFixed(2) });
+        if (k % ev === 0) tlabels.push({ left: (q + 0.5) / n * 100, text: dd.getMonth() === 0 ? String(dd.getFullYear()) : MON[dd.getMonth()] });
+      });
+    }
+    var crossLeft = (cj + 0.5) / n * 100;
+    var events = [], bells = [];
+    d.E.forEach(function (ix) { if (ix >= start) events.push({ left: pos(ix), letter: 'E', bg: '#F5A524', fg: '#3D2400', label: 'Earnings · ' + fd(dates[ix]) }); });
+    d.D.forEach(function (ix) { if (ix >= start) events.push({ left: pos(ix), letter: 'D', bg: '#3B6FE0', fg: '#FFFFFF', label: 'Dividend · ' + fd(dates[ix]) }); });
+    [N - 12, N - 41, N - 77, N - 104].forEach(function (ix) { if (ix >= start) bells.push({ left: pos(ix), label: 'Alert fired · ' + fd(dates[ix]) }); });
+    var marks = events.concat(bells).map(function (e) { return e.left; }).concat([crossLeft]);
+    tlabels = tlabels.filter(function (l) { return !marks.some(function (m) { return Math.abs(m - l.left) < 3.2; }); });
+    var fix = function (arr) { return arr.map(function (e) { var o = Object.assign({}, e); o.left = (+e.left).toFixed(2); return o; }); };
+    var cd = dates[start + cj];
+
+    var legend = [], badges = [];
+    if (st.sma50) legend.push({ badge: '50', dot: '#7FA6F2', sym: 'SMA', name: '50-day', value: f2(d.s50[N - 1]), chg: '', chgColor: '#55555C', textColor: '#111113' });
+    var CMP = [['sox', 'SOX', 'Semis index', '6,412.30', '+89.80 (+1.42%)', '#8A8A92', '30', soxV], ['spx', 'SPX', 'S&P 500', '6,812.45', '+25.78 (+0.38%)', '#A033E8', '500', spxV]];
+    CMP.forEach(function (c) {
+      var on = !!st[c[0]];
+      legend.push({ badge: c[6], dot: on ? c[5] : '#C4C4CA', sym: c[1], name: c[2], value: c[3], chg: c[4], chgColor: on ? '#1A7F4E' : '#8A8A92', textColor: on ? '#111113' : '#8A8A92', on: on, aria: (on ? 'Hide ' : 'Show ') + c[1], eye: on ? EYE_OFF : EYE, pick: function () { var o = {}; o[c[0]] = !self.state[c[0]]; self.setState(o); } });
+      if (on) { var lastV = c[7][n - 1]; badges.push({ sym: c[1], value: f2(lastV), bg: c[5], top: (Yn(lastV) / 3).toFixed(2) }); }
+    });
+    legend.forEach(function (l) { if (!l.pick) { l.pick = function () { self.setState({ sma50: !self.state.sma50 }); }; l.on = true; l.aria = 'Hide SMA 50'; l.eye = EYE_OFF; } });
+
+    var chipDefs = [['Volume', 'vol', '#111113'], ['NVDA', null, '#111113'], ['SMA 50', 'sma50', '#7FA6F2'], ['SOX', 'sox', '#8A8A92'], ['SPX', 'spx', '#A033E8']];
+    var chips = chipDefs.map(function (c) {
+      var on = c[1] ? !!st[c[1]] : true;
+      return {
+        label: c[0], on: on, dot: on ? c[2] : '#C4C4CA', eye: c[1] ? (on ? EYE : EYE_OFF) : 'M0 0',
+        bg: on ? 'rgba(255,255,255,' + glass + ')' : 'rgba(17,17,19,0.04)', fg: on ? '#111113' : '#6E6E76', border: on ? 'rgba(255,255,255,0.95)' : 'transparent', shadow: on ? '0 1px 2px rgba(17,17,19,0.05)' : 'none',
+        pick: c[1] ? function () { var o = {}; o[c[1]] = !self.state[c[1]]; self.setState(o); } : function () {}
+      };
+    });
+    var ctypes = [['candles', 'Candlestick chart', 'M7 3v3M7 15v6M5 6h4v9H5zM17 3v5M17 17v4M15 8h4v9h-4z'], ['line', 'Line chart', 'M4 17l5-6 4 3 7-8']].map(function (x) {
+      var on = st.ctype === x[0];
+      return { label: x[1], icon: x[2], on: on, bg: on ? '#111113' : 'transparent', fg: on ? '#FFFFFF' : '#55555C', pick: function () { self.setState({ ctype: x[0] }); } };
+    });
+    var TOOLS = [
+      ['select', 'Pointer', 'M6 3.5l12 8.6-5.4 1.1 3.1 6.4-2.4 1.2-3.1-6.4L6 18.2z'],
+      ['cross', 'Crosshair', 'M12 3v5M12 16v5M3 12h5M16 12h5M12 9.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 1 0 0-5z'],
+      ['line', 'Trend line', 'M6.5 17.5L17.5 6.5M4 17.5a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0M15 6.5a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0'],
+      ['text', 'Text note', 'M5 7V5h14v2M12 5v14M9 19h6'],
+      ['measure', 'Measure', 'M4 8h16M4 12h16M4 16h16M6 20h3'],
+      ['target', 'Price target', 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8z']
+    ];
+    var tools = TOOLS.map(function (t) {
+      var on = st.tool === t[0];
+      return { label: t[1], icon: t[2], on: on, bg: on ? '#FFFFFF' : 'transparent', shadow: on ? '0 2px 10px rgba(17,17,19,0.14)' : 'none', pick: function () { self.setState({ tool: t[0] }); } };
+    });
+
+    var TONE = function (neg) { return neg ? '#C2362D' : '#1A7F4E'; };
+    var PIN = [['NVDA', 'N', '#111113', '188.42', '3.95', '2.14'], ['AVGO', 'A', '#111113', '342.15', '10.03', '3.02'], ['SPX', '500', '#E5484D', '6,812.45', '25.78', '0.38'], ['NDX', '100', '#3B6FE0', '25,410.20', '179.13', '0.71']];
+    var pinned = PIN.map(function (p) {
+      var neg = p[4].charAt(0) === '-';
+      return { sym: p[0], badge: p[1], badgeBg: p[2], badgeSize: p[1].length > 2 ? 8 : p[1].length > 1 ? 9 : 11, last: p[3], chg: (neg ? '−' : '') + p[4].replace('-', ''), pct: (neg ? '−' : '') + p[5].replace('-', '') + '%', color: TONE(neg) };
+    });
+    var GR = [
+      ['g1', 'Semiconductors', [['AMD', '248.10', '-0.84'], ['TSM', '296.40', '1.12'], ['QCOM', '168.25', '0.27'], ['MRVL', '92.60', '1.94']]],
+      ['g2', 'Mega-cap tech', [['AAPL', '254.10', '-0.38'], ['MSFT', '512.66', '0.91'], ['GOOGL', '247.80', '-0.62'], ['META', '731.20', '0.44'], ['AMZN', '226.35', '1.27']]]
+    ];
+    var groups = GR.map(function (g) {
+      var open = !!st.open[g[0]];
+      return {
+        name: g[1], count: String(g[2].length), open: open, rot: open ? 'rotate(90deg)' : 'none',
+        items: g[2].map(function (w) { var neg = w[2].charAt(0) === '-'; return { sym: w[0], last: w[1], pct: (neg ? '−' : '+') + w[2].replace('-', '') + '%', color: TONE(neg) }; }),
+        pick: function () { var o = Object.assign({}, self.state.open); o[g[0]] = !o[g[0]]; self.setState({ open: o }); }
+      };
+    });
+
+    var ALERTS = {
+      Alerts: [['NVDA crossing down 175.00', 'N', 'NVDA, 1D', 'Active', '#1A7F4E'], ['RSI (14) crossing up 70 on NVDA', 'N', 'NVDA, 1D', 'Active', '#1A7F4E'], ['SOX crossing down its 50-day average', 'S', 'SOX, 1D', 'Paused', '#55555C']],
+      History: [['NVDA crossing up 185.00', 'N', 'Today 10:42', 'Triggered', '#9A5B00'], ['AVGO up more than 3% on the day', 'A', 'Today 09:58', 'Triggered', '#9A5B00'], ['NVDA volume above 2× average', 'N', fd(dates[d.E[0] + 1]), 'Triggered', '#9A5B00']],
+      System: [['10-Q filed for NVDA', 'N', fd(dates[d.E[0]]), 'Filing', '#3B5CCC'], ['Earnings date confirmed: Nov 18', 'N', 'Oct 22', 'Calendar', '#3B5CCC'], ['Q2 FY27 call transcript ready', 'N', fd(dates[d.E[0]]), 'Transcript', '#3B5CCC']]
+    };
+    var alerts = ALERTS[st.alertTab].slice(0, 2).map(function (a) { return { text: a[0], letter: a[1], scope: a[2], state: a[3], stateColor: a[4] }; });
+
+    var OT = [['AVGO', 'Broadcom'], ['MSFT', 'Microsoft'], ['COST', 'Costco'], ['NVDA', 'NVIDIA']];
+    var openTabs = OT.map(function (x) {
+      var on = x[0] === 'NVDA';
+      return { name: x[1], letter: x[0].charAt(0), current: on ? 'page' : 'false', logoBg: on ? '#111113' : '#8A8A92', bg: on ? '#FFFFFF' : 'transparent', fg: on ? '#111113' : '#6E6E76', shadow: on ? '0 -6px 16px -10px rgba(17,17,19,0.2)' : 'none' };
+    });
+
+    var lb = bars[N - 1];
+    var tagTops = [Yn(188.42) / 3, Yn(cb.c) / 3].concat(badges.map(function (b) { return +b.top; }));
+    if (175 > ymin && 175 < ymax) tagTops.push(Yn(175) / 3);
+    ticks = ticks.filter(function (t) { return !tagTops.some(function (y) { return Math.abs(y - t.top) < 2.8; }); });
+    return {
+      glass: glass, nav: nav, nav2: nav2, tfs: tfs, ctypes: ctypes, ticks: ticks, vlines: vlines,
+      upColor: up, downColor: down,
+      upB: candles ? upB || NONE : NONE, dnB: candles ? dnB || NONE : NONE, upW: candles ? upW || NONE : NONE, dnW: candles ? dnW || NONE : NONE,
+      lineD: candles ? NONE : ln, area: area, s50: s50,
+      soxD: st.sox ? path(soxV) : NONE, spxD: st.spx ? path(spxV) : NONE,
+      legend: legend, badges: badges, chips: chips, tools: tools,
+      vol: !!st.vol, volD: volD || NONE, volLast: volLast || NONE, volCross: volCross || NONE, tickD: tickD,
+      lastTop: (Yn(188.42) / 3).toFixed(2),
+      showAlert: 175 > ymin && 175 < ymax, alertTop: (Yn(175) / 3).toFixed(2),
+      crossLeft: crossLeft.toFixed(2), crossTop: (Yn(cb.c) / 3).toFixed(2), crossVal: f2(cb.c),
+      crossDate: DAY[cd.getDay()] + ', ' + fd(cd) + " ’" + String(cd.getFullYear()).slice(2),
+      events: fix(events), bells: fix(bells), tlabels: fix(tlabels),
+      chartLabel: 'NVDA ' + (candles ? 'candlestick' : 'line') + ' chart, ' + st.tf + ', ' + fd(dates[start]) + ' to Oct 30, with SOX and S&P 500 overlays',
+      ohlc: 'O ' + f2(lb.o) + '  H ' + f2(lb.h) + '  L ' + f2(lb.l) + '  C ' + f2(lb.c),
+      watching: !!st.watching, watchLabel: st.watching ? 'Watching' : 'Watch',
+      watchBg: st.watching ? '#2A855A' : 'rgba(255,255,255,0.8)', watchFg: st.watching ? '#FFFFFF' : '#111113', watchBorder: st.watching ? '#2A855A' : 'rgba(17,17,19,0.1)', starFill: st.watching ? '#FFFFFF' : 'none',
+      toggleWatch: function () { self.setState({ watching: !self.state.watching }); },
+      pinned: pinned, groups: groups, alertTabs: this.seg(['Alerts', 'History', 'System'], st.alertTab, 'alertTab', true), alerts: alerts, openTabs: openTabs,
+      mini: [{ k: 'Market cap', v: '4.59T' }, { k: 'Forward P/E', v: '27.9' }, { k: 'Revenue growth', v: '+54.6%' }, { k: 'Gross margin', v: '72.9%' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

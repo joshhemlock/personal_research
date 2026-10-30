@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Compound — NVDA financials</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#E7E7EA}
+a{color:#111113}a:hover{color:#2F5FCC}
+:focus-visible{outline:2px solid #2F5FCC;outline-offset:2px}
+</style>
+</helmet>
+<div style="box-sizing: border-box; min-height: 100vh; padding: 14px; background: #E7E7EA; font-family: Outfit, system-ui, sans-serif; font-variant-numeric: tabular-nums; color: #111113; font-size: 14px; line-height: 1.4">
+<div style="max-width: 1600px; min-height: calc(100vh - 28px); margin: 0 auto; box-sizing: border-box; background: #F7F7F8; border: 1px solid #FFFFFF; border-radius: 32px; box-shadow: 0 40px 80px -40px rgba(17,17,19,0.28), 0 2px 6px rgba(17,17,19,0.04); padding: 16px; display: flex; flex-direction: column; gap: 14px; overflow: hidden">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 0 4px">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 48px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 48px; height: 48px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #D4D4D8; display: inline-flex; align-items: center; justify-content: center">
+<svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="#111113"></circle><path d="M6.5 17.5c3.8 0 5.5-2 6.6-4.6C14.2 10.3 15.8 8.2 19 8.2" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path><circle cx="19" cy="8.2" r="2" fill="#4DB07F"></circle></svg>
+</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2">
+<span style="font-size: 19px; font-weight: 600; letter-spacing: -0.01em">Compound</span>
+<span style="font-size: 13px; color: #6E6E76">research that compounds</span>
+</span>
+</a>
+<span aria-hidden="true" style="width: 1px; height: 32px; background: rgba(17,17,19,0.1)"></span>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #3F3F46">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7.5V12l3 2"></path></svg>
+Market open · 11:51 ET</span>
+<button type="button" aria-label="Search tickers, companies and notes — current symbol NVDA" style="flex: 1 1 340px; max-width: 520px; margin: 0 auto; display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 10px 30px -14px rgba(17,17,19,0.14); font-family: inherit; color: #111113; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg>
+<span style="flex: 1; display: flex; flex-direction: column; align-items: center; line-height: 1.25">
+<span style="font-size: 15px; font-weight: 500">NVDA 188.42 <span style="color: #1A7F4E">+3.95 (+2.14%)</span></span>
+<span style="font-size: 12px; color: #6E6E76">Oct 30, 2026 · 11:51:04 AM</span>
+</span>
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"></path></svg>
+</button>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 22px; margin-left: auto">
+<div style="display: flex; flex-direction: column; line-height: 1.3">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500">6,812.45 <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 11px; font-weight: 600">+0.38%</span></span>
+<span style="font-size: 12px; color: #6E6E76">S&amp;P 500, USD</span>
+</div>
+<div style="display: flex; flex-direction: column; line-height: 1.3">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500">25,410.20 <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 11px; font-weight: 600">+0.71%</span></span>
+<span style="font-size: 12px; color: #6E6E76">Nasdaq 100, USD</span>
+</div>
+<button type="button" aria-label="Account menu" style="display: inline-flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px 0 5px; border-radius: 999px; border: 0; background: #1C1C1F; color: #FFFFFF; cursor: pointer; box-shadow: 0 10px 24px -12px rgba(17,17,19,0.5)">
+<span style="width: 42px; height: 42px; border-radius: 50%; background: #3A3A40; display: inline-flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8a4 4 0 1 0 0 8zM4.5 20.5c1.4-3.6 4.2-5.5 7.5-5.5s6.1 1.9 7.5 5.5"></path></svg></span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 8h14M5 12h14M5 16h14"></path></svg>
+</button>
+</div>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+
+<main aria-label="NVIDIA financials" style="flex: 999 1 620px; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding-bottom: 4px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px">
+<span style="display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px 0 5px; border-radius: 999px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.05)">
+<span style="width: 34px; height: 34px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600">N</span>
+<h1 style="margin: 0; font-size: 16px; font-weight: 500">NVIDIA <span style="color: #6E6E76">·</span> Financials</h1>
+<span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 12px; font-weight: 600">+2.14%</span>
+</span>
+<nav aria-label="Stock sections" style="display: flex; flex-wrap: wrap; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(17,17,19,0.05)">
+<a href="Stock.dc.html" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 999px; color: #55555C; font-size: 14px; text-decoration: none">Chart</a>
+<a href="Financials.dc.html" aria-current="page" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 999px; background: #FFFFFF; color: #111113; font-size: 14px; text-decoration: none; box-shadow: 0 1px 3px rgba(17,17,19,0.1)">Financials</a>
+<a href="#earnings" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 999px; color: #55555C; font-size: 14px; text-decoration: none">Earnings</a>
+<a href="Stock.dc.html" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 999px; color: #55555C; font-size: 14px; text-decoration: none">Filings</a>
+<a href="Notes.dc.html" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 999px; color: #55555C; font-size: 14px; text-decoration: none">Notes</a>
+</nav>
+<span style="flex: 1"></span>
+<button type="button" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); font-family: inherit; font-size: 15px; color: #111113; cursor: pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Export</button>
+<a href="Notes.dc.html" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; box-sizing: border-box; border-radius: 999px; background: #111113; color: #FFFFFF; font-size: 15px; font-weight: 500; text-decoration: none">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"></path></svg>Add to thesis</a>
+</div>
+
+<section aria-label="Headline numbers" style="display: flex; flex-wrap: wrap; gap: 10px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<div style="flex: 1 1 160px; min-width: 0; box-sizing: border-box; border-radius: 20px; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -20px rgba(17,17,19,0.16)">
+<span style="font-size: 13px; color: #55555C; white-space: nowrap">{{k.label}}</span>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 8px">
+<div style="display: flex; flex-direction: column; line-height: 1.15">
+<span style="font-size: 24px; font-weight: 400; letter-spacing: -0.02em">{{k.value}}</span>
+<span style="font-size: 12px; color: {{k.color}}; white-space: nowrap">{{k.delta}}</span>
+</div>
+<svg width="60" height="30" viewBox="0 0 72 34" preserveAspectRatio="none" aria-hidden="true"><path d="{{k.bars}}" fill="#D4D4D9"></path><path d="{{k.last}}" fill="#111113"></path></svg>
+</div>
+</div>
+</sc-for>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch">
+
+<section aria-labelledby="rv-h" style="flex: 3 1 420px; min-width: 0; border-radius: 24px; padding: 14px 18px 12px; display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px">
+<h2 id="rv-h" style="margin: 0; font-size: 19px; font-weight: 400; letter-spacing: -0.01em">Revenue &amp; net income</h2>
+<div style="display: flex; gap: 14px; font-size: 13px; color: #3F3F46">
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #111113"></span>Revenue</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #4DB07F"></span>Net income</span>
+</div>
+</div>
+<div style="display: flex; gap: 8px">
+<div style="position: relative; width: 34px; height: 150px; flex: none">
+<sc-for list="{{revTicks}}" as="t" hint-placeholder-count="5">
+<span style="position: absolute; right: 0; top: {{t.top}}%; transform: translateY(-50%); font-size: 12px; color: #6E6E76">{{t.label}}</span>
+</sc-for>
+</div>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<div style="position: relative; height: 150px">
+<sc-for list="{{revTicks}}" as="t" hint-placeholder-count="5">
+<span style="position: absolute; left: 0; right: 0; top: {{t.top}}%; border-top: 1px solid rgba(17,17,19,0.06)"></span>
+</sc-for>
+<svg viewBox="0 0 800 220" preserveAspectRatio="none" role="img" aria-label="Quarterly revenue and net income, Q3 FY25 to Q2 FY27" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{revBars}}" fill="#111113"></path><path d="{{netBars}}" fill="#4DB07F"></path></svg>
+</div>
+<div style="display: flex">
+<sc-for list="{{qLabels}}" as="q" hint-placeholder-count="8">
+<span style="flex: 1; text-align: center; font-size: 12px; color: #6E6E76; line-height: 1.2">{{q.a}}<br>{{q.b}}</span>
+</sc-for>
+</div>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="mg-h" style="flex: 2 1 320px; min-width: 0; border-radius: 24px; padding: 14px 18px 12px; display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px">
+<h2 id="mg-h" style="margin: 0; font-size: 19px; font-weight: 400; letter-spacing: -0.01em">Margins</h2>
+<span style="font-size: 13px; color: #6E6E76">% of revenue</span>
+</div>
+<div style="display: flex; gap: 8px">
+<div style="position: relative; width: 30px; height: 150px; flex: none">
+<sc-for list="{{mTicks}}" as="t" hint-placeholder-count="5">
+<span style="position: absolute; right: 0; top: {{t.top}}%; transform: translateY(-50%); font-size: 12px; color: #6E6E76">{{t.label}}</span>
+</sc-for>
+</div>
+<div style="position: relative; flex: 1; min-width: 0; height: 150px">
+<sc-for list="{{mTicks}}" as="t" hint-placeholder-count="5">
+<span style="position: absolute; left: 0; right: 0; top: {{t.top}}%; border-top: 1px solid rgba(17,17,19,0.06)"></span>
+</sc-for>
+<svg viewBox="0 0 700 220" preserveAspectRatio="none" role="img" aria-label="Gross, operating and net margin by quarter" style="position: absolute; inset: 0; width: 100%; height: 100%">
+<path d="{{gmLine}}" fill="none" stroke="#111113" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+<path d="{{opLine}}" fill="none" stroke="#3B6FE0" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+<path d="{{nmLine}}" fill="none" stroke="#A033E8" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+</svg>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{mLegend}}" as="m" hint-placeholder-count="3">
+<span style="flex: 1 1 80px; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 12px; background: rgba(17,17,19,0.04); font-size: 13px; color: #3F3F46; white-space: nowrap"><span style="width: 12px; height: 3px; border-radius: 2px; background: {{m.color}}"></span>{{m.label}} <span style="margin-left: auto; font-size: 15px; color: #111113">{{m.value}}</span></span>
+</sc-for>
+</div>
+</section>
+</div>
+
+<section aria-labelledby="is-h" style="border-radius: 24px; padding: 12px 18px 8px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px">
+<h2 id="is-h" style="margin: 0; font-size: 19px; font-weight: 400; letter-spacing: -0.01em">Statements</h2>
+<div role="group" aria-label="Statement" style="display: flex; flex-wrap: wrap; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(17,17,19,0.05)">
+<sc-for list="{{stmtTabs}}" as="t" hint-placeholder-count="3">
+<button type="button" onClick="{{t.pick}}" aria-pressed="{{t.on}}" style="height: 32px; padding: 0 14px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; cursor: pointer; background: {{t.bg}}; color: {{t.fg}}; box-shadow: {{t.shadow}}">{{t.label}}</button>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<div role="group" aria-label="Period" style="display: flex; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(17,17,19,0.05)">
+<sc-for list="{{periodTabs}}" as="t" hint-placeholder-count="2">
+<button type="button" onClick="{{t.pick}}" aria-pressed="{{t.on}}" style="height: 32px; padding: 0 14px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; cursor: pointer; background: {{t.bg}}; color: {{t.fg}}; box-shadow: {{t.shadow}}">{{t.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 12px; color: #6E6E76">USD millions, except per share</span>
+</div>
+</div>
+<div style="overflow: auto; max-height: 360px">
+<div role="table" aria-label="{{stmtTitle}}" style="min-width: 760px">
+<div role="row" style="display: grid; grid-template-columns: minmax(200px, 2fr) repeat(5, minmax(84px, 1fr)) 74px; gap: 0 12px; align-items: end; padding: 6px 8px; font-size: 12px; color: #6E6E76">
+<span role="columnheader">{{stmtTitle}}</span>
+<sc-for list="{{cols}}" as="c" hint-placeholder-count="5">
+<span role="columnheader" style="text-align: right; line-height: 1.25; color: {{c.color}}">{{c.a}} <span style="color: #8A8A92">{{c.b}}</span></span>
+</sc-for>
+<span role="columnheader" style="text-align: right">YoY</span>
+</div>
+<sc-for list="{{stmtRows}}" as="r" hint-placeholder-count="12">
+<div role="row" style="display: grid; grid-template-columns: minmax(200px, 2fr) repeat(5, minmax(84px, 1fr)) 74px; gap: 0 12px; align-items: center; min-height: 27px; padding: 0 8px; border-radius: 10px; background: {{r.bg}}; font-size: 14px; font-weight: {{r.weight}}">
+<span role="rowheader" style="padding-left: {{r.indent}}px; color: {{r.labelColor}}">{{r.label}}</span>
+<sc-for list="{{r.vals}}" as="v" hint-placeholder-count="5">
+<span role="cell" style="text-align: right">{{v.t}}</span>
+</sc-for>
+<span role="cell" style="text-align: right; font-size: 13px; color: {{r.yoyColor}}">{{r.yoy}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+</main>
+
+<aside aria-label="Valuation and earnings" style="flex: 1 1 330px; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding-bottom: 4px">
+
+<section aria-labelledby="va-h" style="border-radius: 24px; padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<h2 id="va-h" style="margin: 0; font-size: 19px; font-weight: 400; letter-spacing: -0.01em">Valuation vs peers</h2>
+<div role="group" aria-label="Multiple" style="display: flex; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(17,17,19,0.05)">
+<sc-for list="{{metricTabs}}" as="t" hint-placeholder-count="3">
+<button type="button" onClick="{{t.pick}}" aria-pressed="{{t.on}}" style="flex: 1; height: 34px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; cursor: pointer; background: {{t.bg}}; color: {{t.fg}}; box-shadow: {{t.shadow}}">{{t.label}}</button>
+</sc-for>
+</div>
+<p style="margin: 0; font-size: 14px; color: #3F3F46">{{valLine}}</p>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{valRows}}" as="v" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 46px minmax(0, 1fr) 46px; align-items: center; gap: 10px">
+<span style="font-size: 14px; font-weight: 500">{{v.sym}}</span>
+<span style="position: relative; display: block; height: 18px; border-radius: 6px; background: rgba(17,17,19,0.05)">
+<span style="position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; width: {{v.w}}%; background: {{v.color}}"></span>
+<span style="position: absolute; top: -3px; bottom: -3px; left: {{medPos}}%; border-left: 1.5px dashed #6E6E76"></span>
+</span>
+<span style="text-align: right; font-size: 14px">{{v.label}}</span>
+</div>
+</sc-for>
+</div>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: #55555C"><span style="width: 0; height: 12px; border-left: 1.5px dashed #6E6E76"></span>Peer median {{median}}</span>
+</section>
+
+<section id="earnings" aria-labelledby="ea-h" style="border-radius: 24px; padding: 14px 18px 14px; display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px">
+<h2 id="ea-h" style="margin: 0; font-size: 19px; font-weight: 400; letter-spacing: -0.01em">EPS vs estimate</h2>
+<span style="display: flex; gap: 10px; font-size: 12px; color: #3F3F46">
+<span style="display: inline-flex; align-items: center; gap: 5px"><span style="width: 9px; height: 9px; box-sizing: border-box; border-radius: 50%; border: 2px solid #8A8A92"></span>Est.</span>
+<span style="display: inline-flex; align-items: center; gap: 5px"><span style="width: 9px; height: 9px; border-radius: 50%; background: #111113"></span>Actual</span>
+</span>
+</div>
+<p style="margin: 0; font-size: 13px; color: #55555C">Beat in 7 of the last 8 quarters · surprise in %</p>
+<div style="display: flex; gap: 3px">
+<sc-for list="{{eps}}" as="e" hint-placeholder-count="9">
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px">
+<div style="position: relative; width: 100%; height: 92px; border-radius: 9px; background: {{e.bg}}">
+<span style="position: absolute; left: 50%; bottom: {{e.estPos}}%; width: 13px; height: 13px; margin: 0 0 -6.5px -6.5px; box-sizing: border-box; border-radius: 50%; border: 2px solid #8A8A92; background: #FFFFFF"></span>
+<span style="position: absolute; left: 50%; bottom: {{e.actPos}}%; width: 11px; height: 11px; margin: 0 0 -5.5px -5.5px; border-radius: 50%; background: {{e.dot}}"></span>
+</div>
+<span style="font-size: 11px; color: {{e.color}}; white-space: nowrap">{{e.surprise}}</span>
+<span style="font-size: 11px; color: #6E6E76; text-align: center; line-height: 1.2">{{e.a}}<br>{{e.b}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="sg-h" style="border-radius: 24px; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px">
+<h2 id="sg-h" style="margin: 0; font-size: 19px; font-weight: 400; letter-spacing: -0.01em">Revenue mix</h2>
+<span style="font-size: 13px; color: #6E6E76">Q2 FY27</span>
+</div>
+<div role="img" aria-label="Revenue by segment" style="display: flex; gap: 2px; height: 12px">
+<sc-for list="{{segments}}" as="g" hint-placeholder-count="5">
+<span style="border-radius: 4px; min-width: 4px; flex: {{g.flex}}; background: {{g.color}}"></span>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 4px 10px">
+<sc-for list="{{segments}}" as="g" hint-placeholder-count="5">
+<span style="display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: #3F3F46; white-space: nowrap"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{g.color}}"></span>{{g.name}} <span style="color: #111113">{{g.share}}</span></span>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="nx-h" style="border-radius: 24px; padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; background: #1C1C1F; color: #FFFFFF; box-shadow: 0 14px 34px -18px rgba(17,17,19,0.5)">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px">
+<h2 id="nx-h" style="margin: 0; font-size: 19px; font-weight: 400">Next report</h2>
+<span style="display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 6px; background: #F5A524; color: #2A1A00; font-size: 12px; font-weight: 500">Nov 18 · after close</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<span style="display: flex; flex-direction: column; line-height: 1.25"><span style="font-size: 12px; color: #B4B4BB">Revenue est.</span><span style="font-size: 18px">72.1B</span></span>
+<span style="display: flex; flex-direction: column; line-height: 1.25"><span style="font-size: 12px; color: #B4B4BB">EPS est.</span><span style="font-size: 18px">1.68</span></span>
+<span style="display: flex; flex-direction: column; line-height: 1.25"><span style="font-size: 12px; color: #B4B4BB">Implied move</span><span style="font-size: 18px">±7.2%</span></span>
+</div>
+</section>
+</aside>
+
+<nav aria-label="Main" style="flex: 1 1 60px; display: flex; flex-wrap: wrap; align-content: flex-start; justify-content: center; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 60px; flex-direction: column">
+<button type="button" aria-label="Notifications" style="position: relative; width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"></path></svg>
+<span style="position: absolute; top: 13px; right: 14px; width: 8px; height: 8px; border-radius: 50%; background: #E5484D; border: 2px solid #FFFFFF"></span>
+</button>
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="5">
+<a href="{{n.href}}" aria-current="{{n.current}}" aria-label="{{n.label}}" title="{{n.label}}" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid {{n.border}}; background: {{n.bg}}; backdrop-filter: blur(20px); box-shadow: {{n.shadow}}; color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+</a>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 60px; flex-direction: column">
+<sc-for list="{{nav2}}" as="n" hint-placeholder-count="4">
+<button type="button" aria-label="{{n.label}}" title="{{n.label}}" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+</button>
+</sc-for>
+</div>
+</nav>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"glass":{"editor":"range","min":0.35,"max":1,"step":0.01,"default":0.72,"section":"Look"},"$preview":{"width":1512,"height":982}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { stmt: 'Income statement', period: 'Quarterly', metric: 'Fwd P/E' };
+  }
+  seg(keys, current, key) {
+    var self = this;
+    return keys.map(function (k) {
+      var on = current === k;
+      return { label: k, on: on, bg: on ? '#FFFFFF' : 'transparent', fg: on ? '#111113' : '#55555C', shadow: on ? '0 1px 3px rgba(17,17,19,0.1)' : 'none', pick: function () { var o = {}; o[key] = k; self.setState(o); } };
+    });
+  }
+  renderVals() {
+    var self = this, st = this.state, i;
+    var glass = this.props.glass == null ? 0.72 : this.props.glass;
+    var NAV = [
+      ['Overview', 'Main.dc.html', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z'],
+      ['Chart', 'Stock.dc.html', 'M7 3v3M7 15v6M5 6h4v9H5zM17 3v5M17 17v4M15 8h4v9h-4z'],
+      ['Financials', 'Financials.dc.html', 'M4 20h16M7 16v-5M12 16V6M17 16V9'],
+      ['Screener', 'Screener.dc.html', 'M4 5h16l-6 7.5V19l-4 2v-8.5z'],
+      ['Research notes', 'Notes.dc.html', 'M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 16h5']
+    ];
+    var nav = NAV.map(function (x) {
+      var on = x[0] === 'Financials';
+      return { label: x[0], href: x[1], icon: x[2], current: on ? 'page' : 'false', bg: on ? 'rgba(17,17,19,0.07)' : 'rgba(255,255,255,' + glass + ')', border: on ? 'transparent' : 'rgba(255,255,255,0.95)', shadow: on ? 'none' : '0 1px 2px rgba(17,17,19,0.05)' };
+    });
+    var nav2 = [
+      ['Settings', 'M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6zM19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z'],
+      ['Ask about these numbers', 'M4 5h16v11H9l-5 4z'],
+      ['Learning library', 'M4 5c3-1 5-1 8 1v14c-3-2-5-2-8-1zM20 5c-3-1-5-1-8 1v14c3-2 5-2 8-1z'],
+      ['Custom formulas', 'M14 4h-2a2 2 0 0 0-2 2v12a2 2 0 0 1-2 2H6M7 11h6M15 13l4 5M19 13l-4 5'],
+      ['Favorites', 'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z']
+    ].map(function (x) { return { label: x[0], icon: x[1] }; });
+
+    var num = function (v, dp) { var s = Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: dp || 0, maximumFractionDigits: dp || 0 }); return v < 0 ? '(' + s + ')' : s; };
+    var sgn = function (v, unit) { return (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1) + (unit || '%'); };
+    var sum = function (a) { return a.reduce(function (s, v) { return s + v; }, 0); };
+
+    var Q8 = ['Q3 FY25', 'Q4 FY25', 'Q1 FY26', 'Q2 FY26', 'Q3 FY26', 'Q4 FY26', 'Q1 FY27', 'Q2 FY27'];
+    var END8 = ['Oct ’24', 'Jan ’25', 'Apr ’25', 'Jul ’25', 'Oct ’25', 'Jan ’26', 'Apr ’26', 'Jul ’26'];
+    var A8 = ['FY23', 'FY24', 'FY25', 'FY26'];
+
+    var rev = [46743, 54920, 61180, 66810], gm = [0.724, 0.734, 0.73, 0.728];
+    var cogs = rev.map(function (r, k) { return Math.round(r * (1 - gm[k])); });
+    var gross = rev.map(function (r, k) { return r - cogs[k]; });
+    var rnd = [4291, 4705, 5120, 5470], sga = [1146, 1210, 1290, 1340];
+    var op = gross.map(function (g, k) { return g - rnd[k] - sga[k]; });
+    var oth = [580, 640, 710, 760];
+    var pre = op.map(function (o, k) { return o + oth[k]; });
+    var tax = pre.map(function (p) { return Math.round(p * 0.155); });
+    var net = pre.map(function (p, k) { return p - tax[k]; });
+    var shares = [24532, 24470, 24410, 24360];
+    var eps = net.map(function (n, k) { return Math.round(n / shares[k] * 100) / 100; });
+
+    var rev8 = [30040, 35082, 39331, 44062].concat(rev), net8 = [16599, 19309, 22091, 18775].concat(net);
+    var gm8 = [75.0, 73.5, 73.0, 60.5].concat(gm.map(function (g) { return g * 100; }));
+    var op8 = [62.3, 61.1, 61.5, 49.1].concat(op.map(function (o, k) { return o / rev[k] * 100; }));
+    var nm8 = net8.map(function (n, k) { return n / rev8[k] * 100; });
+    var ttmRev = sum(rev), ttmNet = sum(net), ttmGross = sum(gross), ttmOp = sum(op);
+    var ocf = [23751, 27414, 31840, 35102], capex = [-1636, -1854, -2104, -2350];
+    var fcf = ocf.map(function (o, k) { return o + capex[k]; });
+    var priorRev = 30040 + 35082 + 39331 + 44062, priorNet = 16599 + 19309 + 22091 + 18775;
+
+    var barsPath = function (vals, w, h) {
+      var mx = Math.max.apply(null, vals), slot = w / vals.length, bw = slot * 0.62, a = '', b = '';
+      vals.forEach(function (v, k) {
+        var bh = v / mx * (h - 2), x = k * slot + (slot - bw) / 2;
+        var p = 'M' + x.toFixed(1) + ' ' + (h - bh).toFixed(1) + 'h' + bw.toFixed(1) + 'V' + h + 'h' + (-bw).toFixed(1) + 'Z';
+        if (k === vals.length - 1) b = p; else a += p;
+      });
+      return { a: a, b: b };
+    };
+    var KP = [
+      ['Revenue · TTM', (ttmRev / 1000).toFixed(1) + 'B', sgn((ttmRev / priorRev - 1) * 100) + ' YoY', rev8],
+      ['Gross margin', (ttmGross / ttmRev * 100).toFixed(1) + '%', '+3.1 pt YoY', gm8],
+      ['Operating margin', (ttmOp / ttmRev * 100).toFixed(1) + '%', '+4.3 pt YoY', op8],
+      ['Net income · TTM', (ttmNet / 1000).toFixed(1) + 'B', sgn((ttmNet / priorNet - 1) * 100) + ' YoY', net8],
+      ['Free cash flow · TTM', (sum(fcf) / 1000).toFixed(1) + 'B', '+51.0% YoY', [14100, 15500, 26200, 13450].concat(fcf)]
+    ];
+    var kpis = KP.map(function (k) { var p = barsPath(k[3], 72, 34); return { label: k[0], value: k[1], delta: k[2], color: '#1A7F4E', bars: p.a, last: p.b }; });
+
+    var RMAX = 80000, revBars = '', netBars = '';
+    for (i = 0; i < 8; i++) {
+      var rh = rev8[i] / RMAX * 220, nh = net8[i] / RMAX * 220, x0 = i * 100 + 20;
+      revBars += 'M' + x0 + ' ' + (220 - rh).toFixed(1) + 'h28V220h-28Z';
+      netBars += 'M' + (x0 + 32) + ' ' + (220 - nh).toFixed(1) + 'h28V220h-28Z';
+    }
+    var revTicks = [0, 20000, 40000, 60000, 80000].map(function (v) { return { label: v ? (v / 1000) + 'B' : '0', top: ((1 - v / RMAX) * 100).toFixed(2) }; });
+    var qLabels = Q8.map(function (q) { var p = q.split(' '); return { a: p[0], b: p[1] }; });
+
+    var MLO = 40, MHI = 80;
+    var mline = function (arr) { var d = ''; arr.forEach(function (v, k) { d += (k ? 'L' : 'M') + (k * 100).toFixed(1) + ' ' + ((1 - (v - MLO) / (MHI - MLO)) * 220).toFixed(1); }); return d; };
+    var mTicks = [40, 50, 60, 70, 80].map(function (v) { return { label: v + '%', top: ((1 - (v - MLO) / (MHI - MLO)) * 100).toFixed(2) }; });
+    var mLegend = [['Gross', gm8, '#111113'], ['Operating', op8, '#3B6FE0'], ['Net', nm8, '#A033E8']].map(function (m) { return { label: m[0], value: m[1][7].toFixed(1) + '%', color: m[2] }; });
+
+    var IS = [
+      ['Revenue', rev, 'b', 'sum', 56.0, [26974, 60922, 130497, 192355]],
+      ['Cost of revenue', cogs, 's', 'sum', 60.2, [11618, 16621, 32639, 54011]],
+      ['Gross profit', gross, 'b', 'sum', 54.5, [15356, 44301, 97858, 138344]],
+      ['Research & development', rnd, 's', 'sum', 38.1, [7339, 8675, 12914, 17260]],
+      ['Sales, general & admin', sga, 's', 'sum', 21.4, [2440, 2654, 3491, 4410]],
+      ['Operating income', op, 'b', 'sum', 59.3, [4224, 32972, 81453, 116674]],
+      ['Other income, net', oth, 's', 'sum', 31.0, [-43, 846, 1034, 2380]],
+      ['Pre-tax income', pre, 'n', 'sum', 58.4, [4181, 33818, 84026, 119054]],
+      ['Income tax', tax, 's', 'sum', 61.0, [-187, 4058, 11146, 18454]],
+      ['Net income', net, 'b', 'sum', 58.0, [4368, 29760, 72880, 100600]],
+      ['Diluted EPS', eps, 'e', 'sum', 59.1, [0.17, 1.19, 2.94, 4.09]],
+      ['Diluted shares', shares, 'n', 'last', -0.8, [25070, 24940, 24804, 24580]]
+    ];
+    var BS = [
+      ['Cash & short-term investments', [38487, 43210, 53691, 61204], 'n', 'last', 59.0, [13296, 25984, 43210, 53691]],
+      ['Accounts receivable', [17693, 23065, 22132, 27808], 's', 'last', 57.2, [3827, 9999, 23065, 22132]],
+      ['Inventories', [14962, 15002, 14998, 16842], 's', 'last', 12.6, [5159, 5282, 10080, 15002]],
+      ['Total assets', [140740, 151301, 168503, 186417], 'b', 'last', 32.5, [41182, 65728, 111601, 151301]],
+      ['Total liabilities', [36230, 38114, 41403, 44112], 'n', 'last', 21.8, [19081, 22750, 32274, 38114]],
+      ['Total debt', [8466, 8463, 8461, 8468], 's', 'last', 0.0, [10953, 9709, 8463, 8463]],
+      ['Shareholders’ equity', [104510, 113187, 127100, 142305], 'b', 'last', 36.2, [22101, 42978, 79327, 113187]],
+      ['Net cash', [30021, 34747, 45230, 52736], 'b', 'last', 75.7, [2343, 16275, 34747, 45228]]
+    ];
+    var CF = [
+      ['Operating cash flow', ocf, 'b', 'sum', 47.8, [5641, 28090, 64089, 101420]],
+      ['Capital expenditures', capex, 's', 'sum', 43.6, [-1833, -1069, -3236, -6880]],
+      ['Free cash flow', fcf, 'b', 'sum', 48.1, [3808, 27021, 60853, 94540]],
+      ['Stock-based compensation', [1424, 1529, 1612, 1704], 's', 'sum', 19.7, [2710, 3549, 4737, 6020]],
+      ['Share repurchases', [-12814, -14100, -15820, -16450], 's', 'sum', 28.4, [-10039, -9533, -33706, -52400]],
+      ['Dividends paid', [-244, -243, -243, -242], 's', 'sum', -0.8, [-398, -395, -834, -975]]
+    ];
+    var SRC = { 'Income statement': IS, 'Balance sheet': BS, 'Cash flow': CF }[st.stmt];
+    var annual = st.period === 'Annual', point = st.stmt === 'Balance sheet';
+    var cols = annual
+      ? A8.map(function (a) { return { a: a, b: '', color: '#6E6E76' }; })
+      : Q8.slice(4).map(function (q, k) { return { a: q, b: END8[k + 4], color: '#6E6E76' }; });
+    cols.push(annual ? { a: 'TTM', b: '', color: '#111113' } : { a: point ? 'Latest' : 'TTM', b: '', color: '#111113' });
+    var stmtRows = SRC.map(function (r) {
+      var e = r[2] === 'e', series = annual ? r[5] : r[1];
+      var vals = series.map(function (v) { return { t: num(v, e ? 2 : 0) }; });
+      var agg = r[3] === 'last' ? r[1][3] : sum(r[1]);
+      vals.push({ t: num(e ? Math.round(agg * 100) / 100 : agg, e ? 2 : 0) });
+      var bold = r[2] === 'b';
+      return {
+        label: r[0], vals: vals, yoy: sgn(r[4]), yoyColor: r[4] >= 0 ? '#1A7F4E' : '#C2362D',
+        weight: bold ? 500 : 400, bg: bold ? 'rgba(17,17,19,0.035)' : 'transparent',
+        indent: r[2] === 's' ? 14 : 0, labelColor: r[2] === 's' ? '#55555C' : '#111113'
+      };
+    });
+
+    var MET = { 'Fwd P/E': [27.9, 34.2, 33.0, 22.6, 14.8], 'EV/Sales': [19.7, 9.8, 21.0, 9.2, 3.9], 'P/FCF': [41.7, 48.0, 40.2, 29.5, 16.1] }[st.metric];
+    var SYMS = ['NVDA', 'AMD', 'AVGO', 'TSM', 'QCOM'];
+    var others = MET.slice(1).sort(function (a, b) { return a - b; }), med = (others[1] + others[2]) / 2;
+    var vmax = Math.max.apply(null, MET) * 1.08;
+    var valRows = SYMS.map(function (s, k) { return { sym: s, w: (MET[k] / vmax * 100).toFixed(1), label: MET[k].toFixed(1) + '×', color: k === 0 ? '#111113' : '#CDCDD2' }; });
+    var ratio = MET[0] / med;
+    var valLine = 'NVDA at ' + MET[0].toFixed(1) + '× is ' + (Math.abs(ratio - 1) < 0.03 ? 'in line with' : ratio > 1 ? Math.round((ratio - 1) * 100) + '% above' : Math.round((1 - ratio) * 100) + '% below') + ' the peer median.';
+
+    var EST = [0.64, 0.75, 0.85, 0.80, 0.97, 1.15, 1.30, 1.42];
+    var ACT = [16599 / 24600, 19309 / 24580, 22091 / 24560, 18775 / 24540].map(function (v) { return Math.round(v * 100) / 100; }).concat(eps);
+    var P = function (v) { return ((v - 0.4) / 1.4 * 100).toFixed(1); };
+    var epsCols = Q8.map(function (q, k) {
+      var s = (ACT[k] / EST[k] - 1) * 100, p = q.split(' ');
+      return { a: p[0], b: p[1].replace('FY', '’'), estPos: P(EST[k]), actPos: P(ACT[k]), surprise: (s >= 0 ? '+' : '−') + Math.abs(s).toFixed(1), color: s >= 0 ? '#1A7F4E' : '#C2362D', dot: s >= 0 ? '#111113' : '#E5484D', bg: 'rgba(17,17,19,0.04)' };
+    });
+    epsCols.push({ a: 'Q3', b: 'Nov 18', estPos: P(1.68), actPos: P(-10), surprise: 'est.', color: '#55555C', dot: 'transparent', bg: 'rgba(245,165,36,0.16)' });
+
+    return {
+      glass: glass, nav: nav, nav2: nav2, kpis: kpis, revBars: revBars, netBars: netBars, revTicks: revTicks, qLabels: qLabels,
+      gmLine: mline(gm8), opLine: mline(op8), nmLine: mline(nm8), mTicks: mTicks, mLegend: mLegend,
+      stmtTitle: st.stmt, stmtTabs: this.seg(['Income statement', 'Balance sheet', 'Cash flow'], st.stmt, 'stmt'),
+      periodTabs: this.seg(['Quarterly', 'Annual'], st.period, 'period'), cols: cols, stmtRows: stmtRows,
+      metricTabs: this.seg(['Fwd P/E', 'EV/Sales', 'P/FCF'], st.metric, 'metric'), valRows: valRows, valLine: valLine,
+      segments: [['Data center', 88.6, '#111113'], ['Gaming', 6.4, '#4DB07F'], ['Pro viz', 1.9, '#3B6FE0'], ['Auto', 1.7, '#A033E8'], ['Other', 1.4, '#B4B4BA']].map(function (g) { return { name: g[0], share: g[1].toFixed(1) + '%', flex: g[1], color: g[2] }; }),
+      median: med.toFixed(1) + '×', medPos: (med / vmax * 100).toFixed(1), eps: epsCols
+    };
+  }
+}
+</script>
+</body>
+</html>

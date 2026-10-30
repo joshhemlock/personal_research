@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compound — Overview</title>
+<!-- Static snapshot of the design at its default state. Exact markup and CSS reference; sample data only; no interactivity. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#E7E7EA}
+a{color:#111113}a:hover{color:#2F5FCC}
+:focus-visible{outline:2px solid #2F5FCC;outline-offset:2px}
+</style>
+</head>
+<body>
+
+<div style="box-sizing: border-box; min-height: 100vh; padding: 14px; background: #E7E7EA; font-family: Outfit, system-ui, sans-serif; font-variant-numeric: tabular-nums; color: #111113; font-size: 14px; line-height: 1.4">
+<div style="max-width: 1600px; min-height: calc(100vh - 28px); margin: 0 auto; box-sizing: border-box; background: #F7F7F8; border: 1px solid #FFFFFF; border-radius: 32px; box-shadow: 0 40px 80px -40px rgba(17,17,19,0.28), 0 2px 6px rgba(17,17,19,0.04); padding: 16px; display: flex; flex-direction: column; gap: 14px; overflow: hidden">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 0 4px">
+<a href="01-overview.html" style="display: flex; align-items: center; gap: 12px; min-height: 48px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 48px; height: 48px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #D4D4D8; display: inline-flex; align-items: center; justify-content: center">
+<svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="#111113"></circle><path d="M6.5 17.5c3.8 0 5.5-2 6.6-4.6C14.2 10.3 15.8 8.2 19 8.2" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path><circle cx="19" cy="8.2" r="2" fill="#4DB07F"></circle></svg>
+</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2">
+<span style="font-size: 19px; font-weight: 600; letter-spacing: -0.01em">Compound</span>
+<span style="font-size: 13px; color: #6E6E76">research that compounds</span>
+</span>
+</a>
+<span aria-hidden="true" style="width: 1px; height: 32px; background: rgba(17,17,19,0.1)"></span>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #3F3F46">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7.5V12l3 2"></path></svg>
+Market open · 11:51 ET</span>
+<button type="button" aria-label="Search tickers, companies and notes" style="flex: 1 1 340px; max-width: 520px; margin: 0 auto; display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 10px 30px -14px rgba(17,17,19,0.14); font-family: inherit; color: #111113; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg>
+<span style="flex: 1; text-align: left; font-size: 15px; color: #55555C">Search tickers, companies, notes</span>
+<span style="font-size: 12px; padding: 4px 9px; border-radius: 999px; background: rgba(17,17,19,0.06); color: #3F3F46">⌘K</span>
+</button>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 22px; margin-left: auto">
+<div style="display: flex; flex-direction: column; line-height: 1.3">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500">6,812.45 <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 11px; font-weight: 600">+0.38%</span></span>
+<span style="font-size: 12px; color: #6E6E76">S&amp;P 500, USD</span>
+</div>
+<div style="display: flex; flex-direction: column; line-height: 1.3">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500">25,410.20 <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 11px; font-weight: 600">+0.71%</span></span>
+<span style="font-size: 12px; color: #6E6E76">Nasdaq 100, USD</span>
+</div>
+<button type="button" aria-label="Account menu" style="display: inline-flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px 0 5px; border-radius: 999px; border: 0; background: #1C1C1F; color: #FFFFFF; cursor: pointer; box-shadow: 0 10px 24px -12px rgba(17,17,19,0.5)">
+<span style="width: 42px; height: 42px; border-radius: 50%; background: #3A3A40; display: inline-flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8a4 4 0 1 0 0 8zM4.5 20.5c1.4-3.6 4.2-5.5 7.5-5.5s6.1 1.9 7.5 5.5"></path></svg></span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 8h14M5 12h14M5 16h14"></path></svg>
+</button>
+</div>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+
+<main style="flex: 999 1 620px; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding-bottom: 4px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 0 4px">
+<div>
+<h1 style="margin: 0; font-size: 26px; font-weight: 400; letter-spacing: -0.02em">Good morning</h1>
+<p style="margin: 0; color: #55555C; font-size: 14px">Friday, October 30 · 5 of 8 watchlist names are up · NVDA reports in 19 days</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" style="display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); font-family: inherit; font-size: 15px; color: #111113; cursor: pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 5v4M9 15v4"></path></svg>Customize</button>
+<a href="04-screener.html" style="display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 20px; box-sizing: border-box; border-radius: 999px; background: #111113; color: #FFFFFF; font-size: 15px; font-weight: 500; text-decoration: none">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Find ideas</a>
+</div>
+</div>
+
+<section aria-label="Market indices" style="display: flex; flex-wrap: wrap; gap: 10px">
+
+<div style="flex: 1 1 150px; min-width: 0; box-sizing: border-box; border-radius: 20px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -20px rgba(17,17,19,0.16)">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 7px; min-width: 0; font-size: 13px; color: #3F3F46; white-space: nowrap"><span style="flex: none; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 8px; font-weight: 600; background: #E5484D">500</span>S&amp;P 500</span>
+<span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; font-size: 11px; font-weight: 600; background: #DDF3E6; color: #1A6B45">+0.38%</span>
+</div>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 8px">
+<span style="font-size: 22px; font-weight: 400; letter-spacing: -0.02em">6,812.45</span>
+<svg width="70" height="28" viewBox="0 0 84 30" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 25.9 L2.2 24.9 L4.3 22.4 L6.5 20.3 L8.6 13.1 L10.8 11.9 L12.9 19.6 L15.1 18.6 L17.2 16.1 L19.4 16.6 L21.5 16.6 L23.7 9.5 L25.8 10.6 L28.0 6.9 L30.2 3.0 L32.3 9.1 L34.5 14.9 L36.6 18.8 L38.8 20.3 L40.9 22.3 L43.1 20.3 L45.2 27.0 L47.4 24.7 L49.5 22.8 L51.7 23.9 L53.8 16.9 L56.0 10.6 L58.2 5.0 L60.3 8.1 L62.5 5.3 L64.6 9.6 L66.8 17.7 L68.9 12.7 L71.1 3.1 L73.2 6.5 L75.4 12.9 L77.5 7.8 L79.7 10.3 L81.8 8.9 L84.0 7.0 L84 30 L0 30 Z" fill="rgba(77,176,127,0.16)"></path><path d="M0.0 25.9 L2.2 24.9 L4.3 22.4 L6.5 20.3 L8.6 13.1 L10.8 11.9 L12.9 19.6 L15.1 18.6 L17.2 16.1 L19.4 16.6 L21.5 16.6 L23.7 9.5 L25.8 10.6 L28.0 6.9 L30.2 3.0 L32.3 9.1 L34.5 14.9 L36.6 18.8 L38.8 20.3 L40.9 22.3 L43.1 20.3 L45.2 27.0 L47.4 24.7 L49.5 22.8 L51.7 23.9 L53.8 16.9 L56.0 10.6 L58.2 5.0 L60.3 8.1 L62.5 5.3 L64.6 9.6 L66.8 17.7 L68.9 12.7 L71.1 3.1 L73.2 6.5 L75.4 12.9 L77.5 7.8 L79.7 10.3 L81.8 8.9 L84.0 7.0 " fill="none" stroke="#2E9B63" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+
+<div style="flex: 1 1 150px; min-width: 0; box-sizing: border-box; border-radius: 20px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -20px rgba(17,17,19,0.16)">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 7px; min-width: 0; font-size: 13px; color: #3F3F46; white-space: nowrap"><span style="flex: none; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 8px; font-weight: 600; background: #3B6FE0">100</span>Nasdaq 100</span>
+<span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; font-size: 11px; font-weight: 600; background: #DDF3E6; color: #1A6B45">+0.71%</span>
+</div>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 8px">
+<span style="font-size: 22px; font-weight: 400; letter-spacing: -0.02em">25,410.20</span>
+<svg width="70" height="28" viewBox="0 0 84 30" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 24.1 L2.2 22.7 L4.3 22.1 L6.5 24.5 L8.6 21.3 L10.8 20.6 L12.9 18.2 L15.1 20.6 L17.2 23.5 L19.4 22.7 L21.5 23.3 L23.7 22.8 L25.8 25.2 L28.0 25.1 L30.2 23.5 L32.3 27.0 L34.5 22.5 L36.6 20.3 L38.8 16.4 L40.9 16.2 L43.1 19.4 L45.2 16.6 L47.4 18.5 L49.5 14.5 L51.7 16.9 L53.8 15.6 L56.0 18.0 L58.2 20.4 L60.3 17.1 L62.5 18.8 L64.6 20.2 L66.8 20.8 L68.9 16.2 L71.1 18.2 L73.2 14.8 L75.4 11.3 L77.5 9.9 L79.7 5.9 L81.8 6.8 L84.0 3.0 L84 30 L0 30 Z" fill="rgba(77,176,127,0.16)"></path><path d="M0.0 24.1 L2.2 22.7 L4.3 22.1 L6.5 24.5 L8.6 21.3 L10.8 20.6 L12.9 18.2 L15.1 20.6 L17.2 23.5 L19.4 22.7 L21.5 23.3 L23.7 22.8 L25.8 25.2 L28.0 25.1 L30.2 23.5 L32.3 27.0 L34.5 22.5 L36.6 20.3 L38.8 16.4 L40.9 16.2 L43.1 19.4 L45.2 16.6 L47.4 18.5 L49.5 14.5 L51.7 16.9 L53.8 15.6 L56.0 18.0 L58.2 20.4 L60.3 17.1 L62.5 18.8 L64.6 20.2 L66.8 20.8 L68.9 16.2 L71.1 18.2 L73.2 14.8 L75.4 11.3 L77.5 9.9 L79.7 5.9 L81.8 6.8 L84.0 3.0 " fill="none" stroke="#2E9B63" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+
+<div style="flex: 1 1 150px; min-width: 0; box-sizing: border-box; border-radius: 20px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -20px rgba(17,17,19,0.16)">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 7px; min-width: 0; font-size: 13px; color: #3F3F46; white-space: nowrap"><span style="flex: none; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 8px; font-weight: 600; background: #2BA3C9">30</span>Dow Jones</span>
+<span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; font-size: 11px; font-weight: 600; background: #FCE4E2; color: #A82C24">−0.12%</span>
+</div>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 8px">
+<span style="font-size: 22px; font-weight: 400; letter-spacing: -0.02em">47,120.88</span>
+<svg width="70" height="28" viewBox="0 0 84 30" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 8.7 L2.2 5.8 L4.3 5.1 L6.5 3.0 L8.6 5.1 L10.8 8.7 L12.9 9.5 L15.1 10.0 L17.2 11.5 L19.4 13.8 L21.5 16.2 L23.7 20.3 L25.8 20.1 L28.0 23.2 L30.2 21.0 L32.3 23.0 L34.5 25.4 L36.6 26.4 L38.8 26.9 L40.9 23.2 L43.1 19.8 L45.2 15.9 L47.4 13.2 L49.5 9.5 L51.7 13.6 L53.8 16.8 L56.0 18.8 L58.2 18.3 L60.3 21.9 L62.5 24.7 L64.6 23.2 L66.8 27.0 L68.9 22.9 L71.1 24.0 L73.2 21.1 L75.4 21.9 L77.5 24.3 L79.7 25.6 L81.8 21.9 L84.0 25.0 L84 30 L0 30 Z" fill="rgba(234,91,82,0.13)"></path><path d="M0.0 8.7 L2.2 5.8 L4.3 5.1 L6.5 3.0 L8.6 5.1 L10.8 8.7 L12.9 9.5 L15.1 10.0 L17.2 11.5 L19.4 13.8 L21.5 16.2 L23.7 20.3 L25.8 20.1 L28.0 23.2 L30.2 21.0 L32.3 23.0 L34.5 25.4 L36.6 26.4 L38.8 26.9 L40.9 23.2 L43.1 19.8 L45.2 15.9 L47.4 13.2 L49.5 9.5 L51.7 13.6 L53.8 16.8 L56.0 18.8 L58.2 18.3 L60.3 21.9 L62.5 24.7 L64.6 23.2 L66.8 27.0 L68.9 22.9 L71.1 24.0 L73.2 21.1 L75.4 21.9 L77.5 24.3 L79.7 25.6 L81.8 21.9 L84.0 25.0 " fill="none" stroke="#E5484D" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+
+<div style="flex: 1 1 150px; min-width: 0; box-sizing: border-box; border-radius: 20px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -20px rgba(17,17,19,0.16)">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 7px; min-width: 0; font-size: 13px; color: #3F3F46; white-space: nowrap"><span style="flex: none; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 8px; font-weight: 600; background: #8B46F0">2K</span>Russell 2000</span>
+<span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; font-size: 11px; font-weight: 600; background: #DDF3E6; color: #1A6B45">+0.95%</span>
+</div>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 8px">
+<span style="font-size: 22px; font-weight: 400; letter-spacing: -0.02em">2,488.31</span>
+<svg width="70" height="28" viewBox="0 0 84 30" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 27.0 L2.2 24.7 L4.3 25.9 L6.5 23.2 L8.6 22.4 L10.8 22.3 L12.9 25.2 L15.1 24.4 L17.2 22.2 L19.4 19.4 L21.5 20.5 L23.7 22.7 L25.8 24.2 L28.0 22.5 L30.2 22.0 L32.3 23.0 L34.5 24.2 L36.6 25.3 L38.8 23.9 L40.9 23.0 L43.1 23.4 L45.2 22.9 L47.4 24.7 L49.5 21.6 L51.7 18.8 L53.8 20.2 L56.0 21.4 L58.2 21.2 L60.3 17.6 L62.5 15.5 L64.6 13.0 L66.8 15.1 L68.9 15.1 L71.1 12.1 L73.2 9.0 L75.4 7.6 L77.5 5.1 L79.7 3.0 L81.8 5.6 L84.0 8.3 L84 30 L0 30 Z" fill="rgba(77,176,127,0.16)"></path><path d="M0.0 27.0 L2.2 24.7 L4.3 25.9 L6.5 23.2 L8.6 22.4 L10.8 22.3 L12.9 25.2 L15.1 24.4 L17.2 22.2 L19.4 19.4 L21.5 20.5 L23.7 22.7 L25.8 24.2 L28.0 22.5 L30.2 22.0 L32.3 23.0 L34.5 24.2 L36.6 25.3 L38.8 23.9 L40.9 23.0 L43.1 23.4 L45.2 22.9 L47.4 24.7 L49.5 21.6 L51.7 18.8 L53.8 20.2 L56.0 21.4 L58.2 21.2 L60.3 17.6 L62.5 15.5 L64.6 13.0 L66.8 15.1 L68.9 15.1 L71.1 12.1 L73.2 9.0 L75.4 7.6 L77.5 5.1 L79.7 3.0 L81.8 5.6 L84.0 8.3 " fill="none" stroke="#2E9B63" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+
+<div style="flex: 1 1 150px; min-width: 0; box-sizing: border-box; border-radius: 20px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -20px rgba(17,17,19,0.16)">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 7px; min-width: 0; font-size: 13px; color: #3F3F46; white-space: nowrap"><span style="flex: none; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 8px; font-weight: 600; background: #111113">10Y</span>US 10Y yield</span>
+<span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; font-size: 11px; font-weight: 600; background: #FCE4E2; color: #A82C24">−2 bp</span>
+</div>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 8px">
+<span style="font-size: 22px; font-weight: 400; letter-spacing: -0.02em">4.07%</span>
+<svg width="70" height="28" viewBox="0 0 84 30" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 20.3 L2.2 17.9 L4.3 17.7 L6.5 23.0 L8.6 19.5 L10.8 18.7 L12.9 24.4 L15.1 27.0 L17.2 22.5 L19.4 19.8 L21.5 15.8 L23.7 13.0 L25.8 9.6 L28.0 9.6 L30.2 12.2 L32.3 14.1 L34.5 14.3 L36.6 13.5 L38.8 18.1 L40.9 22.6 L43.1 18.8 L45.2 14.9 L47.4 10.9 L49.5 11.4 L51.7 8.7 L53.8 4.1 L56.0 3.0 L58.2 7.1 L60.3 5.3 L62.5 5.9 L64.6 11.0 L66.8 11.5 L68.9 16.0 L71.1 13.8 L73.2 13.3 L75.4 13.7 L77.5 9.8 L79.7 12.3 L81.8 17.8 L84.0 21.8 L84 30 L0 30 Z" fill="rgba(234,91,82,0.13)"></path><path d="M0.0 20.3 L2.2 17.9 L4.3 17.7 L6.5 23.0 L8.6 19.5 L10.8 18.7 L12.9 24.4 L15.1 27.0 L17.2 22.5 L19.4 19.8 L21.5 15.8 L23.7 13.0 L25.8 9.6 L28.0 9.6 L30.2 12.2 L32.3 14.1 L34.5 14.3 L36.6 13.5 L38.8 18.1 L40.9 22.6 L43.1 18.8 L45.2 14.9 L47.4 10.9 L49.5 11.4 L51.7 8.7 L53.8 4.1 L56.0 3.0 L58.2 7.1 L60.3 5.3 L62.5 5.9 L64.6 11.0 L66.8 11.5 L68.9 16.0 L71.1 13.8 L73.2 13.3 L75.4 13.7 L77.5 9.8 L79.7 12.3 L81.8 17.8 L84.0 21.8 " fill="none" stroke="#E5484D" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+
+</section>
+
+<section aria-labelledby="wl-h" style="border-radius: 24px; padding: 14px 18px 4px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 2px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px">
+<h2 id="wl-h" style="margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -0.01em">Watchlist</h2>
+<div role="group" aria-label="Watchlist filter" style="display: flex; flex-wrap: wrap; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(17,17,19,0.05)">
+
+<button type="button" aria-pressed="true" style="height: 34px; padding: 0 14px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; cursor: pointer; background: #FFFFFF; color: #111113; box-shadow: 0 1px 3px rgba(17,17,19,0.1)">All 8</button>
+
+<button type="button" aria-pressed="false" style="height: 34px; padding: 0 14px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; cursor: pointer; background: transparent; color: #55555C; box-shadow: none">Tech 4</button>
+
+<button type="button" aria-pressed="false" style="height: 34px; padding: 0 14px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; cursor: pointer; background: transparent; color: #55555C; box-shadow: none">Semis 2</button>
+
+<button type="button" aria-pressed="false" style="height: 34px; padding: 0 14px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; cursor: pointer; background: transparent; color: #55555C; box-shadow: none">Consumer 2</button>
+
+</div>
+</div>
+<span style="display: inline-flex; color: #55555C">
+<button type="button" aria-label="Add symbol" style="width: 40px; height: 40px; padding: 0; border: 0; border-radius: 12px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+<button type="button" aria-label="Choose columns" style="width: 40px; height: 40px; padding: 0; border: 0; border-radius: 12px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM9.5 5v14M14.5 5v14"></path></svg></button>
+<button type="button" aria-label="Watchlist settings" style="width: 40px; height: 40px; padding: 0; border: 0; border-radius: 12px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 5v4M9 15v4"></path></svg></button>
+</span>
+</div>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Watchlist" style="min-width: 900px">
+<div role="row" style="display: grid; grid-template-columns: minmax(170px, 1.5fr) 84px 84px 108px 136px 76px 66px 96px; gap: 0 14px; align-items: center; padding: 6px 4px; font-size: 13px; color: #6E6E76">
+<span role="columnheader">Symbol</span>
+<span role="columnheader" style="text-align: right">Last</span>
+<span role="columnheader" style="text-align: right">Today</span>
+<span role="columnheader">1-month trend</span>
+<span role="columnheader">52-week range</span>
+<span role="columnheader" style="text-align: right">Mkt cap</span>
+<span role="columnheader" style="text-align: right">Fwd P/E</span>
+<span role="columnheader" style="text-align: right">Earnings</span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: minmax(170px, 1.5fr) 84px 84px 108px 136px 76px 66px 96px; gap: 0 14px; align-items: center; padding: 1px 4px; border-top: 1px solid rgba(17,17,19,0.05); font-size: 15px">
+<span role="cell">
+<a href="02-stock-chart.html" style="display: flex; align-items: center; gap: 12px; min-height: 38px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; background: #111113; color: #FFFFFF">N</span>
+<span style="display: flex; flex-direction: column; line-height: 1.15; min-width: 0"><span style="font-weight: 500">NVDA</span><span style="font-size: 12px; color: #6E6E76; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">NVIDIA</span></span>
+</a>
+</span>
+<span role="cell" style="text-align: right">188.42</span>
+<span role="cell" style="text-align: right"><span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #DDF3E6; color: #1A6B45">+2.14%</span></span>
+<span role="cell"><svg width="108" height="28" viewBox="0 0 96 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 25.0 L3.3 24.8 L6.6 23.7 L9.9 20.9 L13.2 19.6 L16.6 17.7 L19.9 19.0 L23.2 17.8 L26.5 18.1 L29.8 17.1 L33.1 15.4 L36.4 15.8 L39.7 16.5 L43.0 16.7 L46.3 16.4 L49.7 13.2 L53.0 14.2 L56.3 13.2 L59.6 13.4 L62.9 13.7 L66.2 11.7 L69.5 10.4 L72.8 7.7 L76.1 8.5 L79.4 6.8 L82.8 5.0 L86.1 5.2 L89.4 5.7 L92.7 3.0 L96.0 4.0 " fill="none" stroke="#2E9B63" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></svg></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 5px">
+<span style="position: relative; display: block; height: 4px; border-radius: 2px; background: rgba(17,17,19,0.08)"><span style="position: absolute; top: -4px; left: 98%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: #111113; border: 2px solid #FFFFFF; box-sizing: border-box"></span></span>
+<span style="display: flex; justify-content: space-between; font-size: 12px; color: #6E6E76"><span>92.47</span><span>190.24</span></span>
+</span>
+<span role="cell" style="text-align: right; color: #3F3F46">4.59T</span>
+<span role="cell" style="text-align: right; color: #3F3F46">27.9</span>
+<span role="cell" style="text-align: right; color: #3F3F46">Nov 18</span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: minmax(170px, 1.5fr) 84px 84px 108px 136px 76px 66px 96px; gap: 0 14px; align-items: center; padding: 1px 4px; border-top: 1px solid rgba(17,17,19,0.05); font-size: 15px">
+<span role="cell">
+<a href="02-stock-chart.html" style="display: flex; align-items: center; gap: 12px; min-height: 38px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; background: #111113; color: #FFFFFF">A</span>
+<span style="display: flex; flex-direction: column; line-height: 1.15; min-width: 0"><span style="font-weight: 500">AAPL</span><span style="font-size: 12px; color: #6E6E76; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Apple</span></span>
+</a>
+</span>
+<span role="cell" style="text-align: right">254.10</span>
+<span role="cell" style="text-align: right"><span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #FCE4E2; color: #A82C24">−0.38%</span></span>
+<span role="cell"><svg width="108" height="28" viewBox="0 0 96 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 25.0 L3.3 23.7 L6.6 23.5 L9.9 23.8 L13.2 23.7 L16.6 24.9 L19.9 24.6 L23.2 23.2 L26.5 21.6 L29.8 20.1 L33.1 18.4 L36.4 17.9 L39.7 16.6 L43.0 17.2 L46.3 16.7 L49.7 17.4 L53.0 17.5 L56.3 15.1 L59.6 15.6 L62.9 15.9 L66.2 14.1 L69.5 11.9 L72.8 10.4 L76.1 8.8 L79.4 6.6 L82.8 5.6 L86.1 4.7 L89.4 5.1 L92.7 3.6 L96.0 3.0 " fill="none" stroke="#2E9B63" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></svg></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 5px">
+<span style="position: relative; display: block; height: 4px; border-radius: 2px; background: rgba(17,17,19,0.08)"><span style="position: absolute; top: -4px; left: 93%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: #111113; border: 2px solid #FFFFFF; box-sizing: border-box"></span></span>
+<span style="display: flex; justify-content: space-between; font-size: 12px; color: #6E6E76"><span>169.21</span><span>260.10</span></span>
+</span>
+<span role="cell" style="text-align: right; color: #3F3F46">3.77T</span>
+<span role="cell" style="text-align: right; color: #3F3F46">31.6</span>
+<span role="cell" style="text-align: right; color: #3F3F46">Jan 29</span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: minmax(170px, 1.5fr) 84px 84px 108px 136px 76px 66px 96px; gap: 0 14px; align-items: center; padding: 1px 4px; border-top: 1px solid rgba(17,17,19,0.05); font-size: 15px">
+<span role="cell">
+<a href="02-stock-chart.html" style="display: flex; align-items: center; gap: 12px; min-height: 38px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; background: #111113; color: #FFFFFF">M</span>
+<span style="display: flex; flex-direction: column; line-height: 1.15; min-width: 0"><span style="font-weight: 500">MSFT</span><span style="font-size: 12px; color: #6E6E76; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Microsoft</span></span>
+</a>
+</span>
+<span role="cell" style="text-align: right">512.66</span>
+<span role="cell" style="text-align: right"><span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #DDF3E6; color: #1A6B45">+0.91%</span></span>
+<span role="cell"><svg width="108" height="28" viewBox="0 0 96 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 6.3 L3.3 3.0 L6.6 5.8 L9.9 12.6 L13.2 14.7 L16.6 12.4 L19.9 11.4 L23.2 6.2 L26.5 9.1 L29.8 13.0 L33.1 11.4 L36.4 18.0 L39.7 14.1 L43.0 12.8 L46.3 16.0 L49.7 13.3 L53.0 16.0 L56.3 13.6 L59.6 9.8 L62.9 10.7 L66.2 16.8 L69.5 16.0 L72.8 12.8 L76.1 7.3 L79.4 10.7 L82.8 17.6 L86.1 20.4 L89.4 22.2 L92.7 25.0 L96.0 22.5 " fill="none" stroke="#E5484D" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></svg></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 5px">
+<span style="position: relative; display: block; height: 4px; border-radius: 2px; background: rgba(17,17,19,0.08)"><span style="position: absolute; top: -4px; left: 80%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: #111113; border: 2px solid #FFFFFF; box-sizing: border-box"></span></span>
+<span style="display: flex; justify-content: space-between; font-size: 12px; color: #6E6E76"><span>344.79</span><span>555.45</span></span>
+</span>
+<span role="cell" style="text-align: right; color: #3F3F46">3.81T</span>
+<span role="cell" style="text-align: right; color: #3F3F46">32.4</span>
+<span role="cell" style="text-align: right; color: #3F3F46">Jan 27</span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: minmax(170px, 1.5fr) 84px 84px 108px 136px 76px 66px 96px; gap: 0 14px; align-items: center; padding: 1px 4px; border-top: 1px solid rgba(17,17,19,0.05); font-size: 15px">
+<span role="cell">
+<a href="02-stock-chart.html" style="display: flex; align-items: center; gap: 12px; min-height: 38px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; background: #111113; color: #FFFFFF">A</span>
+<span style="display: flex; flex-direction: column; line-height: 1.15; min-width: 0"><span style="font-weight: 500">AMZN</span><span style="font-size: 12px; color: #6E6E76; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Amazon</span></span>
+</a>
+</span>
+<span role="cell" style="text-align: right">226.35</span>
+<span role="cell" style="text-align: right"><span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #DDF3E6; color: #1A6B45">+1.27%</span></span>
+<span role="cell"><svg width="108" height="28" viewBox="0 0 96 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 24.4 L3.3 25.0 L6.6 22.7 L9.9 23.6 L13.2 22.1 L16.6 19.6 L19.9 18.0 L23.2 19.9 L26.5 17.4 L29.8 15.2 L33.1 15.6 L36.4 17.1 L39.7 18.2 L43.0 17.9 L46.3 15.7 L49.7 15.8 L53.0 15.3 L56.3 13.0 L59.6 10.1 L62.9 9.8 L66.2 10.1 L69.5 6.8 L72.8 8.1 L76.1 8.9 L79.4 8.7 L82.8 6.0 L86.1 3.0 L89.4 4.1 L92.7 6.0 L96.0 3.6 " fill="none" stroke="#2E9B63" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></svg></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 5px">
+<span style="position: relative; display: block; height: 4px; border-radius: 2px; background: rgba(17,17,19,0.08)"><span style="position: absolute; top: -4px; left: 80%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: #111113; border: 2px solid #FFFFFF; box-sizing: border-box"></span></span>
+<span style="display: flex; justify-content: space-between; font-size: 12px; color: #6E6E76"><span>161.38</span><span>242.52</span></span>
+</span>
+<span role="cell" style="text-align: right; color: #3F3F46">2.41T</span>
+<span role="cell" style="text-align: right; color: #3F3F46">30.2</span>
+<span role="cell" style="text-align: right; color: #3F3F46">Feb 4</span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: minmax(170px, 1.5fr) 84px 84px 108px 136px 76px 66px 96px; gap: 0 14px; align-items: center; padding: 1px 4px; border-top: 1px solid rgba(17,17,19,0.05); font-size: 15px">
+<span role="cell">
+<a href="02-stock-chart.html" style="display: flex; align-items: center; gap: 12px; min-height: 38px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; background: #111113; color: #FFFFFF">G</span>
+<span style="display: flex; flex-direction: column; line-height: 1.15; min-width: 0"><span style="font-weight: 500">GOOGL</span><span style="font-size: 12px; color: #6E6E76; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Alphabet</span></span>
+</a>
+</span>
+<span role="cell" style="text-align: right">247.80</span>
+<span role="cell" style="text-align: right"><span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #FCE4E2; color: #A82C24">−0.62%</span></span>
+<span role="cell"><svg width="108" height="28" viewBox="0 0 96 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 24.2 L3.3 24.8 L6.6 24.5 L9.9 25.0 L13.2 24.2 L16.6 22.8 L19.9 22.5 L23.2 20.3 L26.5 18.2 L29.8 18.1 L33.1 16.5 L36.4 17.1 L39.7 17.0 L43.0 16.1 L46.3 15.0 L49.7 14.3 L53.0 12.4 L56.3 12.4 L59.6 11.9 L62.9 10.1 L66.2 10.9 L69.5 9.3 L72.8 7.5 L76.1 6.4 L79.4 4.9 L82.8 5.1 L86.1 3.2 L89.4 4.2 L92.7 4.1 L96.0 3.0 " fill="none" stroke="#2E9B63" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></svg></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 5px">
+<span style="position: relative; display: block; height: 4px; border-radius: 2px; background: rgba(17,17,19,0.08)"><span style="position: absolute; top: -4px; left: 93%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: #111113; border: 2px solid #FFFFFF; box-sizing: border-box"></span></span>
+<span style="display: flex; justify-content: space-between; font-size: 12px; color: #6E6E76"><span>140.53</span><span>256.00</span></span>
+</span>
+<span role="cell" style="text-align: right; color: #3F3F46">3.00T</span>
+<span role="cell" style="text-align: right; color: #3F3F46">22.4</span>
+<span role="cell" style="text-align: right; color: #3F3F46">Feb 2</span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: minmax(170px, 1.5fr) 84px 84px 108px 136px 76px 66px 96px; gap: 0 14px; align-items: center; padding: 1px 4px; border-top: 1px solid rgba(17,17,19,0.05); font-size: 15px">
+<span role="cell">
+<a href="02-stock-chart.html" style="display: flex; align-items: center; gap: 12px; min-height: 38px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; background: #111113; color: #FFFFFF">M</span>
+<span style="display: flex; flex-direction: column; line-height: 1.15; min-width: 0"><span style="font-weight: 500">META</span><span style="font-size: 12px; color: #6E6E76; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Meta Platforms</span></span>
+</a>
+</span>
+<span role="cell" style="text-align: right">731.20</span>
+<span role="cell" style="text-align: right"><span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #DDF3E6; color: #1A6B45">+0.44%</span></span>
+<span role="cell"><svg width="108" height="28" viewBox="0 0 96 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 5.8 L3.3 6.6 L6.6 8.8 L9.9 8.4 L13.2 7.9 L16.6 6.3 L19.9 5.3 L23.2 3.5 L26.5 4.3 L29.8 3.0 L33.1 5.5 L36.4 5.6 L39.7 7.4 L43.0 8.0 L46.3 10.7 L49.7 11.0 L53.0 13.6 L56.3 15.8 L59.6 16.2 L62.9 15.2 L66.2 18.1 L69.5 20.4 L72.8 18.7 L76.1 17.6 L79.4 20.1 L82.8 19.2 L86.1 21.0 L89.4 20.8 L92.7 22.3 L96.0 25.0 " fill="none" stroke="#E5484D" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></svg></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 5px">
+<span style="position: relative; display: block; height: 4px; border-radius: 2px; background: rgba(17,17,19,0.08)"><span style="position: absolute; top: -4px; left: 79%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: #111113; border: 2px solid #FFFFFF; box-sizing: border-box"></span></span>
+<span style="display: flex; justify-content: space-between; font-size: 12px; color: #6E6E76"><span>479.80</span><span>796.25</span></span>
+</span>
+<span role="cell" style="text-align: right; color: #3F3F46">1.84T</span>
+<span role="cell" style="text-align: right; color: #3F3F46">25.1</span>
+<span role="cell" style="text-align: right; color: #3F3F46">Jan 27</span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: minmax(170px, 1.5fr) 84px 84px 108px 136px 76px 66px 96px; gap: 0 14px; align-items: center; padding: 1px 4px; border-top: 1px solid rgba(17,17,19,0.05); font-size: 15px">
+<span role="cell">
+<a href="02-stock-chart.html" style="display: flex; align-items: center; gap: 12px; min-height: 38px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; background: #111113; color: #FFFFFF">A</span>
+<span style="display: flex; flex-direction: column; line-height: 1.15; min-width: 0"><span style="font-weight: 500">AVGO</span><span style="font-size: 12px; color: #6E6E76; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Broadcom</span></span>
+</a>
+</span>
+<span role="cell" style="text-align: right">342.15</span>
+<span role="cell" style="text-align: right"><span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #DDF3E6; color: #1A6B45">+3.02%</span></span>
+<span role="cell"><svg width="108" height="28" viewBox="0 0 96 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 25.0 L3.3 25.0 L6.6 22.2 L9.9 19.7 L13.2 18.9 L16.6 19.6 L19.9 20.7 L23.2 20.5 L26.5 19.7 L29.8 17.0 L33.1 16.1 L36.4 14.9 L39.7 16.2 L43.0 13.5 L46.3 10.8 L49.7 12.3 L53.0 13.4 L56.3 14.3 L59.6 11.5 L62.9 10.7 L66.2 10.9 L69.5 10.6 L72.8 8.1 L76.1 7.3 L79.4 6.5 L82.8 6.1 L86.1 7.2 L89.4 7.3 L92.7 5.1 L96.0 3.0 " fill="none" stroke="#2E9B63" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></svg></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 5px">
+<span style="position: relative; display: block; height: 4px; border-radius: 2px; background: rgba(17,17,19,0.08)"><span style="position: absolute; top: -4px; left: 86%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: #111113; border: 2px solid #FFFFFF; box-sizing: border-box"></span></span>
+<span style="display: flex; justify-content: space-between; font-size: 12px; color: #6E6E76"><span>138.10</span><span>374.23</span></span>
+</span>
+<span role="cell" style="text-align: right; color: #3F3F46">1.61T</span>
+<span role="cell" style="text-align: right; color: #3F3F46">33.0</span>
+<span role="cell" style="text-align: right; color: #3F3F46">Dec 10</span>
+</div>
+
+<div role="row" style="display: grid; grid-template-columns: minmax(170px, 1.5fr) 84px 84px 108px 136px 76px 66px 96px; gap: 0 14px; align-items: center; padding: 1px 4px; border-top: 1px solid rgba(17,17,19,0.05); font-size: 15px">
+<span role="cell">
+<a href="02-stock-chart.html" style="display: flex; align-items: center; gap: 12px; min-height: 38px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; background: #111113; color: #FFFFFF">C</span>
+<span style="display: flex; flex-direction: column; line-height: 1.15; min-width: 0"><span style="font-weight: 500">COST</span><span style="font-size: 12px; color: #6E6E76; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Costco</span></span>
+</a>
+</span>
+<span role="cell" style="text-align: right">918.40</span>
+<span role="cell" style="text-align: right"><span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #FCE4E2; color: #A82C24">−1.05%</span></span>
+<span role="cell"><svg width="108" height="28" viewBox="0 0 96 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 3.5 L3.3 3.0 L6.6 3.2 L9.9 3.0 L13.2 3.2 L16.6 4.6 L19.9 3.8 L23.2 5.3 L26.5 6.7 L29.8 8.4 L33.1 8.9 L36.4 11.3 L39.7 13.3 L43.0 15.5 L46.3 14.4 L49.7 15.7 L53.0 17.0 L56.3 18.8 L59.6 17.5 L62.9 16.2 L66.2 17.7 L69.5 18.9 L72.8 17.8 L76.1 19.2 L79.4 21.2 L82.8 20.9 L86.1 22.4 L89.4 21.7 L92.7 24.0 L96.0 25.0 " fill="none" stroke="#E5484D" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></svg></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 5px">
+<span style="position: relative; display: block; height: 4px; border-radius: 2px; background: rgba(17,17,19,0.08)"><span style="position: absolute; top: -4px; left: 24%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: #111113; border: 2px solid #FFFFFF; box-sizing: border-box"></span></span>
+<span style="display: flex; justify-content: space-between; font-size: 12px; color: #6E6E76"><span>867.34</span><span>1,078.23</span></span>
+</span>
+<span role="cell" style="text-align: right; color: #3F3F46">407.2B</span>
+<span role="cell" style="text-align: right; color: #3F3F46">46.8</span>
+<span role="cell" style="text-align: right; color: #3F3F46">Dec 10</span>
+</div>
+
+</div>
+</div>
+</section>
+
+<section aria-labelledby="sec-h" style="border-radius: 24px; padding: 14px 18px 16px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px">
+<h2 id="sec-h" style="margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -0.01em">Sector performance</h2>
+<div role="group" aria-label="Period" style="display: flex; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(17,17,19,0.05)">
+
+<button type="button" aria-pressed="true" style="min-width: 48px; height: 34px; padding: 0 12px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; cursor: pointer; background: #FFFFFF; color: #111113; box-shadow: 0 1px 3px rgba(17,17,19,0.1)">1D</button>
+
+<button type="button" aria-pressed="false" style="min-width: 48px; height: 34px; padding: 0 12px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; cursor: pointer; background: transparent; color: #55555C; box-shadow: none">1W</button>
+
+<button type="button" aria-pressed="false" style="min-width: 48px; height: 34px; padding: 0 12px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; cursor: pointer; background: transparent; color: #55555C; box-shadow: none">1M</button>
+
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+
+<div style="flex: 1 1 128px; min-height: 50px; box-sizing: border-box; border-radius: 14px; padding: 7px 14px; gap: 2px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: rgba(77,176,127,0.34)">
+<span style="font-size: 13px; color: #111113">Technology</span>
+<span style="font-size: 17px; font-weight: 400; color: #155C3B">+1.12%</span>
+</div>
+
+<div style="flex: 1 1 128px; min-height: 50px; box-sizing: border-box; border-radius: 14px; padding: 7px 14px; gap: 2px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: rgba(77,176,127,0.20)">
+<span style="font-size: 13px; color: #111113">Communication</span>
+<span style="font-size: 17px; font-weight: 400; color: #155C3B">+0.42%</span>
+</div>
+
+<div style="flex: 1 1 128px; min-height: 50px; box-sizing: border-box; border-radius: 14px; padding: 7px 14px; gap: 2px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: rgba(77,176,127,0.34)">
+<span style="font-size: 13px; color: #111113">Consumer disc.</span>
+<span style="font-size: 17px; font-weight: 400; color: #155C3B">+0.88%</span>
+</div>
+
+<div style="flex: 1 1 128px; min-height: 50px; box-sizing: border-box; border-radius: 14px; padding: 7px 14px; gap: 2px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: rgba(77,176,127,0.10)">
+<span style="font-size: 13px; color: #111113">Financials</span>
+<span style="font-size: 17px; font-weight: 400; color: #155C3B">+0.21%</span>
+</div>
+
+<div style="flex: 1 1 128px; min-height: 50px; box-sizing: border-box; border-radius: 14px; padding: 7px 14px; gap: 2px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: rgba(77,176,127,0.10)">
+<span style="font-size: 13px; color: #111113">Industrials</span>
+<span style="font-size: 17px; font-weight: 400; color: #155C3B">+0.15%</span>
+</div>
+
+<div style="flex: 1 1 128px; min-height: 50px; box-sizing: border-box; border-radius: 14px; padding: 7px 14px; gap: 2px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: rgba(77,176,127,0.20)">
+<span style="font-size: 13px; color: #111113">Materials</span>
+<span style="font-size: 17px; font-weight: 400; color: #155C3B">+0.33%</span>
+</div>
+
+<div style="flex: 1 1 128px; min-height: 50px; box-sizing: border-box; border-radius: 14px; padding: 7px 14px; gap: 2px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: rgba(234,91,82,0.18)">
+<span style="font-size: 13px; color: #111113">Health care</span>
+<span style="font-size: 17px; font-weight: 400; color: #8E2A23">−0.35%</span>
+</div>
+
+<div style="flex: 1 1 128px; min-height: 50px; box-sizing: border-box; border-radius: 14px; padding: 7px 14px; gap: 2px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: rgba(234,91,82,0.09)">
+<span style="font-size: 13px; color: #111113">Utilities</span>
+<span style="font-size: 17px; font-weight: 400; color: #8E2A23">−0.22%</span>
+</div>
+
+<div style="flex: 1 1 128px; min-height: 50px; box-sizing: border-box; border-radius: 14px; padding: 7px 14px; gap: 2px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: rgba(234,91,82,0.18)">
+<span style="font-size: 13px; color: #111113">Real estate</span>
+<span style="font-size: 17px; font-weight: 400; color: #8E2A23">−0.41%</span>
+</div>
+
+<div style="flex: 1 1 128px; min-height: 50px; box-sizing: border-box; border-radius: 14px; padding: 7px 14px; gap: 2px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: rgba(234,91,82,0.18)">
+<span style="font-size: 13px; color: #111113">Consumer staples</span>
+<span style="font-size: 17px; font-weight: 400; color: #8E2A23">−0.64%</span>
+</div>
+
+<div style="flex: 1 1 128px; min-height: 50px; box-sizing: border-box; border-radius: 14px; padding: 7px 14px; gap: 2px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: rgba(234,91,82,0.30)">
+<span style="font-size: 13px; color: #111113">Energy</span>
+<span style="font-size: 17px; font-weight: 400; color: #8E2A23">−1.08%</span>
+</div>
+
+</div>
+</section>
+</main>
+
+<aside aria-label="Movers, earnings and research queue" style="flex: 1 1 330px; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding-bottom: 4px">
+
+<section aria-labelledby="mv-h" style="border-radius: 24px; padding: 14px 18px 16px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 10px">
+<h2 id="mv-h" style="margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -0.01em">Movers</h2>
+<span style="font-size: 13px; color: #6E6E76">Watchlist · today</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+
+<div style="display: grid; grid-template-columns: 54px minmax(0, 1fr) 64px; align-items: center; gap: 10px; min-height: 24px">
+<span style="font-size: 14px; font-weight: 500">AVGO</span>
+<span style="display: flex; height: 12px">
+<span style="flex: 1; display: flex; justify-content: flex-end; border-right: 1px solid rgba(17,17,19,0.15)"><span style="display: block; height: 12px; border-radius: 6px 0 0 6px; background: #EA5B52; width: 0%"></span></span>
+<span style="flex: 1; display: flex"><span style="display: block; height: 12px; border-radius: 0 6px 6px 0; background: #4DB07F; width: 94%"></span></span>
+</span>
+<span style="text-align: right; font-size: 14px; color: #1A7F4E">+3.02%</span>
+</div>
+
+<div style="display: grid; grid-template-columns: 54px minmax(0, 1fr) 64px; align-items: center; gap: 10px; min-height: 24px">
+<span style="font-size: 14px; font-weight: 500">NVDA</span>
+<span style="display: flex; height: 12px">
+<span style="flex: 1; display: flex; justify-content: flex-end; border-right: 1px solid rgba(17,17,19,0.15)"><span style="display: block; height: 12px; border-radius: 6px 0 0 6px; background: #EA5B52; width: 0%"></span></span>
+<span style="flex: 1; display: flex"><span style="display: block; height: 12px; border-radius: 0 6px 6px 0; background: #4DB07F; width: 67%"></span></span>
+</span>
+<span style="text-align: right; font-size: 14px; color: #1A7F4E">+2.14%</span>
+</div>
+
+<div style="display: grid; grid-template-columns: 54px minmax(0, 1fr) 64px; align-items: center; gap: 10px; min-height: 24px">
+<span style="font-size: 14px; font-weight: 500">AMZN</span>
+<span style="display: flex; height: 12px">
+<span style="flex: 1; display: flex; justify-content: flex-end; border-right: 1px solid rgba(17,17,19,0.15)"><span style="display: block; height: 12px; border-radius: 6px 0 0 6px; background: #EA5B52; width: 0%"></span></span>
+<span style="flex: 1; display: flex"><span style="display: block; height: 12px; border-radius: 0 6px 6px 0; background: #4DB07F; width: 40%"></span></span>
+</span>
+<span style="text-align: right; font-size: 14px; color: #1A7F4E">+1.27%</span>
+</div>
+
+<div style="display: grid; grid-template-columns: 54px minmax(0, 1fr) 64px; align-items: center; gap: 10px; min-height: 24px">
+<span style="font-size: 14px; font-weight: 500">MSFT</span>
+<span style="display: flex; height: 12px">
+<span style="flex: 1; display: flex; justify-content: flex-end; border-right: 1px solid rgba(17,17,19,0.15)"><span style="display: block; height: 12px; border-radius: 6px 0 0 6px; background: #EA5B52; width: 0%"></span></span>
+<span style="flex: 1; display: flex"><span style="display: block; height: 12px; border-radius: 0 6px 6px 0; background: #4DB07F; width: 28%"></span></span>
+</span>
+<span style="text-align: right; font-size: 14px; color: #1A7F4E">+0.91%</span>
+</div>
+
+<div style="display: grid; grid-template-columns: 54px minmax(0, 1fr) 64px; align-items: center; gap: 10px; min-height: 24px">
+<span style="font-size: 14px; font-weight: 500">META</span>
+<span style="display: flex; height: 12px">
+<span style="flex: 1; display: flex; justify-content: flex-end; border-right: 1px solid rgba(17,17,19,0.15)"><span style="display: block; height: 12px; border-radius: 6px 0 0 6px; background: #EA5B52; width: 0%"></span></span>
+<span style="flex: 1; display: flex"><span style="display: block; height: 12px; border-radius: 0 6px 6px 0; background: #4DB07F; width: 14%"></span></span>
+</span>
+<span style="text-align: right; font-size: 14px; color: #1A7F4E">+0.44%</span>
+</div>
+
+<div style="display: grid; grid-template-columns: 54px minmax(0, 1fr) 64px; align-items: center; gap: 10px; min-height: 24px">
+<span style="font-size: 14px; font-weight: 500">AAPL</span>
+<span style="display: flex; height: 12px">
+<span style="flex: 1; display: flex; justify-content: flex-end; border-right: 1px solid rgba(17,17,19,0.15)"><span style="display: block; height: 12px; border-radius: 6px 0 0 6px; background: #EA5B52; width: 12%"></span></span>
+<span style="flex: 1; display: flex"><span style="display: block; height: 12px; border-radius: 0 6px 6px 0; background: #4DB07F; width: 0%"></span></span>
+</span>
+<span style="text-align: right; font-size: 14px; color: #C2362D">−0.38%</span>
+</div>
+
+<div style="display: grid; grid-template-columns: 54px minmax(0, 1fr) 64px; align-items: center; gap: 10px; min-height: 24px">
+<span style="font-size: 14px; font-weight: 500">GOOGL</span>
+<span style="display: flex; height: 12px">
+<span style="flex: 1; display: flex; justify-content: flex-end; border-right: 1px solid rgba(17,17,19,0.15)"><span style="display: block; height: 12px; border-radius: 6px 0 0 6px; background: #EA5B52; width: 19%"></span></span>
+<span style="flex: 1; display: flex"><span style="display: block; height: 12px; border-radius: 0 6px 6px 0; background: #4DB07F; width: 0%"></span></span>
+</span>
+<span style="text-align: right; font-size: 14px; color: #C2362D">−0.62%</span>
+</div>
+
+<div style="display: grid; grid-template-columns: 54px minmax(0, 1fr) 64px; align-items: center; gap: 10px; min-height: 24px">
+<span style="font-size: 14px; font-weight: 500">COST</span>
+<span style="display: flex; height: 12px">
+<span style="flex: 1; display: flex; justify-content: flex-end; border-right: 1px solid rgba(17,17,19,0.15)"><span style="display: block; height: 12px; border-radius: 6px 0 0 6px; background: #EA5B52; width: 33%"></span></span>
+<span style="flex: 1; display: flex"><span style="display: block; height: 12px; border-radius: 0 6px 6px 0; background: #4DB07F; width: 0%"></span></span>
+</span>
+<span style="text-align: right; font-size: 14px; color: #C2362D">−1.05%</span>
+</div>
+
+</div>
+</section>
+
+<section aria-labelledby="er-h" style="border-radius: 24px; padding: 14px 18px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 2px">
+<h2 id="er-h" style="margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -0.01em">Upcoming earnings</h2>
+<span style="font-size: 13px; color: #6E6E76">Next 45 days</span>
+</div>
+
+<a href="03-stock-financials.html" style="display: flex; align-items: center; gap: 14px; padding: 6px 0; text-decoration: none; color: #111113">
+<span style="flex: none; width: 50px; height: 50px; border-radius: 15px; background: rgba(17,17,19,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1">
+<span style="font-size: 12px; color: #6E6E76; text-transform: uppercase; letter-spacing: 0.04em">Nov</span>
+<span style="font-size: 20px; font-weight: 400">18</span>
+</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.35">
+<span style="font-size: 15px"><span style="font-weight: 500">NVDA</span> <span style="color: #55555C">· Q3 FY27</span></span>
+<span style="font-size: 13px; color: #6E6E76">After close · EPS est. 1.68</span>
+</span>
+<span style="flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 6px; background: #111113; color: #FFFFFF; font-size: 12px">19 days</span>
+</a>
+
+<a href="03-stock-financials.html" style="display: flex; align-items: center; gap: 14px; padding: 6px 0; text-decoration: none; color: #111113">
+<span style="flex: none; width: 50px; height: 50px; border-radius: 15px; background: rgba(17,17,19,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1">
+<span style="font-size: 12px; color: #6E6E76; text-transform: uppercase; letter-spacing: 0.04em">Dec</span>
+<span style="font-size: 20px; font-weight: 400">10</span>
+</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.35">
+<span style="font-size: 15px"><span style="font-weight: 500">AVGO</span> <span style="color: #55555C">· Q4 FY26</span></span>
+<span style="font-size: 13px; color: #6E6E76">After close · EPS est. 1.95</span>
+</span>
+<span style="flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 6px; background: #111113; color: #FFFFFF; font-size: 12px">41 days</span>
+</a>
+
+<a href="03-stock-financials.html" style="display: flex; align-items: center; gap: 14px; padding: 6px 0; text-decoration: none; color: #111113">
+<span style="flex: none; width: 50px; height: 50px; border-radius: 15px; background: rgba(17,17,19,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1">
+<span style="font-size: 12px; color: #6E6E76; text-transform: uppercase; letter-spacing: 0.04em">Dec</span>
+<span style="font-size: 20px; font-weight: 400">10</span>
+</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.35">
+<span style="font-size: 15px"><span style="font-weight: 500">COST</span> <span style="color: #55555C">· Q1 FY27</span></span>
+<span style="font-size: 13px; color: #6E6E76">After close · EPS est. 4.52</span>
+</span>
+<span style="flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 6px; background: #111113; color: #FFFFFF; font-size: 12px">41 days</span>
+</a>
+
+<p style="margin: 6px 0 0; font-size: 13px; color: #55555C">Reported this week: AAPL, AMZN, GOOGL, META, MSFT · <a href="05-research-notes.html">Transcripts</a></p>
+</section>
+
+<section aria-labelledby="q-h" style="border-radius: 24px; padding: 14px 18px 4px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 4px">
+<h2 id="q-h" style="margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -0.01em">Research queue</h2>
+<span style="font-size: 13px; color: #6E6E76">2 open</span>
+</div>
+
+<label style="display: flex; align-items: center; gap: 12px; min-height: 50px; padding: 2px 0; border-top: 1px solid rgba(17,17,19,0.05); cursor: pointer">
+<input type="checkbox" style="flex: none; width: 18px; height: 18px; margin: 0; accent-color: #111113">
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3">
+<span style="font-size: 15px; color: #111113; text-decoration: none">Finish the AVGO valuation model</span>
+<span style="font-size: 13px; color: #6E6E76">Due Monday · Valuation</span>
+</span>
+<span style="flex: none; width: 26px; height: 26px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600">A</span>
+</label>
+
+<label style="display: flex; align-items: center; gap: 12px; min-height: 50px; padding: 2px 0; border-top: 1px solid rgba(17,17,19,0.05); cursor: pointer">
+<input type="checkbox" checked style="flex: none; width: 18px; height: 18px; margin: 0; accent-color: #111113">
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3">
+<span style="font-size: 15px; color: #6E6E76; text-decoration: line-through">Read the COST Q4 call transcript</span>
+<span style="font-size: 13px; color: #6E6E76">Done yesterday · Earnings</span>
+</span>
+<span style="flex: none; width: 26px; height: 26px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600">C</span>
+</label>
+
+<label style="display: flex; align-items: center; gap: 12px; min-height: 50px; padding: 2px 0; border-top: 1px solid rgba(17,17,19,0.05); cursor: pointer">
+<input type="checkbox" style="flex: none; width: 18px; height: 18px; margin: 0; accent-color: #111113">
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3">
+<span style="font-size: 15px; color: #111113; text-decoration: none">Update NVDA thesis after Nov 18</span>
+<span style="font-size: 13px; color: #6E6E76">Nov 19 · Thesis</span>
+</span>
+<span style="flex: none; width: 26px; height: 26px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600">N</span>
+</label>
+
+</section>
+</aside>
+
+<nav aria-label="Main" style="flex: 1 1 60px; display: flex; flex-wrap: wrap; align-content: flex-start; justify-content: center; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 60px; flex-direction: column">
+<button type="button" aria-label="Notifications" style="position: relative; width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"></path></svg>
+<span style="position: absolute; top: 14px; right: 15px; width: 8px; height: 8px; border-radius: 50%; background: #E5484D; border: 2px solid #FFFFFF"></span>
+</button>
+
+<a href="01-overview.html" aria-current="page" aria-label="Overview" title="Overview" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid transparent; background: rgba(17,17,19,0.07); backdrop-filter: blur(20px); box-shadow: none; color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"></path></svg>
+</a>
+
+<a href="02-stock-chart.html" aria-current="false" aria-label="Chart" title="Chart" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v3M7 15v6M5 6h4v9H5zM17 3v5M17 17v4M15 8h4v9h-4z"></path></svg>
+</a>
+
+<a href="03-stock-financials.html" aria-current="false" aria-label="Financials" title="Financials" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16M7 16v-5M12 16V6M17 16V9"></path></svg>
+</a>
+
+<a href="04-screener.html" aria-current="false" aria-label="Screener" title="Screener" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 2v-8.5z"></path></svg>
+</a>
+
+<a href="05-research-notes.html" aria-current="false" aria-label="Research notes" title="Research notes" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 16h5"></path></svg>
+</a>
+
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 60px; flex-direction: column">
+
+<button type="button" aria-label="Settings" title="Settings" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6zM19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"></path></svg>
+</button>
+
+<button type="button" aria-label="Ask a research question" title="Ask a research question" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>
+</button>
+
+<button type="button" aria-label="Learning library" title="Learning library" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5c3-1 5-1 8 1v14c-3-2-5-2-8-1zM20 5c-3-1-5-1-8 1v14c3-2 5-2 8-1z"></path></svg>
+</button>
+
+<button type="button" aria-label="Custom formulas" title="Custom formulas" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h-2a2 2 0 0 0-2 2v12a2 2 0 0 1-2 2H6M7 11h6M15 13l4 5M19 13l-4 5"></path></svg>
+</button>
+
+<button type="button" aria-label="Favorites" title="Favorites" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"></path></svg>
+</button>
+
+</div>
+</nav>
+
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Compound — Research notes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#E7E7EA}
+a{color:#111113}a:hover{color:#2F5FCC}
+:focus-visible{outline:2px solid #2F5FCC;outline-offset:2px}
+</style>
+</helmet>
+<div style="box-sizing: border-box; min-height: 100vh; padding: 14px; background: #E7E7EA; font-family: Outfit, system-ui, sans-serif; font-variant-numeric: tabular-nums; color: #111113; font-size: 14px; line-height: 1.4">
+<div style="max-width: 1600px; min-height: calc(100vh - 28px); margin: 0 auto; box-sizing: border-box; background: #F7F7F8; border: 1px solid #FFFFFF; border-radius: 32px; box-shadow: 0 40px 80px -40px rgba(17,17,19,0.28), 0 2px 6px rgba(17,17,19,0.04); padding: 16px; display: flex; flex-direction: column; gap: 14px; overflow: hidden">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 0 4px">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 48px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 48px; height: 48px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #D4D4D8; display: inline-flex; align-items: center; justify-content: center">
+<svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="#111113"></circle><path d="M6.5 17.5c3.8 0 5.5-2 6.6-4.6C14.2 10.3 15.8 8.2 19 8.2" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path><circle cx="19" cy="8.2" r="2" fill="#4DB07F"></circle></svg>
+</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2">
+<span style="font-size: 19px; font-weight: 600; letter-spacing: -0.01em">Compound</span>
+<span style="font-size: 13px; color: #6E6E76">research that compounds</span>
+</span>
+</a>
+<span aria-hidden="true" style="width: 1px; height: 32px; background: rgba(17,17,19,0.1)"></span>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #3F3F46">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7.5V12l3 2"></path></svg>
+Market open · 11:51 ET</span>
+<button type="button" aria-label="Search tickers, companies and notes" style="flex: 1 1 340px; max-width: 520px; margin: 0 auto; display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 10px 30px -14px rgba(17,17,19,0.14); font-family: inherit; color: #111113; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg>
+<span style="flex: 1; text-align: left; font-size: 15px; color: #55555C">Search tickers, companies, notes</span>
+<span style="font-size: 12px; padding: 4px 9px; border-radius: 999px; background: rgba(17,17,19,0.06); color: #3F3F46">⌘K</span>
+</button>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 22px; margin-left: auto">
+<div style="display: flex; flex-direction: column; line-height: 1.3">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500">6,812.45 <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 11px; font-weight: 600">+0.38%</span></span>
+<span style="font-size: 12px; color: #6E6E76">S&amp;P 500, USD</span>
+</div>
+<div style="display: flex; flex-direction: column; line-height: 1.3">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500">25,410.20 <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 11px; font-weight: 600">+0.71%</span></span>
+<span style="font-size: 12px; color: #6E6E76">Nasdaq 100, USD</span>
+</div>
+<button type="button" aria-label="Account menu" style="display: inline-flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px 0 5px; border-radius: 999px; border: 0; background: #1C1C1F; color: #FFFFFF; cursor: pointer; box-shadow: 0 10px 24px -12px rgba(17,17,19,0.5)">
+<span style="width: 42px; height: 42px; border-radius: 50%; background: #3A3A40; display: inline-flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8a4 4 0 1 0 0 8zM4.5 20.5c1.4-3.6 4.2-5.5 7.5-5.5s6.1 1.9 7.5 5.5"></path></svg></span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 8h14M5 12h14M5 16h14"></path></svg>
+</button>
+</div>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+
+<aside aria-labelledby="nl-h" style="flex: 1 1 280px; min-width: 0; box-sizing: border-box; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<h2 id="nl-h" style="margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -0.01em">Research notes</h2>
+<button type="button" aria-label="New note" style="width: 40px; height: 40px; padding: 0; border-radius: 50%; border: 0; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+</div>
+<label style="display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 14px; border-radius: 999px; background: rgba(17,17,19,0.05); color: #55555C">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg>
+<input type="search" aria-label="Search notes" placeholder="Search notes" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 14px; color: #111113">
+</label>
+<div role="group" aria-label="Note type" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{kinds}}" as="k" hint-placeholder-count="4">
+<button type="button" onClick="{{k.pick}}" aria-pressed="{{k.on}}" style="height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 13px; cursor: pointer; border: 1px solid {{k.border}}; background: {{k.bg}}; color: {{k.fg}}">{{k.label}}</button>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px; margin: 0 -6px">
+<sc-for list="{{notes}}" as="n" hint-placeholder-count="6">
+<button type="button" aria-current="{{n.current}}" style="display: flex; gap: 10px; align-items: flex-start; width: 100%; padding: 10px; border: 0; border-radius: 16px; text-align: left; font-family: inherit; color: #111113; cursor: pointer; background: {{n.bg}}; box-shadow: {{n.shadow}}">
+<span style="flex: none; width: 30px; height: 30px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">{{n.letter}}</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+<span style="display: flex; align-items: center; justify-content: space-between; gap: 6px"><span style="font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{n.title}}</span><span style="flex: none; width: 8px; height: 8px; border-radius: 50%; background: {{n.dot}}"></span></span>
+<span style="font-size: 13px; color: #55555C; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{n.snippet}}</span>
+<span style="font-size: 12px; color: #6E6E76">{{n.meta}}</span>
+</span>
+</button>
+</sc-for>
+</div>
+</aside>
+
+<main aria-label="NVDA core thesis" style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; border-radius: 24px; padding: 16px 24px 20px; display: flex; flex-direction: column; gap: 14px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px">
+<span style="font-size: 13px; color: #6E6E76">Notes / NVDA / <span style="color: #111113">Core thesis</span> · Saved 11:40</span>
+<div role="toolbar" aria-label="Formatting" style="display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: rgba(17,17,19,0.05)">
+<sc-for list="{{fmt}}" as="f" hint-placeholder-count="6">
+<button type="button" aria-label="{{f.label}}" style="width: 36px; height: 34px; padding: 0; border: 0; border-radius: 999px; background: transparent; color: #3F3F46; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{f.icon}}"></path></svg></button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="margin: 0; font-size: 30px; font-weight: 400; letter-spacing: -0.02em">NVDA — Core thesis</h1>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
+<a href="Stock.dc.html" style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px 0 3px; border-radius: 999px; background: rgba(17,17,19,0.05); font-size: 13px; text-decoration: none"><span style="width: 22px; height: 22px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600">N</span>NVDA</a>
+<span style="display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 999px; background: rgba(17,17,19,0.05); font-size: 13px">Thesis</span>
+<span style="display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 999px; background: rgba(17,17,19,0.05); font-size: 13px; color: #3F3F46">Started Aug 12, 2026 at 163.80</span>
+<span style="display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 13px">+15.0% since</span>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px">
+<span style="font-size: 14px; color: #55555C">Conviction</span>
+<div role="group" aria-label="Conviction" style="display: flex; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(17,17,19,0.05)">
+<sc-for list="{{conv}}" as="c" hint-placeholder-count="3">
+<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.on}}" style="display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 16px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; cursor: pointer; background: {{c.bg}}; color: {{c.fg}}; box-shadow: {{c.shadow}}"><span style="width: 7px; height: 7px; border-radius: 50%; background: {{c.dot}}"></span>{{c.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 14px; color: #55555C">Position size · <span style="color: #111113">{{size}}</span></span>
+</div>
+
+<section aria-label="Fair value scenarios" style="display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border-radius: 18px; background: rgba(17,17,19,0.035)">
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<sc-for list="{{scen}}" as="s" hint-placeholder-count="3">
+<div style="flex: 1 1 120px; display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: 14px; background: {{s.bg}}; color: {{s.fg}}">
+<span style="font-size: 13px; opacity: 0.8">{{s.label}} · {{s.prob}}</span>
+<span style="font-size: 24px; font-weight: 400; letter-spacing: -0.02em">{{s.value}}</span>
+<span style="font-size: 12px; opacity: 0.85">{{s.delta}}</span>
+</div>
+</sc-for>
+<div style="flex: 1 1 140px; display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: 14px; background: #111113; color: #FFFFFF">
+<span style="font-size: 13px; color: #B4B4BB">Weighted value</span>
+<span style="font-size: 24px; font-weight: 400; letter-spacing: -0.02em">205.00</span>
+<span style="font-size: 12px; color: #9FE0BE">+8.8% from 188.42</span>
+</div>
+</div>
+<div style="position: relative; height: 34px; margin: 0 8px">
+<span style="position: absolute; left: 0; right: 0; top: 8px; height: 6px; border-radius: 3px; background: linear-gradient(90deg, rgba(234,91,82,0.35), rgba(17,17,19,0.12) 50%, rgba(77,176,127,0.45))"></span>
+<span style="position: absolute; top: 3px; left: 40.4%; width: 16px; height: 16px; margin-left: -8px; box-sizing: border-box; border-radius: 50%; background: #111113; border: 3px solid #FFFFFF; box-shadow: 0 0 0 1px rgba(17,17,19,0.15)"></span>
+<span style="position: absolute; top: 20px; left: 40.4%; transform: translateX(-50%); font-size: 11px; color: #111113; white-space: nowrap">Now 188.42</span>
+<span style="position: absolute; top: 20px; left: 0; font-size: 11px; color: #6E6E76">140</span>
+<span style="position: absolute; top: 20px; left: 58.3%; transform: translateX(-50%); font-size: 11px; color: #6E6E76">210</span>
+<span style="position: absolute; top: 20px; right: 0; font-size: 11px; color: #6E6E76">260</span>
+</div>
+</section>
+
+<section aria-labelledby="t-h" style="display: flex; flex-direction: column; gap: 6px">
+<h2 id="t-h" style="margin: 0; font-size: 17px; font-weight: 500">Thesis</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #2A2A2E">Data-center compute demand outlasts the current capex cycle. The full stack — chips, networking, systems and software — keeps share and margins above peers even as custom accelerators ramp at the largest buyers.</p>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 14px">
+<section aria-labelledby="d-h" style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 6px">
+<h2 id="d-h" style="margin: 0; font-size: 17px; font-weight: 500">Key drivers</h2>
+<ul style="margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.6; color: #2A2A2E">
+<li>Hyperscaler capex guidance for 2027</li>
+<li>Networking attach rate per rack</li>
+<li>Gross margin holds above 70% through the next product cycle</li>
+</ul>
+</section>
+<section aria-labelledby="r-h" style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 6px">
+<h2 id="r-h" style="margin: 0; font-size: 17px; font-weight: 500">Risks</h2>
+<ul style="margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.6; color: #2A2A2E">
+<li>Custom silicon takes share at the top four buyers</li>
+<li>Export restrictions widen</li>
+<li>Customer concentration in a capex downturn</li>
+</ul>
+</section>
+</div>
+
+<section aria-labelledby="c-h" style="display: flex; flex-direction: column; gap: 6px; padding: 12px 16px; border-radius: 16px; border: 1px dashed rgba(17,17,19,0.18)">
+<h2 id="c-h" style="margin: 0; font-size: 15px; font-weight: 500">What would change my mind</h2>
+<p style="margin: 0; font-size: 14px; color: #2A2A2E">Two straight quarters of data-center revenue decline, or gross margin below 65%.</p>
+</section>
+
+<section aria-labelledby="k-h" style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="k-h" style="margin: 0; font-size: 17px; font-weight: 500">Catalysts</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="3">
+<span style="flex: 1 1 150px; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px; background: rgba(17,17,19,0.04)">
+<span style="flex: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 12px; background: {{c.bg}}; color: {{c.fg}}; line-height: 1.05"><span style="font-size: 10px; text-transform: uppercase">{{c.mon}}</span><span style="font-size: 16px">{{c.day}}</span></span>
+<span style="display: flex; flex-direction: column; line-height: 1.25"><span style="font-size: 14px">{{c.title}}</span><span style="font-size: 12px; color: #6E6E76">{{c.meta}}</span></span>
+</span>
+</sc-for>
+</div>
+</section>
+</main>
+
+<aside aria-label="Note context" style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+
+<section aria-labelledby="sn-h" style="border-radius: 24px; padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px">
+<h2 id="sn-h" style="margin: 0; font-size: 19px; font-weight: 400">Since this note</h2>
+<span style="font-size: 17px; color: #1A7F4E">+15.0%</span>
+</div>
+<svg viewBox="0 0 300 70" preserveAspectRatio="none" role="img" aria-label="NVDA price since Aug 12, up 15 percent" style="width: 100%; height: 70px"><path d="{{sinceArea}}" fill="rgba(77,176,127,0.16)"></path><path d="{{sinceLine}}" fill="none" stroke="#2E9B63" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></svg>
+<div role="table" aria-label="Then versus now">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1.3fr) 1fr 1fr; gap: 8px; padding: 4px 0; font-size: 12px; color: #6E6E76"><span role="columnheader">Metric</span><span role="columnheader" style="text-align: right">Aug 12</span><span role="columnheader" style="text-align: right">Now</span></div>
+<sc-for list="{{then}}" as="t" hint-placeholder-count="4">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1.3fr) 1fr 1fr; gap: 8px; padding: 5px 0; border-top: 1px solid rgba(17,17,19,0.05); font-size: 14px"><span role="rowheader" style="color: #3F3F46">{{t.k}}</span><span role="cell" style="text-align: right; color: #6E6E76">{{t.a}}</span><span role="cell" style="text-align: right">{{t.b}}</span></div>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="ck-h" style="border-radius: 24px; padding: 14px 18px 6px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 2px">
+<h2 id="ck-h" style="margin: 0; font-size: 19px; font-weight: 400">Checklist</h2>
+<span style="font-size: 13px; color: #6E6E76">{{doneCount}} of 6</span>
+</div>
+<sc-for list="{{checks}}" as="c" hint-placeholder-count="6">
+<label style="display: flex; align-items: center; gap: 10px; min-height: 38px; border-top: 1px solid rgba(17,17,19,0.05); font-size: 14px; cursor: pointer">
+<input type="checkbox" checked="{{c.done}}" onChange="{{c.toggle}}" style="flex: none; width: 17px; height: 17px; margin: 0; accent-color: #111113">
+<span style="color: {{c.color}}">{{c.text}}</span>
+</label>
+</sc-for>
+</section>
+
+<section aria-labelledby="ln-h" style="border-radius: 24px; padding: 14px 18px 8px; background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<h2 id="ln-h" style="margin: 0 0 4px; font-size: 19px; font-weight: 400">Linked</h2>
+<sc-for list="{{links}}" as="l" hint-placeholder-count="3">
+<a href="{{l.href}}" style="display: flex; align-items: center; gap: 10px; min-height: 42px; border-top: 1px solid rgba(17,17,19,0.05); text-decoration: none; color: #111113">
+<span style="flex: none; width: 30px; height: 30px; border-radius: 9px; background: rgba(17,17,19,0.05); color: #3F3F46; display: inline-flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{l.icon}}"></path></svg></span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25"><span style="font-size: 14px">{{l.title}}</span><span style="font-size: 12px; color: #6E6E76">{{l.meta}}</span></span>
+</a>
+</sc-for>
+</section>
+</aside>
+
+<nav aria-label="Main" style="flex: 1 1 60px; display: flex; flex-wrap: wrap; align-content: flex-start; justify-content: center; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 60px; flex-direction: column">
+<button type="button" aria-label="Notifications" style="position: relative; width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"></path></svg>
+<span style="position: absolute; top: 13px; right: 14px; width: 8px; height: 8px; border-radius: 50%; background: #E5484D; border: 2px solid #FFFFFF"></span>
+</button>
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="5">
+<a href="{{n.href}}" aria-current="{{n.current}}" aria-label="{{n.label}}" title="{{n.label}}" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid {{n.border}}; background: {{n.bg}}; backdrop-filter: blur(20px); box-shadow: {{n.shadow}}; color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+</a>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 60px; flex-direction: column">
+<sc-for list="{{nav2}}" as="n" hint-placeholder-count="4">
+<button type="button" aria-label="{{n.label}}" title="{{n.label}}" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,{{glass}}); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+</button>
+</sc-for>
+</div>
+</nav>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"glass":{"editor":"range","min":0.35,"max":1,"step":0.01,"default":0.72,"section":"Look"},"$preview":{"width":1512,"height":982}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { kind: 'All', conviction: 'High', checks: { c1: true, c2: true, c3: true, c5: true } };
+  }
+  rng(seed) {
+    var s = seed >>> 0;
+    return function () {
+      s = (s + 0x6D2B79F5) >>> 0;
+      var t = s;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var glass = this.props.glass == null ? 0.72 : this.props.glass;
+    var NAV = [
+      ['Overview', 'Main.dc.html', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z'],
+      ['Chart', 'Stock.dc.html', 'M7 3v3M7 15v6M5 6h4v9H5zM17 3v5M17 17v4M15 8h4v9h-4z'],
+      ['Financials', 'Financials.dc.html', 'M4 20h16M7 16v-5M12 16V6M17 16V9'],
+      ['Screener', 'Screener.dc.html', 'M4 5h16l-6 7.5V19l-4 2v-8.5z'],
+      ['Research notes', 'Notes.dc.html', 'M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 16h5']
+    ];
+    var nav = NAV.map(function (x) {
+      var on = x[0] === 'Research notes';
+      return { label: x[0], href: x[1], icon: x[2], current: on ? 'page' : 'false', bg: on ? 'rgba(17,17,19,0.07)' : 'rgba(255,255,255,' + glass + ')', border: on ? 'transparent' : 'rgba(255,255,255,0.95)', shadow: on ? 'none' : '0 1px 2px rgba(17,17,19,0.05)' };
+    });
+    var nav2 = [
+      ['Settings', 'M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6zM19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z'],
+      ['Ask about this note', 'M4 5h16v11H9l-5 4z'],
+      ['Learning library', 'M4 5c3-1 5-1 8 1v14c-3-2-5-2-8-1zM20 5c-3-1-5-1-8 1v14c3-2 5-2 8-1z'],
+      ['Custom formulas', 'M14 4h-2a2 2 0 0 0-2 2v12a2 2 0 0 1-2 2H6M7 11h6M15 13l4 5M19 13l-4 5'],
+      ['Favorites', 'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z']
+    ].map(function (x) { return { label: x[0], icon: x[1] }; });
+
+    var kinds = ['All', 'Theses', 'Earnings', 'Ideas'].map(function (k) {
+      var on = st.kind === k;
+      return { label: k, on: on, bg: on ? '#111113' : 'rgba(255,255,255,0.7)', fg: on ? '#FFFFFF' : '#3F3F46', border: on ? '#111113' : 'rgba(17,17,19,0.1)', pick: function () { self.setState({ kind: k }); } };
+    });
+    var CONV = { High: '#2E9B63', Medium: '#F5A524', Low: '#B4B4BA' };
+    var NOTES = [
+      ['N', 'NVDA — Core thesis', 'Data-center demand outlasts the capex cycle', 'Thesis · today', 'High', 'Theses'],
+      ['A', 'AVGO — Valuation model', 'Base case 380, bear 290, bull 450', 'Thesis · Oct 27', 'Medium', 'Theses'],
+      ['C', 'COST — Q4 FY26 call', 'Renewal rates, traffic and membership fees', 'Earnings · Oct 29', 'High', 'Earnings'],
+      ['A', 'ANET — Networking for AI', 'Back-end clusters moving to Ethernet', 'Idea · Oct 14', 'Medium', 'Ideas'],
+      ['L', 'LLY — Obesity franchise', 'Supply ramp vs. pricing pressure', 'Thesis · Oct 2', 'Medium', 'Theses'],
+      ['M', 'MSFT — Cloud growth tracker', 'Quarterly growth vs. capacity adds', 'Earnings · Oct 29', 'High', 'Earnings'],
+      ['K', 'KLAC — Screen follow-up', 'Why ROIC stays above 40%', 'Idea · Sep 30', 'Low', 'Ideas']
+    ];
+    var notes = NOTES.filter(function (n) { return st.kind === 'All' || n[5] === st.kind; }).map(function (n, i) {
+      var on = n[1].indexOf('NVDA') === 0;
+      return { letter: n[0], title: n[1], snippet: n[2], meta: n[3], dot: CONV[n[4]], current: on ? 'page' : 'false', bg: on ? '#FFFFFF' : 'transparent', shadow: on ? '0 1px 3px rgba(17,17,19,0.08), 0 8px 20px -12px rgba(17,17,19,0.2)' : 'none' };
+    });
+
+    var conv = ['Low', 'Medium', 'High'].map(function (k) {
+      var on = st.conviction === k;
+      return { label: k, on: on, dot: CONV[k], bg: on ? '#FFFFFF' : 'transparent', fg: on ? '#111113' : '#55555C', shadow: on ? '0 1px 3px rgba(17,17,19,0.1)' : 'none', pick: function () { self.setState({ conviction: k }); } };
+    });
+    var size = { Low: 'starter, up to 1%', Medium: 'standard, 2–3%', High: 'core, 4–5%' }[st.conviction];
+
+    var scen = [
+      { label: 'Bear', prob: '25%', value: '140.00', delta: '−25.7%', bg: 'rgba(234,91,82,0.12)', fg: '#8E2A23' },
+      { label: 'Base', prob: '50%', value: '210.00', delta: '+11.5%', bg: '#FFFFFF', fg: '#111113' },
+      { label: 'Bull', prob: '25%', value: '260.00', delta: '+38.0%', bg: 'rgba(77,176,127,0.16)', fg: '#155C3B' }
+    ];
+    var cats = [
+      { mon: 'Nov', day: '18', title: 'Q3 FY27 earnings', meta: 'After close · est. 1.68', bg: '#111113', fg: '#FFFFFF' },
+      { mon: 'Feb', day: '24', title: 'Q4 FY27 earnings', meta: 'Expected', bg: 'rgba(17,17,19,0.08)', fg: '#111113' },
+      { mon: 'Mar', day: '16', title: 'Developer conference', meta: 'Product roadmap', bg: 'rgba(17,17,19,0.08)', fg: '#111113' }
+    ];
+
+    var r = this.rng(31), v = 163.8, pts = [];
+    for (var i = 0; i < 56; i++) { v += (r() - 0.47) * 3.4; pts.push(v); }
+    var k = (188.42 - 163.8) / (pts[55] - 163.8 || 1);
+    pts = pts.map(function (p, j) { return 163.8 + (p - 163.8) * k * (0.4 + 0.6 * j / 55) + (j === 55 ? 0 : 0); });
+    pts[55] = 188.42;
+    var mn = Math.min.apply(null, pts), mx = Math.max.apply(null, pts), line = '';
+    pts.forEach(function (p, j) { line += (j ? 'L' : 'M') + (j / 55 * 300).toFixed(1) + ' ' + (4 + (1 - (p - mn) / (mx - mn)) * 62).toFixed(1); });
+
+    var CHECKS = [['c1', 'How the company makes money'], ['c2', 'Read the last two earnings calls'], ['c3', 'Modeled three scenarios'], ['c4', 'Compared valuation to five peers'], ['c5', 'Wrote down exit criteria'], ['c6', 'Sized the position by conviction']];
+    var checks = CHECKS.map(function (c) {
+      var done = !!st.checks[c[0]];
+      return { text: c[1], done: done, color: done ? '#6E6E76' : '#111113', toggle: function () { var o = Object.assign({}, self.state.checks); o[c[0]] = !o[c[0]]; self.setState({ checks: o }); } };
+    });
+
+    return {
+      glass: glass, nav: nav, nav2: nav2, kinds: kinds, notes: notes, conv: conv, size: size, scen: scen, cats: cats,
+      fmt: [['Bold', 'M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z'], ['Italic', 'M10 5h8M6 19h8M14 5l-4 14'], ['Bulleted list', 'M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01'], ['Link', 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1'], ['Embed chart', 'M4 18l5-6 4 3 7-8'], ['Share', 'M12 4v11M7 9l5-5 5 5M5 20h14']].map(function (f) { return { label: f[0], icon: f[1] }; }),
+      sinceLine: line, sinceArea: line + 'L300 70L0 70Z',
+      then: [{ k: 'Price', a: '163.80', b: '188.42' }, { k: 'Forward P/E', a: '31.2', b: '27.9' }, { k: 'Rev growth', a: '+61.8%', b: '+54.6%' }, { k: 'Gross margin', a: '72.4%', b: '72.9%' }],
+      checks: checks, doneCount: checks.filter(function (c) { return c.done; }).length,
+      links: [
+        { title: 'Q2 FY27 call transcript', meta: 'Aug 26 · 14 highlights', href: 'Stock.dc.html', icon: 'M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3zM6 11a6 6 0 0 0 12 0M12 17v3' },
+        { title: 'Income statement, last 4 quarters', meta: 'Financials', href: 'Financials.dc.html', icon: 'M4 20h16M7 16v-5M12 16V6M17 16V9' },
+        { title: 'Quality compounders screen', meta: 'Screener · 18 matches', href: 'Screener.dc.html', icon: 'M4 5h16l-6 7.5V19l-4 2v-8.5z' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

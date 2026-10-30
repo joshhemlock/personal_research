@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compound — NVDA chart</title>
+<!-- Static snapshot of the design at its default state. Exact markup and CSS reference; sample data only; no interactivity. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#E7E7EA}
+a{color:#111113}a:hover{color:#2F5FCC}
+:focus-visible{outline:2px solid #2F5FCC;outline-offset:2px}
+</style>
+</head>
+<body>
+
+<div style="box-sizing: border-box; min-height: 100vh; padding: 14px; background: #E7E7EA; font-family: Outfit, system-ui, sans-serif; font-variant-numeric: tabular-nums; color: #111113; font-size: 14px; line-height: 1.4">
+<div style="max-width: 1600px; min-height: calc(100vh - 28px); margin: 0 auto; box-sizing: border-box; background: #F7F7F8; border: 1px solid #FFFFFF; border-radius: 32px; box-shadow: 0 40px 80px -40px rgba(17,17,19,0.28), 0 2px 6px rgba(17,17,19,0.04); padding: 16px 16px 0; display: flex; flex-direction: column; gap: 14px; overflow: hidden">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 0 4px">
+<a href="01-overview.html" style="display: flex; align-items: center; gap: 12px; min-height: 48px; text-decoration: none; color: #111113">
+<span style="flex: none; width: 48px; height: 48px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #D4D4D8; display: inline-flex; align-items: center; justify-content: center">
+<svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="#111113"></circle><path d="M6.5 17.5c3.8 0 5.5-2 6.6-4.6C14.2 10.3 15.8 8.2 19 8.2" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path><circle cx="19" cy="8.2" r="2" fill="#4DB07F"></circle></svg>
+</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2">
+<span style="font-size: 19px; font-weight: 600; letter-spacing: -0.01em">Compound</span>
+<span style="font-size: 13px; color: #6E6E76">research that compounds</span>
+</span>
+</a>
+<span aria-hidden="true" style="width: 1px; height: 32px; background: rgba(17,17,19,0.1)"></span>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #3F3F46">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7.5V12l3 2"></path></svg>
+Market open · 11:51 ET</span>
+<button type="button" aria-label="Search tickers, companies and notes — current symbol NVDA" style="flex: 1 1 340px; max-width: 520px; margin: 0 auto; display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 10px 30px -14px rgba(17,17,19,0.14); font-family: inherit; color: #111113; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg>
+<span style="flex: 1; display: flex; flex-direction: column; align-items: center; line-height: 1.25">
+<span style="font-size: 15px; font-weight: 500">NVDA 188.42 <span style="color: #1A7F4E">+3.95 (+2.14%)</span></span>
+<span style="font-size: 12px; color: #6E6E76">Oct 30, 2026 · 11:51:04 AM</span>
+</span>
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"></path></svg>
+</button>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 22px; margin-left: auto">
+<div style="display: flex; flex-direction: column; line-height: 1.3">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500">6,812.45 <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 11px; font-weight: 600">+0.38%</span></span>
+<span style="font-size: 12px; color: #6E6E76">S&amp;P 500, USD</span>
+</div>
+<div style="display: flex; flex-direction: column; line-height: 1.3">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500">25,410.20 <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 11px; font-weight: 600">+0.71%</span></span>
+<span style="font-size: 12px; color: #6E6E76">Nasdaq 100, USD</span>
+</div>
+<button type="button" aria-label="Account menu" style="display: inline-flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px 0 5px; border-radius: 999px; border: 0; background: #1C1C1F; color: #FFFFFF; cursor: pointer; box-shadow: 0 10px 24px -12px rgba(17,17,19,0.5)">
+<span style="width: 42px; height: 42px; border-radius: 50%; background: #3A3A40; display: inline-flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8a4 4 0 1 0 0 8zM4.5 20.5c1.4-3.6 4.2-5.5 7.5-5.5s6.1 1.9 7.5 5.5"></path></svg></span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 8h14M5 12h14M5 16h14"></path></svg>
+</button>
+</div>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+
+<main aria-label="NVIDIA chart" style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px">
+<span style="display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px 0 5px; border-radius: 999px; background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.05)">
+<span style="width: 34px; height: 34px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600">N</span>
+<h1 style="margin: 0; font-size: 16px; font-weight: 500">NVIDIA <span style="color: #6E6E76">·</span> Nasdaq</h1>
+<span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; background: #DDF3E6; color: #1A6B45; font-size: 12px; font-weight: 600">+2.14%</span>
+</span>
+<a href="05-research-notes.html" style="display: inline-flex; align-items: center; height: 44px; padding: 0 20px; box-sizing: border-box; border-radius: 999px; background: #5E5E66; color: #FFFFFF; font-size: 15px; font-weight: 500; text-decoration: none">Add note</a>
+<button type="button" aria-pressed="true" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 999px; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer; border: 1px solid #2A855A; background: #2A855A; color: #FFFFFF">
+<svg width="17" height="17" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" fill="#FFFFFF" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"></path></svg>Watching</button>
+<span style="font-size: 15px; color: #3F3F46; padding-left: 4px; word-spacing: 2px">O 185.10  H 189.30  L 184.62  C 188.42</span>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<div role="group" aria-label="Time range" style="display: flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 999px; background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.05)">
+
+<button type="button" aria-pressed="false" style="min-width: 44px; height: 38px; padding: 0 12px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; background: transparent; color: #55555C">1M</button>
+
+<button type="button" aria-pressed="false" style="min-width: 44px; height: 38px; padding: 0 12px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; background: transparent; color: #55555C">3M</button>
+
+<button type="button" aria-pressed="true" style="min-width: 44px; height: 38px; padding: 0 12px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; background: #111113; color: #FFFFFF">6M</button>
+
+<button type="button" aria-pressed="false" style="min-width: 44px; height: 38px; padding: 0 12px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; background: transparent; color: #55555C">YTD</button>
+
+<button type="button" aria-pressed="false" style="min-width: 44px; height: 38px; padding: 0 12px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; background: transparent; color: #55555C">1Y</button>
+
+<button type="button" aria-pressed="false" style="min-width: 44px; height: 38px; padding: 0 12px; border: 0; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; background: transparent; color: #55555C">2Y</button>
+
+</div>
+<div role="group" aria-label="Chart type" style="display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.05)">
+
+<button type="button" aria-pressed="true" aria-label="Candlestick chart" style="width: 44px; height: 38px; padding: 0; border: 0; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; background: #111113; color: #FFFFFF"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v3M7 15v6M5 6h4v9H5zM17 3v5M17 17v4M15 8h4v9h-4z"></path></svg></button>
+
+<button type="button" aria-pressed="false" aria-label="Line chart" style="width: 44px; height: 38px; padding: 0; border: 0; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; background: transparent; color: #55555C"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17l5-6 4 3 7-8"></path></svg></button>
+
+</div>
+<button type="button" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); font-family: inherit; font-size: 14px; color: #111113; cursor: pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 17l5-5 4 3 7-8M15 7h5v5"></path></svg>Compare</button>
+<button type="button" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); font-family: inherit; font-size: 14px; color: #111113; cursor: pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 12h3l2-6 4 12 2-6h5"></path></svg>Indicators</button>
+<button type="button" aria-label="Chart layers" style="width: 44px; height: 44px; padding: 0; border-radius: 12px; border: 0; background: rgba(17,17,19,0.05); color: #3F3F46; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg></button>
+<span style="flex: 1"></span>
+<span style="display: inline-flex; gap: 2px; color: #55555C">
+<button type="button" aria-label="Save snapshot" style="width: 40px; height: 40px; padding: 0; border: 0; border-radius: 12px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z"></path></svg></button>
+<button type="button" aria-label="Full screen" style="width: 40px; height: 40px; padding: 0; border: 0; border-radius: 12px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"></path></svg></button>
+<button type="button" aria-label="Chart settings" style="width: 40px; height: 40px; padding: 0; border: 0; border-radius: 12px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 5v4M9 15v4"></path></svg></button>
+</span>
+</div>
+
+<div style="position: relative; height: 516px">
+
+<div style="position: absolute; left: 0; right: 0; top: 85.81%; display: flex; align-items: center; transform: translateY(-50%)">
+<span style="flex: 1; border-top: 1px solid rgba(17,17,19,0.05)"></span>
+<span style="width: 76px; box-sizing: border-box; padding-left: 14px; font-size: 13px; color: #3F3F46">130.00</span>
+</div>
+
+<div style="position: absolute; left: 0; right: 0; top: 73.10%; display: flex; align-items: center; transform: translateY(-50%)">
+<span style="flex: 1; border-top: 1px solid rgba(17,17,19,0.05)"></span>
+<span style="width: 76px; box-sizing: border-box; padding-left: 14px; font-size: 13px; color: #3F3F46">140.00</span>
+</div>
+
+<div style="position: absolute; left: 0; right: 0; top: 47.67%; display: flex; align-items: center; transform: translateY(-50%)">
+<span style="flex: 1; border-top: 1px solid rgba(17,17,19,0.05)"></span>
+<span style="width: 76px; box-sizing: border-box; padding-left: 14px; font-size: 13px; color: #3F3F46">160.00</span>
+</div>
+
+<div style="position: absolute; left: 0; right: 0; top: 34.96%; display: flex; align-items: center; transform: translateY(-50%)">
+<span style="flex: 1; border-top: 1px solid rgba(17,17,19,0.05)"></span>
+<span style="width: 76px; box-sizing: border-box; padding-left: 14px; font-size: 13px; color: #3F3F46">170.00</span>
+</div>
+
+<div style="position: absolute; left: 0; right: 0; top: 22.25%; display: flex; align-items: center; transform: translateY(-50%)">
+<span style="flex: 1; border-top: 1px solid rgba(17,17,19,0.05)"></span>
+<span style="width: 76px; box-sizing: border-box; padding-left: 14px; font-size: 13px; color: #3F3F46">180.00</span>
+</div>
+
+<div style="position: absolute; left: 0; top: 0; bottom: 0; right: 76px">
+
+<span style="position: absolute; top: 0; bottom: 0; left: 13.10%; border-left: 1px solid rgba(17,17,19,0.05)"></span>
+
+<span style="position: absolute; top: 0; bottom: 0; left: 30.56%; border-left: 1px solid rgba(17,17,19,0.05)"></span>
+
+<span style="position: absolute; top: 0; bottom: 0; left: 48.81%; border-left: 1px solid rgba(17,17,19,0.05)"></span>
+
+<span style="position: absolute; top: 0; bottom: 0; left: 65.48%; border-left: 1px solid rgba(17,17,19,0.05)"></span>
+
+<span style="position: absolute; top: 0; bottom: 0; left: 82.94%; border-left: 1px solid rgba(17,17,19,0.05)"></span>
+
+<svg viewBox="0 0 1000 300" preserveAspectRatio="none" role="img" aria-label="NVDA candlestick chart, 6M, May 8 to Oct 30, with SOX and S&amp;P 500 overlays" style="position: absolute; inset: 0; width: 100%; height: 100%">
+<path d="M3.97 223.24L11.90 227.01L19.84 223.83L27.78 225.01L35.71 229.15L43.65 228.86L51.59 226.06L59.52 228.02L67.46 228.07L75.40 223.44L83.33 223.32L91.27 221.48L99.21 218.79L107.14 221.53L115.08 221.83L123.02 219.51L130.95 221.39L138.89 226.37L146.83 232.35L154.76 234.74L162.70 232.93L170.63 234.27L178.57 231.26L186.51 229.30L194.44 233.86L202.38 236.99L210.32 240.72L218.25 241.57L226.19 242.18L234.13 241.58L242.06 238.81L250.00 241.19L257.94 242.93L265.87 240.56L273.81 234.40L281.75 235.31L289.68 240.92L297.62 242.37L305.56 239.75L313.49 237.93L321.43 240.07L329.37 236.99L337.30 238.70L345.24 244.36L353.17 241.52L361.11 243.86L369.05 242.76L376.98 245.58L384.92 240.85L392.86 234.15L400.79 227.73L408.73 228.82L416.67 232.51L424.60 232.91L432.54 229.75L440.48 224.88L448.41 221.33L456.35 221.31L464.29 214.45L472.22 211.28L480.16 209.19L488.10 210.02L496.03 210.21L503.97 213.43L511.90 215.18L519.84 207.82L527.78 204.47L535.71 198.11L543.65 202.77L551.59 202.44L559.52 203.53L567.46 208.08L575.40 204.35L583.33 207.59L591.27 207.58L599.21 205.15L607.14 204.26L615.08 196.77L623.02 196.83L630.95 194.28L638.89 198.39L646.83 194.47L654.76 192.04L662.70 191.16L670.63 190.92L678.57 187.17L686.51 192.95L694.44 195.34L702.38 197.17L710.32 190.13L718.25 187.40L726.19 181.66L734.13 179.22L742.06 174.20L750.00 180.69L757.94 184.94L765.87 185.72L773.81 186.36L781.75 184.74L789.68 188.06L797.62 188.05L805.56 183.42L813.49 188.21L821.43 191.66L829.37 187.74L837.30 179.92L845.24 173.66L853.17 165.90L861.11 158.25L869.05 163.42L876.98 155.94L884.92 159.47L892.86 160.39L900.79 164.24L908.73 166.69L916.67 159.99L924.60 156.24L932.54 160.14L940.48 157.66L948.41 162.62L956.35 164.86L964.29 159.20L972.22 151.18L980.16 157.77L988.10 149.73L996.03 154.88" fill="none" stroke="#9A9AA2" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+<path d="M3.97 223.24L11.90 220.88L19.84 218.51L27.78 217.76L35.71 217.84L43.65 216.41L51.59 218.40L59.52 220.72L67.46 220.79L75.40 221.72L83.33 218.76L91.27 217.96L99.21 217.00L107.14 219.49L115.08 219.79L123.02 220.44L130.95 220.25L138.89 218.67L146.83 216.43L154.76 217.61L162.70 214.44L170.63 212.09L178.57 211.47L186.51 210.00L194.44 207.05L202.38 204.60L210.32 201.53L218.25 200.64L226.19 202.35L234.13 199.91L242.06 198.05L250.00 198.14L257.94 198.41L265.87 198.63L273.81 201.07L281.75 198.80L289.68 200.53L297.62 202.65L305.56 200.93L313.49 199.57L321.43 202.28L329.37 201.51L337.30 201.92L345.24 203.33L353.17 200.82L361.11 198.15L369.05 200.15L376.98 198.31L384.92 195.82L392.86 194.50L400.79 197.14L408.73 196.97L416.67 194.87L424.60 192.81L432.54 192.96L440.48 193.15L448.41 190.62L456.35 190.44L464.29 192.64L472.22 193.95L480.16 193.64L488.10 192.59L496.03 189.71L503.97 191.23L511.90 192.47L519.84 190.39L527.78 189.03L535.71 187.45L543.65 184.73L551.59 183.26L559.52 181.39L567.46 183.39L575.40 185.40L583.33 186.02L591.27 186.19L599.21 185.34L607.14 185.49L615.08 182.48L623.02 181.00L630.95 183.76L638.89 182.42L646.83 183.20L654.76 183.21L662.70 183.80L670.63 184.20L678.57 185.56L686.51 182.80L694.44 185.02L702.38 182.31L710.32 184.48L718.25 187.01L726.19 185.25L734.13 185.74L742.06 187.59L750.00 185.30L757.94 185.17L765.87 186.09L773.81 188.21L781.75 186.07L789.68 186.38L797.62 186.47L805.56 188.84L813.49 191.41L821.43 190.92L829.37 187.88L837.30 186.09L845.24 186.61L853.17 184.34L861.11 181.32L869.05 182.23L876.98 181.36L884.92 182.40L892.86 181.51L900.79 182.13L908.73 178.89L916.67 175.98L924.60 174.66L932.54 171.95L940.48 173.40L948.41 174.21L956.35 174.02L964.29 175.57L972.22 175.60L980.16 176.80L988.10 178.05L996.03 177.79" fill="none" stroke="#A033E8" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+<path d="M3.97 272.32L11.90 270.58L19.84 268.73L27.78 266.84L35.71 264.82L43.65 262.73L51.59 260.63L59.52 258.55L67.46 256.51L75.40 254.35L83.33 252.18L91.27 250.15L99.21 248.16L107.14 246.19L115.08 244.34L123.02 242.53L130.95 241.05L138.89 239.63L146.83 238.27L154.76 237.08L162.70 235.83L170.63 234.82L178.57 233.80L186.51 232.96L194.44 232.25L202.38 231.69L210.32 231.36L218.25 231.03L226.19 230.66L234.13 230.21L242.06 229.73L250.00 229.42L257.94 229.23L265.87 228.85L273.81 228.46L281.75 228.16L289.68 227.94L297.62 227.61L305.56 227.39L313.49 227.21L321.43 227.07L329.37 226.81L337.30 226.58L345.24 226.19L353.17 225.70L361.11 225.31L369.05 224.81L376.98 224.42L384.92 224.11L392.86 223.84L400.79 223.62L408.73 223.48L416.67 223.33L424.60 223.31L432.54 223.26L440.48 223.34L448.41 223.53L456.35 223.72L464.29 223.95L472.22 224.07L480.16 224.25L488.10 224.41L496.03 224.63L503.97 224.81L511.90 224.76L519.84 224.47L527.78 223.92L535.71 223.10L543.65 222.18L551.59 221.16L559.52 220.15L567.46 218.93L575.40 217.62L583.33 216.15L591.27 214.68L599.21 212.99L607.14 211.10L615.08 209.16L623.02 207.25L630.95 205.20L638.89 203.02L646.83 200.69L654.76 198.35L662.70 196.06L670.63 193.54L678.57 190.83L686.51 188.04L694.44 185.28L702.38 182.31L710.32 179.33L718.25 176.34L726.19 173.44L734.13 170.52L742.06 167.71L750.00 164.86L757.94 161.98L765.87 159.17L773.81 156.38L781.75 153.64L789.68 150.87L797.62 148.22L805.56 145.49L813.49 142.92L821.43 140.27L829.37 137.59L837.30 134.88L845.24 132.04L853.17 129.13L861.11 126.05L869.05 123.11L876.98 120.20L884.92 117.24L892.86 114.22L900.79 111.31L908.73 108.65L916.67 106.12L924.60 103.71L932.54 101.32L940.48 99.00L948.41 96.54L956.35 94.01L964.29 91.46L972.22 89.02L980.16 86.59L988.10 84.48L996.03 82.16" fill="none" stroke="#7FA6F2" stroke-width="1.4" stroke-dasharray="2 4" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+<path d="M0 0" fill="rgba(17,17,19,0.05)"></path>
+<path d="M0 0" fill="none" stroke="#111113" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+<path d="M3.97 220.33V235.01M11.90 217.24V228.66M19.84 212.66V220.87M27.78 203.90V219.83M35.71 206.33V212.38M43.65 201.10V208.97M51.59 200.91V212.09M67.46 198.60V210.06M75.40 192.52V202.14M99.21 189.55V202.73M123.02 197.48V204.59M146.83 208.01V219.02M162.70 210.46V222.79M178.57 225.83V232.80M194.44 228.50V236.03M226.19 237.11V248.93M234.13 242.38V245.83M265.87 242.93V252.75M289.68 250.96V258.46M297.62 242.78V253.33M313.49 242.17V254.81M329.37 232.82V250.48M337.30 228.90V239.61M345.24 224.26V235.62M353.17 223.70V234.14M361.11 218.45V226.61M369.05 214.79V226.56M392.86 210.87V227.72M400.79 210.80V220.08M408.73 206.24V216.41M416.67 204.03V213.01M432.54 205.36V212.12M456.35 207.49V214.18M472.22 204.27V210.33M488.10 201.37V207.01M503.97 199.39V204.88M511.90 185.46V205.03M519.84 181.87V201.32M527.78 178.55V186.71M535.71 171.50V182.17M543.65 164.36V178.62M567.46 159.72V176.75M575.40 159.81V165.88M583.33 150.03V166.82M591.27 154.90V156.70M599.21 145.45V162.71M607.14 144.70V160.90M630.95 139.99V150.59M638.89 130.18V138.21M646.83 128.45V140.11M662.70 126.55V141.84M670.63 120.99V136.40M678.57 114.73V126.15M686.51 107.81V117.24M694.44 105.06V118.97M702.38 94.37V115.21M710.32 86.83V102.23M726.19 92.23V96.69M734.13 83.37V97.37M742.06 81.63V87.96M750.00 79.55V93.53M757.94 75.82V84.04M765.87 72.99V81.40M789.68 75.60V86.75M805.56 69.84V87.08M821.43 72.72V88.76M829.37 66.16V84.03M845.24 66.53V76.79M853.17 58.39V70.35M861.11 54.27V70.58M884.92 52.84V65.14M892.86 52.17V67.48M932.54 45.63V65.09M940.48 41.37V58.90M948.41 39.75V54.01M956.35 40.40V51.72M964.29 29.25V44.98M980.16 28.39V46.14M996.03 31.26V49.11" fill="none" stroke="#4DB07F" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>
+<path d="M59.52 195.02V207.79M83.33 190.49V203.33M91.27 190.57V203.54M107.14 186.18V196.09M115.08 192.12V198.04M130.95 190.55V212.14M138.89 199.52V213.88M154.76 210.12V220.23M170.63 213.31V226.81M186.51 224.50V230.36M202.38 224.66V236.65M210.32 230.85V246.92M218.25 234.68V249.22M242.06 239.63V249.96M250.00 243.08V251.98M257.94 246.34V256.02M273.81 238.53V250.88M281.75 249.80V255.88M305.56 241.36V252.15M321.43 237.60V250.10M376.98 210.67V221.43M384.92 214.45V223.03M424.60 203.20V211.55M440.48 200.46V208.81M448.41 207.10V211.74M464.29 204.22V211.52M480.16 196.92V208.78M496.03 200.62V208.54M551.59 157.38V171.61M559.52 161.02V172.39M615.08 140.63V148.74M623.02 140.49V151.27M654.76 127.46V137.67M718.25 91.49V104.20M773.81 74.34V88.43M781.75 80.02V90.05M797.62 76.41V85.10M813.49 73.06V83.67M837.30 63.60V75.94M869.05 52.21V57.66M876.98 55.69V60.77M900.79 51.33V64.42M908.73 52.81V59.92M916.67 49.18V63.50M924.60 55.25V63.14M972.22 28.63V44.73M988.10 27.69V49.69" fill="none" stroke="#EA5B52" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>
+<path d="M1.59 223.24h4.76V230.73h-4.76ZM9.52 217.70h4.76V222.09h-4.76ZM17.46 214.67h4.76V216.82h-4.76ZM25.40 209.49h4.76V214.77h-4.76ZM33.33 207.92h4.76V209.93h-4.76ZM41.27 203.88h4.76V208.36h-4.76ZM49.21 202.13h4.76V206.43h-4.76ZM65.08 199.98h4.76V203.19h-4.76ZM73.02 198.72h4.76V201.54h-4.76ZM96.83 194.43h4.76V198.04h-4.76ZM120.63 198.16h4.76V199.06h-4.76ZM144.44 210.80h4.76V213.39h-4.76ZM160.32 217.12h4.76V220.97h-4.76ZM176.19 226.73h4.76V228.92h-4.76ZM192.06 228.92h4.76V230.52h-4.76ZM223.81 243.21h4.76V247.03h-4.76ZM231.75 242.46h4.76V245.55h-4.76ZM263.49 245.08h4.76V252.43h-4.76ZM287.30 251.93h4.76V253.58h-4.76ZM295.24 246.24h4.76V252.73h-4.76ZM311.11 243.75h4.76V251.86h-4.76ZM326.98 237.47h4.76V246.33h-4.76ZM334.92 234.76h4.76V238.15h-4.76ZM342.86 226.65h4.76V234.68h-4.76ZM350.79 223.73h4.76V228.41h-4.76ZM358.73 223.64h4.76V224.61h-4.76ZM366.67 218.81h4.76V224.42h-4.76ZM390.48 216.81h4.76V221.09h-4.76ZM398.41 212.32h4.76V217.65h-4.76ZM406.35 210.96h4.76V213.38h-4.76ZM414.29 207.24h4.76V209.69h-4.76ZM430.16 205.78h4.76V209.89h-4.76ZM453.97 210.38h4.76V211.36h-4.76ZM469.84 204.74h4.76V208.82h-4.76ZM485.71 204.52h4.76V205.42h-4.76ZM501.59 202.69h4.76V204.79h-4.76ZM509.52 192.60h4.76V202.19h-4.76ZM517.46 183.79h4.76V194.48h-4.76ZM525.40 179.11h4.76V181.32h-4.76ZM533.33 172.64h4.76V178.85h-4.76ZM541.27 164.78h4.76V174.13h-4.76ZM565.08 165.41h4.76V169.60h-4.76ZM573.02 161.19h4.76V165.54h-4.76ZM580.95 156.40h4.76V160.29h-4.76ZM588.89 155.39h4.76V156.29h-4.76ZM596.83 150.42h4.76V158.03h-4.76ZM604.76 146.72h4.76V153.13h-4.76ZM628.57 140.26h4.76V147.96h-4.76ZM636.51 136.07h4.76V137.26h-4.76ZM644.44 133.76h4.76V135.55h-4.76ZM660.32 130.66h4.76V133.89h-4.76ZM668.25 123.15h4.76V133.47h-4.76ZM676.19 115.52h4.76V122.06h-4.76ZM684.13 112.72h4.76V114.63h-4.76ZM692.06 108.14h4.76V112.60h-4.76ZM700.00 100.95h4.76V109.60h-4.76ZM707.94 94.96h4.76V98.28h-4.76ZM723.81 92.53h4.76V95.54h-4.76ZM731.75 88.96h4.76V92.34h-4.76ZM739.68 85.88h4.76V87.76h-4.76ZM747.62 81.31h4.76V89.03h-4.76ZM755.56 79.92h4.76V83.87h-4.76ZM763.49 78.23h4.76V79.55h-4.76ZM787.30 78.53h4.76V82.21h-4.76ZM803.17 74.90h4.76V81.34h-4.76ZM819.05 75.31h4.76V81.27h-4.76ZM826.98 71.87h4.76V76.23h-4.76ZM842.86 69.82h4.76V71.55h-4.76ZM850.79 64.73h4.76V70.13h-4.76ZM858.73 57.09h4.76V67.32h-4.76ZM882.54 56.68h4.76V59.34h-4.76ZM890.48 54.19h4.76V58.67h-4.76ZM930.16 53.44h4.76V56.45h-4.76ZM938.10 48.69h4.76V55.29h-4.76ZM946.03 44.05h4.76V47.40h-4.76ZM953.97 40.61h4.76V44.30h-4.76ZM961.90 37.79h4.76V38.69h-4.76ZM977.78 35.11h4.76V42.04h-4.76ZM993.65 34.62h4.76V47.28h-4.76Z" fill="#4DB07F"></path>
+<path d="M57.14 200.36h4.76V201.26h-4.76ZM80.95 196.10h4.76V197.00h-4.76ZM88.89 195.51h4.76V196.41h-4.76ZM104.76 191.93h4.76V193.50h-4.76ZM112.70 192.72h4.76V195.41h-4.76ZM128.57 195.90h4.76V206.72h-4.76ZM136.51 204.35h4.76V213.35h-4.76ZM152.38 210.73h4.76V218.45h-4.76ZM168.25 214.68h4.76V226.64h-4.76ZM184.13 225.05h4.76V229.77h-4.76ZM200.00 227.06h4.76V234.87h-4.76ZM207.94 235.05h4.76V241.07h-4.76ZM215.87 240.98h4.76V244.66h-4.76ZM239.68 242.56h4.76V245.35h-4.76ZM247.62 244.68h4.76V250.19h-4.76ZM255.56 247.92h4.76V251.63h-4.76ZM271.43 244.62h4.76V249.09h-4.76ZM279.37 250.21h4.76V251.48h-4.76ZM303.17 246.08h4.76V249.65h-4.76ZM319.05 243.26h4.76V246.75h-4.76ZM374.60 216.47h4.76V220.35h-4.76ZM382.54 217.98h4.76V220.41h-4.76ZM422.22 207.61h4.76V208.51h-4.76ZM438.10 205.25h4.76V207.90h-4.76ZM446.03 207.15h4.76V211.56h-4.76ZM461.90 210.75h4.76V211.65h-4.76ZM477.78 202.79h4.76V205.94h-4.76ZM493.65 202.47h4.76V205.39h-4.76ZM549.21 163.05h4.76V167.36h-4.76ZM557.14 166.07h4.76V166.97h-4.76ZM612.70 145.58h4.76V147.43h-4.76ZM620.63 146.19h4.76V147.73h-4.76ZM652.38 134.34h4.76V135.24h-4.76ZM715.87 97.01h4.76V97.91h-4.76ZM771.43 76.06h4.76V80.94h-4.76ZM779.37 81.36h4.76V83.04h-4.76ZM795.24 79.01h4.76V79.91h-4.76ZM811.11 77.31h4.76V78.68h-4.76ZM834.92 71.26h4.76V72.41h-4.76ZM866.67 55.73h4.76V57.36h-4.76ZM874.60 57.82h4.76V60.69h-4.76ZM898.41 54.44h4.76V57.13h-4.76ZM906.35 56.55h4.76V59.55h-4.76ZM914.29 57.00h4.76V57.90h-4.76ZM922.22 57.92h4.76V58.82h-4.76ZM969.84 35.80h4.76V38.92h-4.76ZM985.71 37.21h4.76V49.69h-4.76Z" fill="#EA5B52"></path>
+</svg>
+
+<span style="position: absolute; left: 0; right: 0; top: 28.60%; border-top: 1.5px dashed rgba(229,72,77,0.7)"></span>
+
+<span style="position: absolute; left: 0; right: 0; top: 11.54%; border-top: 1px dotted rgba(17,17,19,0.35)"></span>
+<span style="position: absolute; top: 0; bottom: 0; left: 64.68%; border-left: 1px dashed #111113"></span>
+<span style="position: absolute; left: 0; right: 0; top: 44.59%; border-top: 1px dashed #111113"></span>
+<span style="position: absolute; left: 64.68%; top: 44.59%; width: 18px; height: 18px; margin: -9px 0 0 -9px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #111113; background: rgba(255,255,255,0.75); display: flex; align-items: center; justify-content: center"><span style="width: 4px; height: 4px; border-radius: 50%; background: #111113"></span></span>
+
+<div style="position: absolute; left: 4px; top: 6px; display: flex; flex-direction: column; gap: 6px">
+
+<div style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #111113">
+<span style="width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #FFFFFF; background: #7FA6F2">50</span>
+<span style="font-weight: 500">SMA</span><span style="color: #6E6E76">·</span><span style="color: #55555C">50-day</span>
+<span style="font-weight: 500">175.96</span>
+<span style="color: #55555C"></span>
+<button type="button" aria-pressed="true" aria-label="Hide SMA 50" style="width: 32px; height: 32px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: #8A8A92; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18M10.6 6.1A9.6 9.6 0 0 1 12 6c6 0 9.5 6 9.5 6a16 16 0 0 1-2.6 3.3M6.4 7.6A16 16 0 0 0 2.5 12s3.5 6 9.5 6a9 9 0 0 0 4.2-1M9.9 10a2.5 2.5 0 0 0 3.5 3.6"></path></svg></button>
+</div>
+
+<div style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #111113">
+<span style="width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #FFFFFF; background: #8A8A92">30</span>
+<span style="font-weight: 500">SOX</span><span style="color: #6E6E76">·</span><span style="color: #55555C">Semis index</span>
+<span style="font-weight: 500">6,412.30</span>
+<span style="color: #1A7F4E">+89.80 (+1.42%)</span>
+<button type="button" aria-pressed="true" aria-label="Hide SOX" style="width: 32px; height: 32px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: #8A8A92; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18M10.6 6.1A9.6 9.6 0 0 1 12 6c6 0 9.5 6 9.5 6a16 16 0 0 1-2.6 3.3M6.4 7.6A16 16 0 0 0 2.5 12s3.5 6 9.5 6a9 9 0 0 0 4.2-1M9.9 10a2.5 2.5 0 0 0 3.5 3.6"></path></svg></button>
+</div>
+
+<div style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #111113">
+<span style="width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #FFFFFF; background: #A033E8">500</span>
+<span style="font-weight: 500">SPX</span><span style="color: #6E6E76">·</span><span style="color: #55555C">S&amp;P 500</span>
+<span style="font-weight: 500">6,812.45</span>
+<span style="color: #1A7F4E">+25.78 (+0.38%)</span>
+<button type="button" aria-pressed="true" aria-label="Hide SPX" style="width: 32px; height: 32px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: #8A8A92; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18M10.6 6.1A9.6 9.6 0 0 1 12 6c6 0 9.5 6 9.5 6a16 16 0 0 1-2.6 3.3M6.4 7.6A16 16 0 0 0 2.5 12s3.5 6 9.5 6a9 9 0 0 0 4.2-1M9.9 10a2.5 2.5 0 0 0 3.5 3.6"></path></svg></button>
+</div>
+
+</div>
+
+<div role="toolbar" aria-label="Drawing tools" style="position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 999px; background: rgba(255,255,255,0.5); backdrop-filter: blur(18px) saturate(1.4); border: 1px solid rgba(255,255,255,0.85); box-shadow: 0 12px 36px -10px rgba(17,17,19,0.22)">
+
+<button type="button" aria-pressed="true" aria-label="Pointer" style="width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #111113; background: #FFFFFF; box-shadow: 0 2px 10px rgba(17,17,19,0.14)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5l12 8.6-5.4 1.1 3.1 6.4-2.4 1.2-3.1-6.4L6 18.2z"></path></svg></button>
+
+<button type="button" aria-pressed="false" aria-label="Crosshair" style="width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #111113; background: transparent; box-shadow: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v5M12 16v5M3 12h5M16 12h5M12 9.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 1 0 0-5z"></path></svg></button>
+
+<button type="button" aria-pressed="false" aria-label="Trend line" style="width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #111113; background: transparent; box-shadow: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 17.5L17.5 6.5M4 17.5a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0M15 6.5a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0"></path></svg></button>
+
+<button type="button" aria-pressed="false" aria-label="Text note" style="width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #111113; background: transparent; box-shadow: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7V5h14v2M12 5v14M9 19h6"></path></svg></button>
+
+<button type="button" aria-pressed="false" aria-label="Measure" style="width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #111113; background: transparent; box-shadow: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h16M4 12h16M4 16h16M6 20h3"></path></svg></button>
+
+<button type="button" aria-pressed="false" aria-label="Price target" style="width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #111113; background: transparent; box-shadow: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8z"></path></svg></button>
+
+</div>
+</div>
+
+<span style="position: absolute; right: 0; top: 11.54%; transform: translateY(-50%); display: inline-flex; border-radius: 6px; overflow: hidden; font-size: 12px; font-weight: 500; color: #FFFFFF"><span style="padding: 3px 6px; background: #3A3A40">NVDA</span><span style="padding: 3px 7px; background: #111113">188.42</span></span>
+
+<span style="position: absolute; right: 0; top: 51.63%; transform: translateY(-50%); display: inline-flex; border-radius: 6px; overflow: hidden; font-size: 12px; font-weight: 500; color: #FFFFFF; background: #8A8A92"><span style="padding: 3px 6px; background: rgba(255,255,255,0.18)">SOX</span><span style="padding: 3px 7px">156.89</span></span>
+
+<span style="position: absolute; right: 0; top: 59.26%; transform: translateY(-50%); display: inline-flex; border-radius: 6px; overflow: hidden; font-size: 12px; font-weight: 500; color: #FFFFFF; background: #A033E8"><span style="padding: 3px 6px; background: rgba(255,255,255,0.18)">SPX</span><span style="padding: 3px 7px">150.88</span></span>
+
+
+<span style="position: absolute; right: 0; top: 28.60%; transform: translateY(-50%); display: inline-flex; border-radius: 6px; overflow: hidden; font-size: 12px; font-weight: 500; color: #FFFFFF; background: #D93C42"><span style="padding: 3px 6px; background: rgba(255,255,255,0.2)">Alert</span><span style="padding: 3px 7px">175.00</span></span>
+
+<span style="position: absolute; right: 0; top: 44.59%; transform: translateY(-50%); display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px 0 4px; box-sizing: border-box; border-radius: 999px; border: 1px solid #111113; background: #FFFFFF; font-size: 12px; font-weight: 500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 4a8 8 0 1 0 0 16a8 8 0 1 0 0-16zM12 8v8M8 12h8"></path></svg>162.43</span>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+
+<button type="button" aria-pressed="true" style="display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 999px; font-family: inherit; font-size: 15px; cursor: pointer; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); color: #111113; box-shadow: 0 1px 2px rgba(17,17,19,0.05)">
+<span style="width: 7px; height: 7px; border-radius: 50%; background: #111113"></span>Volume
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12zM12 9.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 1 0 0-5z"></path></svg>
+</button>
+
+<button type="button" aria-pressed="true" style="display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 999px; font-family: inherit; font-size: 15px; cursor: pointer; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); color: #111113; box-shadow: 0 1px 2px rgba(17,17,19,0.05)">
+<span style="width: 7px; height: 7px; border-radius: 50%; background: #111113"></span>NVDA
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M0 0"></path></svg>
+</button>
+
+<button type="button" aria-pressed="true" style="display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 999px; font-family: inherit; font-size: 15px; cursor: pointer; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); color: #111113; box-shadow: 0 1px 2px rgba(17,17,19,0.05)">
+<span style="width: 7px; height: 7px; border-radius: 50%; background: #7FA6F2"></span>SMA 50
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12zM12 9.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 1 0 0-5z"></path></svg>
+</button>
+
+<button type="button" aria-pressed="true" style="display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 999px; font-family: inherit; font-size: 15px; cursor: pointer; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); color: #111113; box-shadow: 0 1px 2px rgba(17,17,19,0.05)">
+<span style="width: 7px; height: 7px; border-radius: 50%; background: #8A8A92"></span>SOX
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12zM12 9.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 1 0 0-5z"></path></svg>
+</button>
+
+<button type="button" aria-pressed="true" style="display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 999px; font-family: inherit; font-size: 15px; cursor: pointer; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); color: #111113; box-shadow: 0 1px 2px rgba(17,17,19,0.05)">
+<span style="width: 7px; height: 7px; border-radius: 50%; background: #A033E8"></span>SPX
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12zM12 9.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 1 0 0-5z"></path></svg>
+</button>
+
+<span style="flex: 1"></span>
+<span style="font-size: 12px; color: #6E6E76">Last tick Oct 30, 2026 at 11:51 AM</span>
+</div>
+
+
+<div style="position: relative; height: 56px">
+<svg viewBox="0 0 1000 70" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: calc(100% - 76px); height: 56px"><path d="M1.59 42.24h4.76V70h-4.76ZM9.52 42.69h4.76V70h-4.76ZM17.46 46.01h4.76V70h-4.76ZM25.40 37.15h4.76V70h-4.76ZM33.33 44.42h4.76V70h-4.76ZM41.27 41.59h4.76V70h-4.76ZM49.21 38.90h4.76V70h-4.76ZM57.14 41.39h4.76V70h-4.76ZM65.08 36.63h4.76V70h-4.76ZM73.02 49.34h4.76V70h-4.76ZM80.95 34.83h4.76V70h-4.76ZM88.89 49.00h4.76V70h-4.76ZM96.83 37.09h4.76V70h-4.76ZM104.76 38.18h4.76V70h-4.76ZM112.70 37.25h4.76V70h-4.76ZM120.63 34.22h4.76V70h-4.76ZM128.57 8.00h4.76V70h-4.76ZM136.51 48.43h4.76V70h-4.76ZM144.44 49.03h4.76V70h-4.76ZM152.38 39.75h4.76V70h-4.76ZM160.32 40.12h4.76V70h-4.76ZM168.25 36.96h4.76V70h-4.76ZM176.19 48.87h4.76V70h-4.76ZM184.13 36.63h4.76V70h-4.76ZM192.06 36.56h4.76V70h-4.76ZM200.00 45.21h4.76V70h-4.76ZM207.94 35.27h4.76V70h-4.76ZM215.87 49.42h4.76V70h-4.76ZM223.81 39.31h4.76V70h-4.76ZM231.75 35.66h4.76V70h-4.76ZM239.68 41.73h4.76V70h-4.76ZM247.62 42.95h4.76V70h-4.76ZM255.56 38.83h4.76V70h-4.76ZM263.49 34.52h4.76V70h-4.76ZM271.43 45.37h4.76V70h-4.76ZM279.37 46.58h4.76V70h-4.76ZM287.30 49.76h4.76V70h-4.76ZM295.24 39.21h4.76V70h-4.76ZM303.17 45.67h4.76V70h-4.76ZM311.11 47.20h4.76V70h-4.76ZM319.05 48.58h4.76V70h-4.76ZM326.98 44.23h4.76V70h-4.76ZM334.92 41.58h4.76V70h-4.76ZM342.86 41.99h4.76V70h-4.76ZM350.79 48.60h4.76V70h-4.76ZM358.73 49.57h4.76V70h-4.76ZM366.67 50.62h4.76V70h-4.76ZM374.60 35.22h4.76V70h-4.76ZM382.54 47.32h4.76V70h-4.76ZM390.48 43.72h4.76V70h-4.76ZM398.41 35.41h4.76V70h-4.76ZM406.35 45.68h4.76V70h-4.76ZM414.29 41.97h4.76V70h-4.76ZM422.22 40.00h4.76V70h-4.76ZM430.16 38.03h4.76V70h-4.76ZM438.10 41.74h4.76V70h-4.76ZM446.03 40.08h4.76V70h-4.76ZM453.97 45.96h4.76V70h-4.76ZM461.90 40.01h4.76V70h-4.76ZM469.84 50.65h4.76V70h-4.76ZM477.78 48.31h4.76V70h-4.76ZM485.71 50.19h4.76V70h-4.76ZM493.65 44.26h4.76V70h-4.76ZM501.59 39.86h4.76V70h-4.76ZM509.52 38.05h4.76V70h-4.76ZM517.46 37.91h4.76V70h-4.76ZM525.40 50.23h4.76V70h-4.76ZM533.33 39.38h4.76V70h-4.76ZM541.27 44.77h4.76V70h-4.76ZM549.21 35.34h4.76V70h-4.76ZM557.14 47.16h4.76V70h-4.76ZM565.08 50.03h4.76V70h-4.76ZM573.02 36.62h4.76V70h-4.76ZM580.95 39.87h4.76V70h-4.76ZM588.89 39.01h4.76V70h-4.76ZM596.83 49.45h4.76V70h-4.76ZM604.76 42.99h4.76V70h-4.76ZM612.70 46.52h4.76V70h-4.76ZM620.63 35.28h4.76V70h-4.76ZM628.57 28.68h4.76V70h-4.76ZM636.51 47.93h4.76V70h-4.76ZM652.38 37.83h4.76V70h-4.76ZM660.32 49.95h4.76V70h-4.76ZM668.25 42.18h4.76V70h-4.76ZM676.19 42.63h4.76V70h-4.76ZM684.13 44.45h4.76V70h-4.76ZM692.06 39.01h4.76V70h-4.76ZM700.00 48.54h4.76V70h-4.76ZM707.94 45.62h4.76V70h-4.76ZM715.87 41.85h4.76V70h-4.76ZM723.81 45.31h4.76V70h-4.76ZM731.75 43.67h4.76V70h-4.76ZM739.68 40.29h4.76V70h-4.76ZM747.62 42.97h4.76V70h-4.76ZM755.56 41.92h4.76V70h-4.76ZM763.49 40.85h4.76V70h-4.76ZM771.43 39.66h4.76V70h-4.76ZM779.37 49.22h4.76V70h-4.76ZM787.30 41.56h4.76V70h-4.76ZM795.24 36.13h4.76V70h-4.76ZM803.17 41.05h4.76V70h-4.76ZM811.11 40.25h4.76V70h-4.76ZM819.05 37.90h4.76V70h-4.76ZM826.98 47.54h4.76V70h-4.76ZM834.92 37.43h4.76V70h-4.76ZM842.86 45.24h4.76V70h-4.76ZM850.79 42.70h4.76V70h-4.76ZM858.73 46.97h4.76V70h-4.76ZM866.67 45.77h4.76V70h-4.76ZM874.60 50.72h4.76V70h-4.76ZM882.54 42.02h4.76V70h-4.76ZM890.48 36.77h4.76V70h-4.76ZM898.41 41.82h4.76V70h-4.76ZM906.35 35.83h4.76V70h-4.76ZM914.29 43.44h4.76V70h-4.76ZM922.22 45.15h4.76V70h-4.76ZM930.16 43.31h4.76V70h-4.76ZM938.10 50.24h4.76V70h-4.76ZM946.03 36.03h4.76V70h-4.76ZM953.97 47.70h4.76V70h-4.76ZM961.90 45.32h4.76V70h-4.76ZM969.84 44.90h4.76V70h-4.76ZM977.78 47.25h4.76V70h-4.76ZM985.71 38.26h4.76V70h-4.76Z" fill="#D4D4D9"></path><path d="M993.65 41.61h4.76V70h-4.76Z" fill="#8E8E96"></path><path d="M644.44 43.68h4.76V70h-4.76Z" fill="#111113"></path></svg>
+<span style="position: absolute; right: 0; top: 10px; padding: 3px 7px; border-radius: 6px; background: #111113; color: #FFFFFF; font-size: 12px; font-weight: 500">162.4M</span>
+</div>
+
+
+<div style="position: relative; height: 38px; margin-right: 76px; border-bottom: 1px solid rgba(17,17,19,0.08)">
+<svg viewBox="0 0 1000 10" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 8px"><path d="M4.0 2V10M11.9 5V10M19.8 5V10M27.8 5V10M35.7 5V10M43.7 2V10M51.6 5V10M59.5 5V10M67.5 5V10M75.4 5V10M83.3 2V10M91.3 5V10M99.2 5V10M107.1 5V10M115.1 5V10M123.0 2V10M131.0 5V10M138.9 5V10M146.8 5V10M154.8 5V10M162.7 2V10M170.6 5V10M178.6 5V10M186.5 5V10M194.4 5V10M202.4 2V10M210.3 5V10M218.3 5V10M226.2 5V10M234.1 5V10M242.1 2V10M250.0 5V10M257.9 5V10M265.9 5V10M273.8 5V10M281.7 2V10M289.7 5V10M297.6 5V10M305.6 5V10M313.5 5V10M321.4 2V10M329.4 5V10M337.3 5V10M345.2 5V10M353.2 5V10M361.1 2V10M369.0 5V10M377.0 5V10M384.9 5V10M392.9 5V10M400.8 2V10M408.7 5V10M416.7 5V10M424.6 5V10M432.5 5V10M440.5 2V10M448.4 5V10M456.3 5V10M464.3 5V10M472.2 5V10M480.2 2V10M488.1 5V10M496.0 5V10M504.0 5V10M511.9 5V10M519.8 2V10M527.8 5V10M535.7 5V10M543.7 5V10M551.6 5V10M559.5 2V10M567.5 5V10M575.4 5V10M583.3 5V10M591.3 5V10M599.2 2V10M607.1 5V10M615.1 5V10M623.0 5V10M631.0 5V10M638.9 2V10M646.8 5V10M654.8 5V10M662.7 5V10M670.6 5V10M678.6 2V10M686.5 5V10M694.4 5V10M702.4 5V10M710.3 5V10M718.3 2V10M726.2 5V10M734.1 5V10M742.1 5V10M750.0 5V10M757.9 2V10M765.9 5V10M773.8 5V10M781.7 5V10M789.7 5V10M797.6 2V10M805.6 5V10M813.5 5V10M821.4 5V10M829.4 5V10M837.3 2V10M845.2 5V10M853.2 5V10M861.1 5V10M869.0 5V10M877.0 2V10M884.9 5V10M892.9 5V10M900.8 5V10M908.7 5V10M916.7 2V10M924.6 5V10M932.5 5V10M940.5 5V10M948.4 5V10M956.3 2V10M964.3 5V10M972.2 5V10M980.2 5V10M988.1 5V10M996.0 2V10" fill="none" stroke="#B4B4BA" stroke-width="1" vector-effect="non-scaling-stroke"></path></svg>
+<span style="position: absolute; top: 0; bottom: 0; left: 64.68%; border-left: 1px dashed #111113"></span>
+
+<span style="position: absolute; top: 6px; left: 30.56%; transform: translateX(-50%); font-size: 13px; color: #3F3F46; white-space: nowrap">Jul</span>
+
+<span style="position: absolute; top: 6px; left: 48.81%; transform: translateX(-50%); font-size: 13px; color: #3F3F46; white-space: nowrap">Aug</span>
+
+<span style="position: absolute; top: 6px; left: 82.94%; transform: translateX(-50%); font-size: 13px; color: #3F3F46; white-space: nowrap">Oct</span>
+
+
+<span title="Earnings · Aug 26" style="position: absolute; top: 4px; left: 62.30%; transform: translateX(-50%); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: #F5A524; color: #3D2400">E</span>
+
+<span title="Earnings · May 29" style="position: absolute; top: 4px; left: 12.30%; transform: translateX(-50%); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: #F5A524; color: #3D2400">E</span>
+
+<span title="Dividend · Sep 21" style="position: absolute; top: 4px; left: 76.59%; transform: translateX(-50%); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: #3B6FE0; color: #FFFFFF">D</span>
+
+<span title="Dividend · Jun 24" style="position: absolute; top: 4px; left: 26.59%; transform: translateX(-50%); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: #3B6FE0; color: #FFFFFF">D</span>
+
+
+<span title="Alert fired · Oct 15" style="position: absolute; top: 6px; left: 90.87%; transform: translateX(-50%); color: #8A8A92; display: flex"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"></path></svg></span>
+
+<span title="Alert fired · Sep 4" style="position: absolute; top: 6px; left: 67.86%; transform: translateX(-50%); color: #8A8A92; display: flex"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"></path></svg></span>
+
+<span title="Alert fired · Jul 16" style="position: absolute; top: 6px; left: 39.29%; transform: translateX(-50%); color: #8A8A92; display: flex"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"></path></svg></span>
+
+<span title="Alert fired · Jun 9" style="position: absolute; top: 6px; left: 17.86%; transform: translateX(-50%); color: #8A8A92; display: flex"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"></path></svg></span>
+
+<span style="position: absolute; top: 4px; left: 64.68%; transform: translateX(-50%); padding: 3px 10px; border-radius: 999px; background: #111113; color: #FFFFFF; font-size: 12px; font-weight: 500; white-space: nowrap">Mon, Aug 31 ’26</span>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 4px; margin-top: auto; padding-top: 4px">
+<button type="button" aria-label="Open another ticker" style="width: 48px; height: 48px; padding: 0; border: 0; background: transparent; color: #3F3F46; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+
+<a href="02-stock-chart.html" aria-current="false" style="display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 18px; box-sizing: border-box; border-radius: 16px 16px 0 0; text-decoration: none; font-size: 15px; background: transparent; color: #6E6E76; box-shadow: none"><span style="width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #8A8A92">A</span>Broadcom</a>
+
+<a href="02-stock-chart.html" aria-current="false" style="display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 18px; box-sizing: border-box; border-radius: 16px 16px 0 0; text-decoration: none; font-size: 15px; background: transparent; color: #6E6E76; box-shadow: none"><span style="width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #8A8A92">M</span>Microsoft</a>
+
+<a href="02-stock-chart.html" aria-current="false" style="display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 18px; box-sizing: border-box; border-radius: 16px 16px 0 0; text-decoration: none; font-size: 15px; background: transparent; color: #6E6E76; box-shadow: none"><span style="width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #8A8A92">C</span>Costco</a>
+
+<a href="02-stock-chart.html" aria-current="page" style="display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 18px; box-sizing: border-box; border-radius: 16px 16px 0 0; text-decoration: none; font-size: 15px; background: #FFFFFF; color: #111113; box-shadow: 0 -6px 16px -10px rgba(17,17,19,0.2)"><span style="width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #111113">N</span>NVIDIA</a>
+
+</div>
+</main>
+
+<aside aria-label="Watchlist, alerts and details" style="flex: 1 1 330px; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding-bottom: 16px">
+
+<section aria-labelledby="wl-h" style="border-radius: 24px; padding: 16px 18px 6px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px">
+<h2 id="wl-h" style="margin: 0; font-size: 21px; font-weight: 400; letter-spacing: -0.01em">Watchlist</h2>
+<span style="display: inline-flex; color: #55555C">
+<button type="button" aria-label="Add symbol" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+<button type="button" aria-label="Open in new window" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-8 8M18 14v6H4V6h6"></path></svg></button>
+<button type="button" aria-label="Watchlist settings" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 5v4M9 15v4"></path></svg></button>
+</span>
+</div>
+<div role="table" aria-label="Watchlist">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 64px 64px; gap: 8px; padding: 4px 0 8px; font-size: 13px; color: #6E6E76">
+<span role="columnheader">Symbol</span><span role="columnheader" style="text-align: right">Last</span><span role="columnheader" style="text-align: right">Change</span><span role="columnheader" style="text-align: right">Chg %</span>
+</div>
+
+<a href="02-stock-chart.html" role="row" style="display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 64px 64px; gap: 8px; align-items: center; min-height: 33px; text-decoration: none; color: #111113; font-size: 14px">
+<span role="cell" style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 11px; font-weight: 600; background: #111113">N</span>NVDA</span>
+<span role="cell" style="text-align: right">188.42</span>
+<span role="cell" style="text-align: right; color: #1A7F4E">3.95</span>
+<span role="cell" style="text-align: right; color: #1A7F4E">2.14%</span>
+</a>
+
+<a href="02-stock-chart.html" role="row" style="display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 64px 64px; gap: 8px; align-items: center; min-height: 33px; text-decoration: none; color: #111113; font-size: 14px">
+<span role="cell" style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 11px; font-weight: 600; background: #111113">A</span>AVGO</span>
+<span role="cell" style="text-align: right">342.15</span>
+<span role="cell" style="text-align: right; color: #1A7F4E">10.03</span>
+<span role="cell" style="text-align: right; color: #1A7F4E">3.02%</span>
+</a>
+
+<a href="02-stock-chart.html" role="row" style="display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 64px 64px; gap: 8px; align-items: center; min-height: 33px; text-decoration: none; color: #111113; font-size: 14px">
+<span role="cell" style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 8px; font-weight: 600; background: #E5484D">500</span>SPX</span>
+<span role="cell" style="text-align: right">6,812.45</span>
+<span role="cell" style="text-align: right; color: #1A7F4E">25.78</span>
+<span role="cell" style="text-align: right; color: #1A7F4E">0.38%</span>
+</a>
+
+<a href="02-stock-chart.html" role="row" style="display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 64px 64px; gap: 8px; align-items: center; min-height: 33px; text-decoration: none; color: #111113; font-size: 14px">
+<span role="cell" style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 8px; font-weight: 600; background: #3B6FE0">100</span>NDX</span>
+<span role="cell" style="text-align: right">25,410.20</span>
+<span role="cell" style="text-align: right; color: #1A7F4E">179.13</span>
+<span role="cell" style="text-align: right; color: #1A7F4E">0.71%</span>
+</a>
+
+</div>
+<div style="display: flex; flex-direction: column; margin-top: 6px; border-top: 1px solid rgba(17,17,19,0.06)">
+
+<div>
+<button type="button" aria-expanded="false" style="width: 100%; display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 4px; border: 0; background: transparent; font-family: inherit; font-size: 15px; color: #111113; cursor: pointer; text-align: left">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: none"><path d="M9 6l6 6-6 6"></path></svg>
+<span style="flex: 1">Semiconductors</span><span style="font-size: 13px; color: #6E6E76">4</span>
+</button>
+
+</div>
+
+<div>
+<button type="button" aria-expanded="false" style="width: 100%; display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 4px; border: 0; background: transparent; font-family: inherit; font-size: 15px; color: #111113; cursor: pointer; text-align: left">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: none"><path d="M9 6l6 6-6 6"></path></svg>
+<span style="flex: 1">Mega-cap tech</span><span style="font-size: 13px; color: #6E6E76">5</span>
+</button>
+
+</div>
+
+</div>
+</section>
+
+<section aria-label="Alerts" style="border-radius: 24px; padding: 12px 18px 8px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16)">
+<div role="group" aria-label="Alert views" style="display: flex; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(17,17,19,0.05)">
+
+<button type="button" aria-pressed="true" style="flex: 1; height: 40px; border: 0; border-radius: 999px; font-family: inherit; font-size: 15px; cursor: pointer; background: #FFFFFF; color: #111113; box-shadow: 0 1px 3px rgba(17,17,19,0.1)">Alerts</button>
+
+<button type="button" aria-pressed="false" style="flex: 1; height: 40px; border: 0; border-radius: 999px; font-family: inherit; font-size: 15px; cursor: pointer; background: transparent; color: #55555C; box-shadow: none">History</button>
+
+<button type="button" aria-pressed="false" style="flex: 1; height: 40px; border: 0; border-radius: 999px; font-family: inherit; font-size: 15px; cursor: pointer; background: transparent; color: #55555C; box-shadow: none">System</button>
+
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; margin: 4px 0 0; color: #55555C">
+<button type="button" aria-label="New alert" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+<span style="display: inline-flex">
+<button type="button" aria-label="Search alerts" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14zM20 20l-4-4"></path></svg></button>
+<button type="button" aria-label="Sort alerts" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M4 17l3 3 3-3M14 6h6M14 12h4M14 18h2"></path></svg></button>
+<button type="button" aria-label="Alert settings" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 5v4M9 15v4"></path></svg></button>
+</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 7px 0">
+<span style="font-size: 15px">NVDA crossing down 175.00</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #3F3F46">
+<span style="width: 20px; height: 20px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600">N</span>
+NVDA, 1D<span style="color: #A1A1A8">·</span><span style="color: #1A7F4E">Active</span>
+</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 7px 0">
+<span style="font-size: 15px">RSI (14) crossing up 70 on NVDA</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #3F3F46">
+<span style="width: 20px; height: 20px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600">N</span>
+NVDA, 1D<span style="color: #A1A1A8">·</span><span style="color: #1A7F4E">Active</span>
+</span>
+</div>
+
+</section>
+
+<section aria-labelledby="tk-h" style="border-radius: 24px; padding: 16px 18px; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.4); border: 1px solid rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 14px 34px -18px rgba(17,17,19,0.16); display: flex; flex-direction: column; gap: 9px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 10px">
+<span style="width: 34px; height: 34px; border-radius: 50%; background: #111113; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600">N</span>
+<h2 id="tk-h" style="margin: 0; font-size: 22px; font-weight: 500">NVDA</h2>
+</span>
+<span style="display: inline-flex; color: #55555C">
+<a href="03-stock-financials.html" aria-label="Open financials" style="width: 36px; height: 36px; border-radius: 10px; color: inherit; display: inline-flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 20h16M7 16v-5M12 16V6M17 16V9"></path></svg></a>
+<a href="05-research-notes.html" aria-label="Open research note" style="width: 36px; height: 36px; border-radius: 10px; color: inherit; display: inline-flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 16h5"></path></svg></a>
+<a href="05-research-notes.html" aria-label="Edit thesis" style="width: 36px; height: 36px; border-radius: 10px; color: inherit; display: inline-flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"></path></svg></a>
+</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 16px">NVIDIA Corp <span style="color: #6E6E76">↗ ·</span> Nasdaq</span>
+<span style="font-size: 13px; color: #55555C">Semiconductors · Technology</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px"><span style="font-size: 28px; font-weight: 400; letter-spacing: -0.02em">188.42</span><span style="font-size: 14px">USD</span><span style="font-size: 18px; color: #1A7F4E">+3.95 (+2.14%)</span></span>
+<span style="font-size: 13px; color: #6E6E76">Last update at 11:51 AM, UTC−4</span>
+</div>
+<span aria-hidden="true" style="height: 1px; background: rgba(17,17,19,0.07)"></span>
+<a href="05-research-notes.html" style="display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: #111113">
+<span style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px"><span style="font-size: 24px; font-weight: 400; letter-spacing: -0.02em">210.00</span><span style="font-size: 14px">USD</span><span style="font-size: 17px; color: #1A7F4E">+11.5% upside</span></span>
+<span style="align-self: flex-start; display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 6px; background: #111113; color: #FFFFFF; font-size: 12px; font-weight: 500">My fair value · base case</span>
+</a>
+</section>
+</aside>
+
+<nav aria-label="Main" style="flex: 1 1 60px; display: flex; flex-wrap: wrap; align-content: flex-start; justify-content: center; gap: 20px; padding-bottom: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 60px; flex-direction: column">
+<button type="button" aria-label="Notifications" style="position: relative; width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"></path></svg>
+<span style="position: absolute; top: 14px; right: 15px; width: 8px; height: 8px; border-radius: 50%; background: #E5484D; border: 2px solid #FFFFFF"></span>
+</button>
+
+<a href="01-overview.html" aria-current="false" aria-label="Overview" title="Overview" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"></path></svg>
+</a>
+
+<a href="02-stock-chart.html" aria-current="page" aria-label="Chart" title="Chart" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid transparent; background: rgba(17,17,19,0.07); backdrop-filter: blur(20px); box-shadow: none; color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v3M7 15v6M5 6h4v9H5zM17 3v5M17 17v4M15 8h4v9h-4z"></path></svg>
+</a>
+
+<a href="03-stock-financials.html" aria-current="false" aria-label="Financials" title="Financials" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16M7 16v-5M12 16V6M17 16V9"></path></svg>
+</a>
+
+<a href="04-screener.html" aria-current="false" aria-label="Screener" title="Screener" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 2v-8.5z"></path></svg>
+</a>
+
+<a href="05-research-notes.html" aria-current="false" aria-label="Research notes" title="Research notes" style="width: 52px; height: 52px; box-sizing: border-box; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 16h5"></path></svg>
+</a>
+
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 60px; flex-direction: column">
+
+<button type="button" aria-label="Settings" title="Settings" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6zM19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"></path></svg>
+</button>
+
+<button type="button" aria-label="Ask about this chart" title="Ask about this chart" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>
+</button>
+
+<button type="button" aria-label="Learning library" title="Learning library" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5c3-1 5-1 8 1v14c-3-2-5-2-8-1zM20 5c-3-1-5-1-8 1v14c3-2 5-2 8-1z"></path></svg>
+</button>
+
+<button type="button" aria-label="Custom formulas" title="Custom formulas" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h-2a2 2 0 0 0-2 2v12a2 2 0 0 1-2 2H6M7 11h6M15 13l4 5M19 13l-4 5"></path></svg>
+</button>
+
+<button type="button" aria-label="Favorites" title="Favorites" style="width: 52px; height: 52px; padding: 0; border-radius: 17px; border: 1px solid rgba(255,255,255,0.95); background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); box-shadow: 0 1px 2px rgba(17,17,19,0.05); color: #111113; display: inline-flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"></path></svg>
+</button>
+
+</div>
+</nav>
+
+</div>
+</div>
+</div>
+</body>
+</html>
