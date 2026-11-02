@@ -304,7 +304,8 @@ function LegendRow({ series, symbol, name, value, change, up, on, onToggle, togg
         aria-pressed={on}
         aria-label={`${on ? "Hide" : "Show"} ${toggleLabel}`}
         onClick={() => onToggle(series)}
-        className="pointer-events-auto"
+        // Quiet until hovered: the legend sits on the plot.
+        className="pointer-events-auto bg-transparent text-foreground-icon-tertiary hover:bg-background-primary-hover hover:text-foreground-icon-primary active:bg-background-primary-active"
       />
     </div>
   );

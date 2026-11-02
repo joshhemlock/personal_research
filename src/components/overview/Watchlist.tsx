@@ -98,6 +98,15 @@ export function Watchlist({ rows }: { rows: WatchRow[] }) {
         <TableHeader>
           <TableColumn isRowHeader textValue="Symbol">
             <span className="ps-2.5">Symbol</span>
+            {/* Holds the column at the widest name of the whole list, so a
+                filter never re-flows the columns of the rows that stay. */}
+            <span aria-hidden className="invisible flex h-0 flex-col ps-2.5">
+              {rows.map((r) => (
+                <span key={r.symbol} className="max-w-40 truncate text-caption-1-regular">
+                  {r.name}
+                </span>
+              ))}
+            </span>
           </TableColumn>
           <TableColumn textValue="Last">
             <End>Last</End>
