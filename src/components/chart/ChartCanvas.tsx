@@ -157,11 +157,14 @@ export function ChartCanvas({
 
   const move = useEffectEvent((p: MouseEventParams<Time>) => {
     const api = apiRef.current;
-    const price = api && p.point ? api.candles.coordinateToPrice(p.point.y) : null;
-    if (p.logical === undefined || price === null) {
-      onPointer(null);
+    if (!p.point) {
+      // The library also clears its crosshair on internal updates; only a
+      // pointer that really left the chart counts as leaving.
+      if (!hostRef.current?.matches(":hover")) onPointer(null);
       return;
     }
+    const price = api ? api.candles.coordinateToPrice(p.point.y) : null;
+    if (p.logical === undefined || price === null) return;
     onPointer({ index: Math.max(0, Math.min(bars.length - 1, Math.round(p.logical))), price });
   });
 
