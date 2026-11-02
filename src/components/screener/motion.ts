@@ -2,8 +2,9 @@
  * BoardUI entrances for things a click brings in (a starred star, the
  * "Saved" check, a filter row just added), played with the Web Animations
  * API on the element itself: unlike a CSS animation class, a screen that
- * Next hides and shows again doesn't replay them, and globals.css's
- * `data-settled` rule (which retires CSS entrances) doesn't block them.
+ * Next hides and shows again doesn't replay them, and a Settle scope
+ * (components/motion/Settle, which retires played CSS entrances) doesn't
+ * touch them.
  */
 
 /** globals.css `pop`: a small element condensing in. */

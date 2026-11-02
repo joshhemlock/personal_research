@@ -33,7 +33,7 @@ import {
   type SortKey,
   type UniverseId,
 } from "@/lib/mock/screener";
-import { transitionRows } from "./rowTransition";
+import { transitionRows } from "@/components/motion/row-transition";
 import { PAGE_SIZE, defaultDir, filtersKey, median, queryKey, runScreen, toQuery, type ColumnKey } from "./screen";
 
 export type ScreenerState = {
@@ -212,7 +212,7 @@ type ScreenerContextValue = {
   state: ScreenerState;
   /**
    * Applies an edit. With sample data the rows follow at once, so edits that
-   * change them run inside a view transition (rowTransition.ts) and the rows
+   * change them run inside a view transition (transitionRows) and the rows
    * glide into place. With live data the rows change when the server answers,
    * and that update is the transition.
    */

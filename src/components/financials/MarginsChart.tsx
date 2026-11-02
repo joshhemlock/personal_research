@@ -91,13 +91,14 @@ export function MarginsChart({ quarters, margins }: MarginsChartProps) {
               <path
                 key={s.key}
                 d={linePath(s.values, (v) => (top(v) / 100) * H)}
-                pathLength={1}
                 fill="none"
                 strokeWidth="2"
                 strokeLinejoin="round"
                 strokeLinecap="round"
                 vectorEffect="non-scaling-stroke"
-                className={cx("animate-draw", s.stroke)}
+                // A wipe: in this stretched box animate-draw's dashes are
+                // measured in screen space and would stop short.
+                className={cx("animate-wipe", s.stroke)}
                 style={stagger(i, 60)}
               />
             ))}

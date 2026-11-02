@@ -2,14 +2,14 @@
 
 // React Aria tables only render their columns from a client module.
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { RiAddLine, RiLayoutColumnLine } from "@remixicon/react";
 import { Chip } from "@/components/base/badges/chip";
 import { IconButton } from "@/components/base/buttons/icon-button";
 import { SegmentedControl, SegmentedControlItem } from "@/components/base/segmented-control/segmented-control";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@/components/base/table/table";
 import { AnimatedValue } from "@/components/motion/AnimatedValue";
-import { runListTransition } from "@/components/motion/list-transition";
+import { transitionRows } from "@/components/motion/row-transition";
 import { deltaColor } from "@/components/shell/delta";
 import { num, pct } from "@/lib/format";
 import { WATCH_GROUPS, type WatchGroup, type WatchRow } from "@/lib/mock/overview";
@@ -29,6 +29,10 @@ function End({ children }: { children: string }) {
 /** Trend lines draw in down the table, 30ms a row, within the ~240ms stagger cap. */
 const ROW_STAGGER_MS = 30;
 const MAX_STAGGER_MS = 210;
+/** The trend lines' draw (600ms) plus the stagger. */
+const ENTRANCE_MS = 1000;
+
+const noSubscription = () => () => {};
 
 /** Content below the watchlist that glides when the card changes height. */
 const FOLLOWERS = '[data-glide-with="watchlist"]';
@@ -36,12 +40,27 @@ const FOLLOWERS = '[data-glide-with="watchlist"]';
 /**
  * Watchlist card: a group filter, then one row per symbol linking to its
  * chart. Changing the filter is a view transition with a group per row:
- * rows that leave blur out, rows that arrive condense in, the rows that stay
- * glide to their new place, and the card and what sits below it follow the
- * new height (runListTransition; row-* and card-move in globals.css).
+ * rows that leave blur out, rows that arrive condense in (staggered), the
+ * rows that stay glide to their new place, and what sits below the card
+ * follows its new height (transitionRows; row-* and card-move in
+ * globals.css). The filter itself stays clickable throughout.
  */
 export function Watchlist({ rows }: { rows: WatchRow[] }) {
   const [filter, setFilter] = useState<WatchFilter>("All");
+  // The trend lines draw during the card's first entrance only, and only
+  // when the card mounts in the browser (arriving on the Overview from
+  // another screen). React Aria swaps the server-rendered rows for new ones
+  // when it hydrates, and again when Next shows this screen after hiding it,
+  // so lines drawn in those rows would restart (or replay) mid-way. Rows a
+  // filter brings in condense in with the row transition instead.
+  const hydrating = useSyncExternalStore(noSubscription, () => false, () => true);
+  const [fromServer] = useState(hydrating);
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setEntered(true), ENTRANCE_MS);
+    return () => clearTimeout(id);
+  }, []);
+  const drawLines = !fromServer && !entered;
   const sectionRef = useRef<HTMLElement>(null);
   const tableRef = useRef<HTMLTableElement>(null);
   const shown = filter === "All" ? rows : rows.filter((r) => r.group === filter);
@@ -70,11 +89,8 @@ export function Watchlist({ rows }: { rows: WatchRow[] }) {
                 setFilter(next);
                 return;
               }
-              runListTransition(() => setFilter(next), {
+              transitionRows(table, () => setFilter(next), {
                 name: "watchlist",
-                rows: () => table.tBodies[0]?.rows as Iterable<HTMLElement> | undefined,
-                keyOf: (row) => row.dataset.key,
-                frame: sectionRef.current,
                 followers: () => sectionRef.current?.closest("main")?.querySelectorAll<HTMLElement>(FOLLOWERS),
               });
             }}
@@ -126,7 +142,7 @@ export function Watchlist({ rows }: { rows: WatchRow[] }) {
             <span className="block pe-2.5 text-end">Earnings</span>
           </TableColumn>
         </TableHeader>
-        <TableBody items={shown}>
+        <TableBody items={shown} dependencies={[drawLines]}>
           {(row) => (
             <TableRow
               id={row.symbol}
@@ -152,6 +168,7 @@ export function Watchlist({ rows }: { rows: WatchRow[] }) {
                 <Sparkline
                   values={row.trend}
                   up={row.monthPct >= 0}
+                  draw={drawLines}
                   delay={Math.min((order.get(row.symbol) ?? 0) * ROW_STAGGER_MS, MAX_STAGGER_MS)}
                   className="h-7 w-24"
                 />

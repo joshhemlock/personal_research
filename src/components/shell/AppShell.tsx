@@ -1,7 +1,7 @@
-import { ViewTransition, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { NavKey } from "./nav";
 import { DEFAULT_ASK_LABEL, DEFAULT_SYMBOL, type HeaderQuote } from "./page-state";
-import { ShellPagePublisher } from "./ShellPage";
+import { ScreenTransition, ShellPagePublisher } from "./ShellPage";
 
 type AppShellProps = {
   /** Which navigation item is the current page, if any. */
@@ -24,16 +24,12 @@ type AppShellProps = {
  * this hands them the screen's bits (active item, symbol, quote, ask label)
  * and lays out the screen's columns.
  *
- * The columns sit in a React <ViewTransition> with no DOM node above it in
- * the screen, so moving to another screen swaps them with BoardUI's
- * blur-out / blur-in (page-exit / page-enter in globals.css) while the shell
- * stays put.
- *
- * The transition is named per screen, not per route: a route change within
- * a screen (note to note, ticker to ticker) mounts a new copy of the same
- * screen, and React pairs the two by name as a "share", which is "none"
- * here. Nothing animates at this level then; the screen runs its own
- * transition for its content, without a page swap on top of it.
+ * The columns sit in a React <ViewTransition> (ScreenTransition) with no
+ * DOM node above it in the screen, so moving to another screen swaps them
+ * with BoardUI's blur-out / blur-in (page-exit / page-enter in globals.css)
+ * while the shell stays put. It is keyed on the screen only: a route change
+ * within a screen (note to note, ticker to ticker) is left to the screen's
+ * own transitions, with no page swap on top.
  */
 export function AppShell({
   active,
@@ -42,20 +38,12 @@ export function AppShell({
   askLabel = DEFAULT_ASK_LABEL,
   children,
 }: AppShellProps) {
-  const screen = active ?? "page";
   return (
     <>
       <ShellPagePublisher active={active} symbol={symbol} quote={quote} askLabel={askLabel} />
-      <ViewTransition
-        key={screen}
-        name={`screen-${screen}`}
-        enter="page-enter"
-        exit="page-exit"
-        share="none"
-        default="none"
-      >
+      <ScreenTransition screen={active ?? "page"}>
         <div className="flex min-w-0 flex-wrap items-stretch gap-4">{children}</div>
-      </ViewTransition>
+      </ScreenTransition>
     </>
   );
 }

@@ -41,6 +41,8 @@ export type SidebarProps = {
   /** Inside the phone drawer: always expanded, with a close button. */
   mobile?: boolean;
   onClose?: () => void;
+  /** Told just before the rail collapses or expands (ShellFrame moves the page with it). */
+  onCollapsedChange?: (collapsed: boolean) => void;
   className?: string;
 };
 
@@ -58,7 +60,7 @@ const notYet = () => {};
  * It reads the URL, which a prerender of a route with an unknown param
  * can't: render it inside <Suspense> with <SidebarFallback> as the fallback.
  */
-export function Sidebar({ live, mobile = false, onClose, className }: SidebarProps) {
+export function Sidebar({ live, mobile = false, onClose, onCollapsedChange, className }: SidebarProps) {
   const { active, symbol, askLabel } = useShellPage();
   const pathname = usePathname();
   // The row pressed on this URL; it stops counting once the URL changes.
@@ -69,6 +71,7 @@ export function Sidebar({ live, mobile = false, onClose, className }: SidebarPro
       live={live}
       mobile={mobile}
       onClose={onClose}
+      onCollapsedChange={onCollapsedChange}
       className={className}
       selected={selected}
       symbol={symbol}
@@ -81,8 +84,10 @@ export function Sidebar({ live, mobile = false, onClose, className }: SidebarPro
 }
 
 /** The sidebar before the URL is known (a prerendered shell for an unknown param): nothing selected yet. */
-export function SidebarFallback({ live }: { live: boolean }) {
-  return <SidebarPanel live={live} symbol={DEFAULT_SYMBOL} askLabel={DEFAULT_ASK_LABEL} />;
+export function SidebarFallback({ live, onCollapsedChange }: Pick<SidebarProps, "live" | "onCollapsedChange">) {
+  return (
+    <SidebarPanel live={live} onCollapsedChange={onCollapsedChange} symbol={DEFAULT_SYMBOL} askLabel={DEFAULT_ASK_LABEL} />
+  );
 }
 
 type SidebarPanelProps = Omit<SidebarProps, "mobile"> & {
@@ -97,6 +102,7 @@ function SidebarPanel({
   live,
   mobile = false,
   onClose,
+  onCollapsedChange,
   className,
   selected,
   symbol,
@@ -142,6 +148,7 @@ function SidebarPanel({
       fluid={mobile}
       selected={selected ?? ""}
       onNavigate={onNavigate}
+      onCollapsedChange={onCollapsedChange}
       items={items}
       quickSearch={false}
       sections={[tools]}

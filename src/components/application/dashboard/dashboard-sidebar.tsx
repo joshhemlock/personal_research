@@ -310,6 +310,7 @@ export function DashboardSidebar({
   footer,
   navLabel = "Main",
   onNavigate,
+  onCollapsedChange,
   className,
 }: {
   /** Rendered inside the mobile drawer: always expanded, close button instead of collapse. */
@@ -343,6 +344,12 @@ export function DashboardSidebar({
   navLabel?: string;
   /** Told when a primary or section row's link is followed, before the next screen has loaded. */
   onNavigate?: (href: string) => void;
+  /**
+   * Told just before the rail collapses or expands, so the layout around it
+   * can move with the morph (e.g. glide the page instead of re-flowing it
+   * every frame).
+   */
+  onCollapsedChange?: (collapsed: boolean) => void;
   className?: string;
 } = {}) {
   const localize = useTemplateCopy();
@@ -368,8 +375,18 @@ export function DashboardSidebar({
 
   // Plain functions, and the effects below repeat the bits they need: manual
   // useCallback here was memoization the React Compiler could not preserve.
+  const setRail = (next: boolean) => {
+    onCollapsedChange?.(next);
+    setCollapsed(next);
+  };
+  // The ⌘L listener below lives across renders; it reads the latest callback.
+  const collapsedChangeRef = useRef(onCollapsedChange);
+  useEffect(() => {
+    collapsedChangeRef.current = onCollapsedChange;
+  });
+
   const activateSearch = () => {
-    if (!mobile) setCollapsed(false);
+    if (!mobile && collapsedState) setRail(false);
     setSearchActive(true);
   };
 
@@ -386,16 +403,25 @@ export function DashboardSidebar({
   // been placed (first paint, before hydration) the selected row draws its
   // own fill, so the selection never flashes.
   const rowKeys = items.map((item) => item.key).join(" ");
+  const placed = useRef<Glide | null>(null);
   useIsomorphicLayoutEffect(() => {
     const nav = navRef.current;
     if (!nav) return;
     const place = (animate: boolean) => {
       const row = selected ? nav.querySelector<HTMLElement>(`[data-nav-key="${CSS.escape(selected)}"]`) : null;
-      setGlide((prev) => {
-        if (!row) return prev && prev.shown ? { ...prev, shown: false, move: false } : prev;
-        const next = { top: row.offsetTop, height: row.offsetHeight, shown: true, move: animate && !!prev?.shown };
-        return prev && prev.shown && prev.top === next.top && prev.height === next.height ? prev : next;
-      });
+      const prev = placed.current;
+      let next = prev;
+      if (!row) {
+        if (prev?.shown) next = { ...prev, shown: false, move: false };
+      } else if (!prev?.shown || prev.top !== row.offsetTop || prev.height !== row.offsetHeight) {
+        next = { top: row.offsetTop, height: row.offsetHeight, shown: true, move: animate && !!prev?.shown };
+      }
+      // Only a real change renders: the rail's width morph fires the
+      // observer every frame without moving any row.
+      if (next !== prev) {
+        placed.current = next;
+        setGlide(next);
+      }
     };
     place(true);
     // Rows can reflow (fonts, a filtered list): follow without gliding.
@@ -430,7 +456,10 @@ export function DashboardSidebar({
     const onShortcut = (event: KeyboardEvent) => {
       if (event.key.toLocaleLowerCase() === "l" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
-        if (!mobile) setCollapsed(false);
+        if (!mobile) {
+          collapsedChangeRef.current?.(false);
+          setCollapsed(false);
+        }
         setSearchActive(true);
       }
     };
@@ -571,7 +600,7 @@ export function DashboardSidebar({
               onClick={() => {
                 const isExpanding = collapsedState;
                 if (!isExpanding) deactivateSearch(false);
-                setCollapsed(!collapsedState);
+                setRail(!collapsedState);
                 setSuppressUserHover(isExpanding);
               }}
               className={cx(

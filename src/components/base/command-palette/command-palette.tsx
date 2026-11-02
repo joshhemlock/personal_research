@@ -133,12 +133,15 @@ export function CommandPalette({
     >
       <div
         aria-hidden
-        className="absolute inset-0 bg-black/20 transition-opacity duration-150 ease-out group-data-[entering]/palette:opacity-0 group-data-[exiting]/palette:opacity-0"
+        className="absolute inset-0 bg-black/20 transition-opacity duration-150 ease-out group-data-[entering]/palette:opacity-0 group-data-[exiting]/palette:opacity-0 group-data-[exiting]/palette:ease-exit"
       />
       <AriaModal
         className={cx(
           "relative flex max-h-[min(560px,76vh)] w-full max-w-[560px] flex-col outline-none",
-          "transition-[opacity,translate,scale,filter] duration-200 ease-out",
+          // Filter on a large surface: keep it on the GPU. Leaving is faster
+          // than arriving and eases in, so the palette gets out of the way.
+          "transform-gpu transition-[opacity,translate,scale,filter] duration-200 ease-out",
+          "data-[exiting]:duration-150 data-[exiting]:ease-exit",
           "data-[entering]:opacity-0 data-[exiting]:opacity-0",
           "motion-safe:data-[entering]:translate-y-2.5 motion-safe:data-[entering]:scale-[0.98] motion-safe:data-[entering]:blur-[4px]",
           "motion-safe:data-[exiting]:translate-y-2 motion-safe:data-[exiting]:scale-[0.98] motion-safe:data-[exiting]:blur-[3px]",

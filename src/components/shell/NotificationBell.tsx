@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { RiNotificationLine } from "@remixicon/react";
 import { IconButton } from "@/components/base/buttons/icon-button";
 import { cx } from "@/utils/cx";
@@ -24,10 +23,10 @@ export type ShellNotice = {
 // The panel (BoardUI's notification center) loads on demand: fetched once
 // the page is idle, or when the bell is hovered or focused, so a click
 // still opens it at once.
-const loadPanel = () => import("./NotificationPanel");
-const NotificationPanel = dynamic(() => import("./NotificationPanel").then((m) => m.NotificationPanel), {
-  ssr: false,
-});
+// One import() shared by the preload and the component (same chunk).
+let panel: Promise<typeof import("./NotificationPanel")> | undefined;
+const loadPanel = () => (panel ??= import("./NotificationPanel"));
+const NotificationPanel = lazy(() => loadPanel().then((m) => ({ default: m.NotificationPanel })));
 
 /**
  * The top bar's bell: the unread count on the glyph, opening the
@@ -68,7 +67,11 @@ export function NotificationBell({ notices, className }: { notices: ShellNotice[
           </span>
         )}
       </span>
-      {used && <NotificationPanel triggerRef={triggerRef} isOpen={isOpen} onOpenChange={setIsOpen} notices={notices} />}
+      {used && (
+        <Suspense fallback={null}>
+          <NotificationPanel triggerRef={triggerRef} isOpen={isOpen} onOpenChange={setIsOpen} notices={notices} />
+        </Suspense>
+      )}
     </>
   );
 }

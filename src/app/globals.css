@@ -108,7 +108,10 @@
  *   animate-rise         a vertical bar rising from its baseline (360ms)
  *   animate-grow         a horizontal bar growing from its start (360ms)
  *   animate-draw         an SVG line drawing itself; give the path
- *                        pathLength="1" (600ms)
+ *                        pathLength="1" (600ms). Not with
+ *                        vector-effect="non-scaling-stroke" in a stretched
+ *                        SVG: use animate-wipe there
+ *   animate-wipe         a chart line revealed left to right (600ms)
  *   animate-fade         a fill or wash fading in alongside a draw (600ms)
  *   animate-wait         a placeholder that only shows if the wait lasts
  *                        (fades in after 150ms, so quick handovers never
@@ -190,6 +193,23 @@
   stroke-dasharray: 1 2;
   animation: draw 600ms var(--ease-board) both;
 }
+/* A chart line revealed left to right by a clip, for lines whose dashes
+   animate-draw can't measure: with vector-effect: non-scaling-stroke in a
+   stretched SVG (preserveAspectRatio="none"), Chrome lays the dashes out in
+   screen space and the drawn line stops short, leaving a gap. The insets
+   overhang by 4px so round caps and stroke edges are never cut. Physical
+   left to right in RTL too: it's a chart. */
+@keyframes wipe {
+  from {
+    clip-path: inset(-4px 100% -4px -4px);
+  }
+  to {
+    clip-path: inset(-4px);
+  }
+}
+@utility animate-wipe {
+  animation: wipe 600ms var(--ease-board) both;
+}
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -204,7 +224,8 @@
 
 /* Inside a Settle scope (components/motion/Settle), an element whose
    one-off animation has finished is marked data-played and keeps its end
-   state, so showing the screen again doesn't replay it. */
+   state, so showing the screen again doesn't replay it. Keep this list in
+   step with Settle's. */
 [data-settle]
   [data-played]:is(
     .animate-enter,
@@ -213,6 +234,7 @@
     .animate-rise,
     .animate-grow,
     .animate-draw,
+    .animate-wipe,
     .animate-fade,
     .animate-wait,
     .animate-number-fade
@@ -269,12 +291,13 @@
   pointer-events: none;
 }
 
-/* Rows of a filtered list (the Overview watchlist; runListTransition in
-   components/motion, or a React <ViewTransition enter="row-enter"
-   exit="row-exit" update="row-move"> around a plain row): leaving rows blur
-   out fast, arriving rows condense in, and the rows that stay glide to
-   their new place. The card and the content below a list that changed
-   height glide with it (card-move). */
+/* Rows of a list that changes (the Overview watchlist, the Screener results:
+   transitionRows in components/motion/row-transition, or a React
+   <ViewTransition enter="row-enter" exit="row-exit" update="row-move">
+   around a plain row): leaving rows blur out fast, arriving rows condense
+   in top to bottom (row-d1…row-d7: 30ms a row, capped at 210ms), and the
+   rows that stay glide to their new place. Content below a list that
+   changed height glides with it (card-move). */
 ::view-transition-group(.row-move),
 ::view-transition-group(.card-move) {
   animation-duration: 360ms;
@@ -285,6 +308,27 @@
 }
 ::view-transition-old(.row-exit):only-child {
   animation: row-out 180ms var(--ease-exit) both;
+}
+::view-transition-new(.row-d1):only-child {
+  animation-delay: 30ms;
+}
+::view-transition-new(.row-d2):only-child {
+  animation-delay: 60ms;
+}
+::view-transition-new(.row-d3):only-child {
+  animation-delay: 90ms;
+}
+::view-transition-new(.row-d4):only-child {
+  animation-delay: 120ms;
+}
+::view-transition-new(.row-d5):only-child {
+  animation-delay: 150ms;
+}
+::view-transition-new(.row-d6):only-child {
+  animation-delay: 180ms;
+}
+::view-transition-new(.row-d7):only-child {
+  animation-delay: 210ms;
 }
 @keyframes row-in {
   from {

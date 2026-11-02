@@ -1,19 +1,10 @@
 /*
  * Screener styles utilities can't express.
  *
- * Results rows: rowTransition.ts names each row for the life of a view
- * transition with the app's shared row classes (row-move / row-enter /
- * row-exit in globals.css: rows that stay glide, new ones condense in,
- * leaving ones blur out) plus a stagger step, sr-d0…sr-d7, so a new page
- * of rows lands top to bottom (30ms a row, capped at 210ms).
+ * Results rows animate with the shared transitionRows helper
+ * (components/motion/row-transition) and the app's row recipes in
+ * globals.css (row-move / row-enter / row-exit, staggered row-d1…row-d7).
  */
-::view-transition-new(.sr-d1):only-child { animation-delay: 30ms; }
-::view-transition-new(.sr-d2):only-child { animation-delay: 60ms; }
-::view-transition-new(.sr-d3):only-child { animation-delay: 90ms; }
-::view-transition-new(.sr-d4):only-child { animation-delay: 120ms; }
-::view-transition-new(.sr-d5):only-child { animation-delay: 150ms; }
-::view-transition-new(.sr-d6):only-child { animation-delay: 180ms; }
-::view-transition-new(.sr-d7):only-child { animation-delay: 210ms; }
 
 /* The first and last cells line up with the card's 20px padding. */
 table.sr-table :is(th, td):first-child {

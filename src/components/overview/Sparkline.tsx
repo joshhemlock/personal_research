@@ -10,6 +10,8 @@ type SparklineProps = {
   up: boolean;
   /** Fill under the line, fading out; needs a document-unique `id`. */
   area?: { id: string };
+  /** Draw in on mount (default). Off for a line that is only being re-mounted. */
+  draw?: boolean;
   /** Entrance stagger, ms: the line draws itself in after this delay. */
   delay?: number;
   className?: string;
@@ -17,12 +19,14 @@ type SparklineProps = {
 
 /**
  * A small trend line in the gain/loss chart tokens. Decorative: the numbers
- * sit beside it. On first paint the line draws itself in (animate-draw) and
- * its fill fades in under it (paint only, no layout).
+ * sit beside it. On first paint the line wipes in left to right and its
+ * fill fades in under it (paint only, no layout). A wipe, not
+ * animate-draw's dashes: the box stretches the line (non-scaling stroke),
+ * and a dash measured in screen space would stop short.
  */
-export function Sparkline({ values, up, area, delay = 0, className }: SparklineProps) {
+export function Sparkline({ values, up, area, draw = true, delay = 0, className }: SparklineProps) {
   const d = linePath(values, W, H, 3);
-  const timing = delay ? { animationDelay: `${delay}ms` } : undefined;
+  const timing = draw && delay ? { animationDelay: `${delay}ms` } : undefined;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true" className={cx("block", className)}>
       {area && (
@@ -41,18 +45,17 @@ export function Sparkline({ values, up, area, delay = 0, className }: SparklineP
               />
             </linearGradient>
           </defs>
-          <path d={`${d}L${W} ${H} L0 ${H} Z`} fill={`url(#${area.id})`} className="animate-fade" style={timing} />
+          <path d={`${d}L${W} ${H} L0 ${H} Z`} fill={`url(#${area.id})`} className={cx(draw && "animate-fade")} style={timing} />
         </>
       )}
       <path
         d={d}
-        pathLength={1}
         fill="none"
         strokeWidth="1.5"
         strokeLinejoin="round"
         strokeLinecap="round"
         vectorEffect="non-scaling-stroke"
-        className={cx("animate-draw", up ? "stroke-chart-positive" : "stroke-chart-negative")}
+        className={cx(draw && "animate-wipe", up ? "stroke-chart-positive" : "stroke-chart-negative")}
         style={timing}
       />
     </svg>

@@ -52,11 +52,12 @@ export default function OverviewLoading() {
                     <Line className="h-6.5" bar="h-4.5 w-24" />
                     <Skeleton className="h-9 w-72 max-w-[50%] rounded-2lg" />
                   </div>
-                  <div className="h-8 border-y border-separator-border bg-background-secondary-default" />
+                  {/* The small BoardUI table's header (31px) and rows (47px). */}
+                  <div className="h-[31px] border-y border-separator-border bg-background-secondary-default" />
                   {Array.from({ length: 8 }, (_, i) => (
                     <div
                       key={i}
-                      className="flex h-12 items-center gap-6 border-b border-separator-border px-5 last:border-b-0"
+                      className="flex h-[47px] items-center gap-6 border-b border-separator-border px-5 last:border-b-0"
                     >
                       <div className="flex w-24 flex-col gap-1.5">
                         <Skeleton shape="text" className="h-3 w-12" />
@@ -87,9 +88,9 @@ export default function OverviewLoading() {
               </div>
 
               <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(18rem,100%),1fr))] items-start gap-4">
-                <SideCard rows={8} row="h-7" />
-                <SideCard rows={4} row="h-16" />
-                <SideCard rows={4} row="h-12" />
+                <SideCard rows={8} row="h-7" gap="gap-1" />
+                <SideCard rows={4} row="h-16" gap="gap-1" />
+                <SideCard rows={4} row="h-12" gap="gap-2" />
               </div>
             </div>
           </div>
@@ -109,14 +110,14 @@ function Line({ className, bar }: { className: string; bar: string }) {
 }
 
 /** One of the side column's cards: a title row, then a list. */
-function SideCard({ rows, row }: { rows: number; row: string }) {
+function SideCard({ rows, row, gap }: { rows: number; row: string; gap: string }) {
   return (
     <div className={cx(CARD, "flex min-w-0 flex-col gap-3 p-5")}>
       <div className="flex items-center justify-between gap-3">
         <Line className="h-6.5" bar="h-4.5 w-28" />
         <Line className="h-5" bar="h-3 w-20" />
       </div>
-      <div className="flex flex-col gap-2">
+      <div className={cx("flex flex-col", gap)}>
         {Array.from({ length: rows }, (_, i) => (
           <Skeleton key={i} className={cx("w-full rounded-xl", row)} />
         ))}
