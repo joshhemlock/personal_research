@@ -93,6 +93,138 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+ * Motion: BoardUI's motion language (see its skill's references/motion.md).
+ * Fast and subtle: interface 100–300ms, data entrances 360–400ms. Entrances
+ * condense into place (fade + slight scale + small blur, ease-out); exits are
+ * faster and ease-in. Press feedback is a colour step, never a scale. Only
+ * opacity, transform and filter animate, so everything stays on the GPU.
+ *
+ * Utilities:
+ *   ease-board / ease-modal / ease-exit   easings (Tailwind ease-* utilities)
+ *   animate-enter        a card or block condensing into place (360ms)
+ *   animate-pop          a small element condensing in (200ms)
+ *   animate-number       a changed figure cross-fading in (220ms); re-key it
+ *   animate-rise         a vertical bar rising from its baseline (360ms)
+ *   animate-grow         a horizontal bar growing from its start (360ms)
+ *   animate-draw         an SVG line drawing itself; give the path
+ *                        pathLength="1" (600ms)
+ * Stagger with an inline `animationDelay` (about 30-40ms a step, capped
+ * around 240ms in total) so lists never feel slow.
+ * --------------------------------------------------------------------------- */
+@theme {
+  --ease-board: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-modal: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-exit: cubic-bezier(0.55, 0, 0.9, 0.35);
+
+  --animate-enter: enter 360ms var(--ease-board) both;
+  --animate-pop: pop 200ms var(--ease-board) both;
+  --animate-number: number-in 220ms ease-out both;
+
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: scale(0.985);
+      filter: blur(2px);
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+      filter: blur(2px);
+    }
+  }
+  @keyframes number-in {
+    from {
+      opacity: 0;
+      filter: blur(1px);
+    }
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@utility animate-rise {
+  transform-origin: bottom;
+  animation: rise 360ms var(--ease-board) both;
+}
+@utility animate-grow {
+  transform-origin: left;
+  &:dir(rtl) {
+    transform-origin: right;
+  }
+  animation: grow 360ms var(--ease-board) both;
+}
+@utility animate-draw {
+  stroke-dasharray: 1;
+  animation: draw 600ms var(--ease-board) both;
+}
+
+/* Page changes. AppShell wraps each screen's columns in a React
+   <ViewTransition> keyed by screen; navigating swaps them with a quick
+   blur-out and a condensing blur-in. The sidebar and top bar stay put. */
+::view-transition-old(.page-exit) {
+  animation: page-out 150ms var(--ease-exit) both;
+}
+::view-transition-new(.page-enter) {
+  animation: page-in 300ms var(--ease-board) both;
+}
+@keyframes page-out {
+  to {
+    opacity: 0;
+    filter: blur(2px);
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: scale(0.995);
+    filter: blur(3px);
+  }
+}
+
+/* A skeleton handing over to the content it stood in for. */
+::view-transition-old(.skeleton-exit) {
+  animation: page-out 150ms var(--ease-exit) both;
+}
+::view-transition-new(.content-enter) {
+  animation: page-in 300ms var(--ease-board) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 /* ===========================================================================
  * LEGACY — remove when every screen is on BoardUI.
  *

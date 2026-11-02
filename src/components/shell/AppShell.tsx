@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { ViewTransition, type ReactNode } from "react";
 import { isSample } from "@/lib/data/source";
 import type { NavKey } from "./nav";
 import { ShellFrame } from "./ShellFrame";
@@ -27,7 +27,11 @@ export function AppShell({ active, symbol = "NVDA", quote, askLabel = "Ask a res
   return (
     <ShellFrame sidebar={{ active, symbol, askLabel, live: !isSample }}>
       <TopBar quote={quote} />
-      <div className="flex min-w-0 flex-wrap items-stretch gap-4">{children}</div>
+      {/* Keyed by screen: navigating to another screen (or symbol) swaps the
+          columns with BoardUI's blur-out / blur-in (see globals.css). */}
+      <ViewTransition key={`${active ?? "page"}:${symbol}`} enter="page-enter" exit="page-exit" default="none">
+        <div className="flex min-w-0 flex-wrap items-stretch gap-4">{children}</div>
+      </ViewTransition>
     </ShellFrame>
   );
 }
