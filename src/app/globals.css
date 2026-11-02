@@ -111,8 +111,9 @@
   --color-muted: var(--color-text-secondary);
   --color-hairline: var(--color-separator-border);
   --color-track: var(--color-background-secondary-default);
-  --color-account: var(--color-background-tertiary-default);
-  --color-tag: var(--color-background-quaternary-default);
+  /* Dark fills under white text. */
+  --color-account: var(--color-text-primary);
+  --color-tag: var(--color-text-secondary);
   --color-focus: var(--color-border-focus-ring);
 
   --color-up: var(--color-chart-positive);
@@ -181,9 +182,11 @@
   }
 }
 
-/* `bg-ink` fills sit behind white text (buttons, ticker discs). The ink text
-   token turns light in dark mode, so those fills take a dark surface there. */
-.dark .bg-ink {
+/* `bg-ink` / `bg-account` fills sit behind white text (buttons, ticker discs,
+   the next-report card). The ink text token turns light in dark mode, so
+   those fills take a dark surface there. */
+.dark .bg-ink,
+.dark .bg-account {
   background-color: var(--color-background-quaternary-default);
 }
 /* LEGACY end */

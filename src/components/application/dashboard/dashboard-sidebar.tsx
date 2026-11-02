@@ -4,7 +4,6 @@ import { useTemplateCopy } from "@/components/foundations/template-copy/template
 
 import Link from "next/link";
 import {
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -310,18 +309,20 @@ export function DashboardSidebar({
   const sectionRows = (sections ?? []).flatMap((section) => section.items);
   const secondaryMatch = [...secondaryRows, ...sectionRows].some((item) => matches(item.label));
 
-  const activateSearch = useCallback(() => {
+  // Plain functions, and the effects below repeat the bits they need: manual
+  // useCallback here was memoization the React Compiler could not preserve.
+  const activateSearch = () => {
     if (!mobile) setCollapsed(false);
     setSearchActive(true);
-  }, [mobile]);
+  };
 
-  const deactivateSearch = useCallback((restoreFocus: boolean) => {
+  const deactivateSearch = (restoreFocus: boolean) => {
     setQuery("");
     setSearchActive(false);
     if (restoreFocus) {
       window.requestAnimationFrame(() => searchTriggerRef.current?.focus());
     }
-  }, []);
+  };
 
   useEffect(() => {
     if (!searchActive) return;
@@ -335,24 +336,28 @@ export function DashboardSidebar({
     const onOutsideClick = (event: MouseEvent) => {
       const target = event.target;
       if (target instanceof Node && searchFieldRef.current?.contains(target)) return;
-      deactivateSearch(false);
+      setQuery("");
+      setSearchActive(false);
     };
 
     document.addEventListener("click", onOutsideClick);
     return () => document.removeEventListener("click", onOutsideClick);
-  }, [deactivateSearch, searchActive]);
+  }, [searchActive]);
 
   useEffect(() => {
+    // ⌘L belongs to the quick search; without it the browser keeps the shortcut.
+    if (!quickSearch) return;
     const onShortcut = (event: KeyboardEvent) => {
       if (event.key.toLocaleLowerCase() === "l" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
-        activateSearch();
+        if (!mobile) setCollapsed(false);
+        setSearchActive(true);
       }
     };
 
     window.addEventListener("keydown", onShortcut);
     return () => window.removeEventListener("keydown", onShortcut);
-  }, [activateSearch]);
+  }, [mobile, quickSearch]);
 
   return localize((
     <aside

@@ -255,7 +255,7 @@ function Cell({
 }
 
 /**
- * Grid tracks for the shown columns, plus, below the split width (91.5rem,
+ * Grid tracks for the shown columns, plus, below the split width (101.75rem,
  * --breakpoint-split in globals.css), container queries on the results card
  * that hide AUTO_HIDE columns and then tighten the rest so the table fits
  * without scrolling. CSS rather than a ResizeObserver: the server-rendered
@@ -269,7 +269,7 @@ function fitCss(cols: ColumnDef[]): string {
     if (i === 0 && step.hide) css += "[data-no-room-note]{display:block}";
     return `@container results (width < ${step.below}px){${css}}`;
   });
-  return `${table}{--cols:${gridTemplate(cols)}}@media (width < 91.5rem){${rules.join("")}}`;
+  return `${table}{--cols:${gridTemplate(cols)}}@media (width < 101.75rem){${rules.join("")}}`;
 }
 
 /** The matching stocks: sortable headers, one row per stock on this page. */
@@ -279,7 +279,7 @@ export function ResultsTable() {
   const sortable = (key: ColumnKey) => key !== "watch" && !(live && LIVE_UNSORTABLE.includes(key));
 
   return (
-    <div className="overflow-x-auto">
+    <div className="relative overflow-x-auto">
       <style>{fitCss(cols)}</style>
       <div
         role="table"
@@ -287,7 +287,7 @@ export function ResultsTable() {
         aria-rowcount={result.total + 1}
         aria-busy={result.loading || undefined}
         data-results-table=""
-        className={`min-w-[960px] max-split:min-w-0${result.loading ? " opacity-60 transition-opacity" : ""}`}
+        className={`min-w-[960px] max-split:min-w-0 ${result.loading ? "opacity-60 transition-opacity" : ""}`}
       >
         <div role="row" aria-rowindex={1} className={`${ROW} py-[6px] text-[12px] text-muted`}>
           {cols.map((c) => (
