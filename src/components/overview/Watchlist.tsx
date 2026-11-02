@@ -30,7 +30,7 @@ function End({ children }: { children: string }) {
 const ROW_STAGGER_MS = 30;
 const MAX_STAGGER_MS = 210;
 
-/** Content below the watchlist that glides when it changes height (data-glide-with). */
+/** Content below the watchlist that glides when the card changes height. */
 const FOLLOWERS = '[data-glide-with="watchlist"]';
 
 /**

@@ -29,7 +29,8 @@ type SectorPerformanceProps = {
 /**
  * Sector heat tiles with a 1D / 1W / 1M period toggle. Switching period
  * steps each tile's heat colour over 200ms and swaps its figure in place
- * (BoardUI's number fade); nothing moves.
+ * (BoardUI's number fade); nothing moves. The card glides with the
+ * watchlist above it when that changes height (data-glide-with).
  */
 export function SectorPerformance({ sectors, periods, scale }: SectorPerformanceProps) {
   const [period, setPeriod] = useState<SectorPeriod>(periods[0]);

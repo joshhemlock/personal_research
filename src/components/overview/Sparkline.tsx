@@ -18,7 +18,7 @@ type SparklineProps = {
 /**
  * A small trend line in the gain/loss chart tokens. Decorative: the numbers
  * sit beside it. On first paint the line draws itself in (animate-draw) and
- * its fill fades in under it.
+ * its fill fades in under it (paint only, no layout).
  */
 export function Sparkline({ values, up, area, delay = 0, className }: SparklineProps) {
   const d = linePath(values, W, H, 3);
