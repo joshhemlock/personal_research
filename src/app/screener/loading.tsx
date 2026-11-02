@@ -87,16 +87,25 @@ export default function ScreenerLoading() {
             </span>
             <span className="h-9 border-y border-separator-border bg-background-secondary-default" />
             {Array.from({ length: 8 }, (_, i) => (
-              <span key={i} className="flex items-center gap-4 border-b border-separator-border px-5 py-2.5 last:border-b-0">
-                <Skeleton shape="circle" className="size-6" />
-                <span className="flex w-32 flex-col gap-1.5">
+              <span key={i} className="flex items-center gap-5 border-b border-separator-border px-5 py-2.5">
+                <span className="flex w-36 shrink-0 flex-col gap-1.5">
                   <Skeleton shape="text" className="h-3.5 w-12" />
                   <Skeleton shape="text" className="h-3 w-24" />
                 </span>
-                <Skeleton shape="text" className="ms-auto h-3.5 w-3/5" />
-                <Skeleton shape="circle" className="size-5" />
+                {/* The figures: short bars at the end of each numeric column. */}
+                <span className="flex min-w-0 flex-1 justify-end gap-5 overflow-hidden">
+                  {Array.from({ length: 7 }, (_, j) => (
+                    <Skeleton key={j} shape="text" className="h-3.5 w-12 shrink-0" />
+                  ))}
+                  <Skeleton shape="text" className="h-5 w-21 shrink-0" />
+                </span>
+                <Skeleton shape="circle" className="size-5 shrink-0" />
               </span>
             ))}
+            <span className="flex items-center justify-between px-5 py-3">
+              <Skeleton shape="text" className="h-3.5 w-32" />
+              <Skeleton className="h-8 w-36 rounded-lg" />
+            </span>
           </div>
         </div>
       </div>
