@@ -15,6 +15,7 @@ const MAX_STAGGER_MS = 240;
 /**
  * Research to-dos. Checking one off draws the tick (BoardUI's checkbox),
  * fades the title to the done colour and swaps the open count in place.
+ * Ticks drawn once stay drawn when the screen is shown again (Settle).
  */
 export function ResearchQueue({ tasks }: { tasks: QueueTask[] }) {
   const [done, setDone] = useState<Record<string, boolean>>(() =>

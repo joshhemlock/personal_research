@@ -1,27 +1,23 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
-
-/** Long enough for a draw (600ms) plus a capped stagger (240ms). */
-const ENTRANCE_MS = 1000;
+import type { AnimationEvent, ReactNode } from "react";
 
 /**
- * Wraps a screen's content and marks it `data-settled` once its entrance
- * animations (animate-enter, -draw, -grow…) have played. Next keeps recent
- * screens mounted but hidden (Activity); showing one again would restart
- * every CSS animation in it, and globals.css retires them under
- * `[data-settled]` instead. The state survives the hide, so a screen you
- * return to is simply there, with only the page transition.
+ * Wraps a screen's content so its one-off animations play once. Next keeps
+ * recent screens mounted but hidden (Activity), and showing one again would
+ * restart every CSS animation in it: sparklines redrawing, bars regrowing,
+ * checkbox ticks redrawing. Each element whose animation has finished is
+ * marked `data-played`, and globals.css retires the entrance utilities
+ * (animate-enter, -draw, -grow…, BoardUI's animate-check-draw) on marked
+ * elements inside a `data-settle` scope, leaving them in their end state.
+ * Anything mounted later (a new row, a box ticked now) still animates once.
  */
 export function Settle({ className, children }: { className?: string; children: ReactNode }) {
-  const [settled, setSettled] = useState(false);
-  useEffect(() => {
-    if (settled) return;
-    const id = setTimeout(() => setSettled(true), ENTRANCE_MS);
-    return () => clearTimeout(id);
-  }, [settled]);
+  const markPlayed = (event: AnimationEvent) => {
+    if (event.target instanceof Element) event.target.setAttribute("data-played", "");
+  };
   return (
-    <div data-settled={settled || undefined} className={className}>
+    <div data-settle="" className={className} onAnimationEnd={markPlayed}>
       {children}
     </div>
   );

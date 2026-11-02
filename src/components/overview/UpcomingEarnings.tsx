@@ -18,7 +18,10 @@ type UpcomingEarningsProps = {
 const STAGGER_MS = 40;
 const MAX_STAGGER_MS = 240;
 
-/** Next earnings dates for watchlist names, each linking to its financials. */
+/**
+ * Next earnings dates for watchlist names, each linking to its financials.
+ * Rows press with BoardUI's colour step (hover, then active token).
+ */
 export function UpcomingEarnings({ events, today, windowDays, reported }: UpcomingEarningsProps) {
   return (
     <Card titleId="er-h" title="Upcoming earnings" note={`Next ${windowDays} days`}>

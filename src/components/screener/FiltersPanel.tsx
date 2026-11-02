@@ -91,7 +91,8 @@ function ThresholdRow({
 }) {
   const m = METRICS[metric];
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => () => clearTimeout(timer.current), []);
+  // A pending edit dies with the form it was typed into (another screen, Reset).
+  useEffect(() => () => clearTimeout(timer.current), [version]);
 
   // A row just added with "Add filter" condenses into place, once.
   const rowRef = useRef<HTMLDivElement>(null);

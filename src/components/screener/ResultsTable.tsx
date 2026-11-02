@@ -3,7 +3,7 @@
 // React Aria tables only render their columns from a client module.
 
 import Link from "next/link";
-import { memo, useLayoutEffect, useMemo, useRef, type Dispatch, type RefObject } from "react";
+import { memo, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type RefObject } from "react";
 import { RiStarFill, RiStarLine } from "@remixicon/react";
 import { Button } from "@/components/base/buttons/button";
 import { LinkButton } from "@/components/base/buttons/link-button";
@@ -19,6 +19,7 @@ import {
   LIVE_UNSORTABLE,
   TIGHT_PAD,
   fitSteps,
+  hiddenForRoom,
   fmtCap,
   fmtGrowth,
   fmtPct1,
@@ -170,12 +171,14 @@ function WatchButton({ symbol }: { symbol: string }) {
  * already has the right columns, so nothing jumps after hydration.
  */
 function fitCss(cols: ColumnDef[]): string {
-  const table = "table.sr-table";
+  // .bui-table: outranks BoardUI's compact-table padding. The edge cells keep
+  // their inset (screener.css).
+  const table = "table.bui-table.sr-table";
   return fitSteps(cols)
     .map((step) => {
       const css = step.hide
         ? `${table} [data-col="${step.hide}"]{display:none}`
-        : `${table} :is(th,td){padding-inline:${TIGHT_PAD}px}`;
+        : `${table} :is(th,td):not(:first-child,:last-child){padding-inline:${TIGHT_PAD}px}`;
       return `@container results (width < ${step.below}px){${css}}`;
     })
     .join("");
@@ -194,6 +197,28 @@ type TableViewProps = {
   retry: () => void;
   tableRef: RefObject<HTMLTableElement | null>;
 };
+
+/**
+ * The columns the table hides for room at its current width (see fitSteps),
+ * kept up to date with a ResizeObserver on the table's wrapper, which is as
+ * wide as the card the fit stylesheet queries. Empty until mounted: the
+ * stylesheet has the first paint covered.
+ */
+function useNoRoom(cols: ColumnDef[]): [RefObject<HTMLDivElement | null>, ColumnKey[]] {
+  const ref = useRef<HTMLDivElement>(null);
+  const [noRoom, setNoRoom] = useState<ColumnKey[]>([]);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const next = hiddenForRoom(cols, entry.contentRect.width);
+      setNoRoom((prev) => (prev.join() === next.join() ? prev : next));
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [cols]);
+  return [ref, noRoom];
+}
 
 /** The matching stocks: sortable headers, one row per stock on this page. */
 export function ResultsTable() {
@@ -230,13 +255,18 @@ const TableView = memo(function TableView({
   retry,
   tableRef,
 }: TableViewProps) {
+  // Columns the user shows, then the ones that fit: the fit stylesheet hides
+  // the rest from the first paint, and once mounted they leave the table
+  // altogether so arrow keys never land on a hidden cell.
   const cols = useMemo(() => COLUMNS.filter((c) => !hiddenColumns.includes(c.key)), [hiddenColumns]);
+  const [wrapRef, noRoom] = useNoRoom(cols);
+  const shown = useMemo(() => cols.filter((c) => !noRoom.includes(c.key)), [cols, noRoom]);
   const sortable = (key: ColumnKey) => key !== "watch" && !(live && LIVE_UNSORTABLE.includes(key));
   const direction = sort.dir === "asc" ? "ascending" : "descending";
 
   return (
     // aria-busy while a live query runs: the rows on screen are the previous answer.
-    <div aria-busy={loading || undefined} className="min-w-0">
+    <div ref={wrapRef} aria-busy={loading || undefined} className="min-w-0">
       <style>{fitCss(cols)}</style>
       {/* relative: the screen-reader-only text in cells must stay inside the scroller.
           data-pending dims the old rows a touch, after a beat (screener.css). */}
@@ -251,7 +281,7 @@ const TableView = memo(function TableView({
         onSortChange={(d) => dispatch({ type: "sortColumn", key: d.column as SortKey })}
       >
         <TableHeader>
-          {cols.map((c) => (
+          {shown.map((c) => (
             <TableColumn
               key={c.key}
               id={c.key}
@@ -272,7 +302,7 @@ const TableView = memo(function TableView({
           // Items, so React Aria caches each row's render by its data: a re-sort
           // moves the rows it already has instead of re-rendering them.
           items={rows}
-          dependencies={[cols, live]}
+          dependencies={[shown, live]}
           renderEmptyState={() => (
             <div className="py-10 text-center text-body-regular text-text-secondary">
               {failed ? (
@@ -307,7 +337,7 @@ const TableView = memo(function TableView({
               // Opaque, so rows gliding past each other in a transition don't show through.
               className="bg-background-primary-default hover:bg-background-primary-hover"
             >
-              {cols.map((c) => (
+              {shown.map((c) => (
                 <TableCell key={c.key} data-col={c.key} className={c.align === "end" ? "text-end" : undefined}>
                   <Cell col={c.key} s={s} linked={live || CHARTED.has(s.symbol)} />
                 </TableCell>

@@ -10,7 +10,7 @@ type MoversProps = {
   fullScale: number;
 };
 
-/** Bars grow out of the center line on first paint, 30ms apart down the list (~240ms cap). */
+/** Bars grow out of the center line on first paint, 30ms apart down the list (within the ~240ms cap). */
 const STAGGER_MS = 30;
 const MAX_STAGGER_MS = 210;
 

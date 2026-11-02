@@ -25,8 +25,15 @@ type AppShellProps = {
  * and lays out the screen's columns.
  *
  * The columns sit in a React <ViewTransition> with no DOM node above it in
- * the screen, so a navigation swaps screens with BoardUI's blur-out /
- * blur-in (page-exit / page-enter in globals.css) while the shell stays put.
+ * the screen, so moving to another screen swaps them with BoardUI's
+ * blur-out / blur-in (page-exit / page-enter in globals.css) while the shell
+ * stays put.
+ *
+ * The transition is named per screen, not per route: a route change within
+ * a screen (note to note, ticker to ticker) mounts a new copy of the same
+ * screen, and React pairs the two by name as a "share", which is "none"
+ * here. Nothing animates at this level then; the screen runs its own
+ * transition for its content, without a page swap on top of it.
  */
 export function AppShell({
   active,
@@ -35,10 +42,18 @@ export function AppShell({
   askLabel = DEFAULT_ASK_LABEL,
   children,
 }: AppShellProps) {
+  const screen = active ?? "page";
   return (
     <>
       <ShellPagePublisher active={active} symbol={symbol} quote={quote} askLabel={askLabel} />
-      <ViewTransition key={`${active ?? "page"}:${symbol}`} enter="page-enter" exit="page-exit" default="none">
+      <ViewTransition
+        key={screen}
+        name={`screen-${screen}`}
+        enter="page-enter"
+        exit="page-exit"
+        share="none"
+        default="none"
+      >
         <div className="flex min-w-0 flex-wrap items-stretch gap-4">{children}</div>
       </ViewTransition>
     </>

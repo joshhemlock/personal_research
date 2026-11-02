@@ -118,10 +118,10 @@
  *
  * Entrances play once per screen. Next keeps recent screens mounted but
  * hidden (Activity) and showing one again restarts its CSS animations, so a
- * screen wraps its content in `data-settled` once they have run (see
- * components/motion/Settle) and the rule below retires them. A figure that
- * changes later animates with <AnimatedValue> (Web Animations), which a
- * re-show doesn't replay.
+ * screen wraps its content in <Settle> (components/motion/Settle): each
+ * element whose animation has finished is marked data-played and the rule
+ * below retires it. A figure that changes later animates with
+ * <AnimatedValue> (Web Animations), which a re-show doesn't replay.
  * --------------------------------------------------------------------------- */
 @theme {
   --ease-board: cubic-bezier(0.22, 1, 0.36, 1);
@@ -202,9 +202,27 @@
   animation: fade-in 200ms ease-out 150ms both;
 }
 
-/* A screen whose entrances have played (components/motion/Settle). */
-[data-settled] :is(.animate-enter, .animate-pop, .animate-rise, .animate-grow, .animate-draw, .animate-fade) {
+/* Inside a Settle scope (components/motion/Settle), an element whose
+   one-off animation has finished is marked data-played and keeps its end
+   state, so showing the screen again doesn't replay it. */
+[data-settle]
+  [data-played]:is(
+    .animate-enter,
+    .animate-pop,
+    .animate-number,
+    .animate-rise,
+    .animate-grow,
+    .animate-draw,
+    .animate-fade,
+    .animate-wait,
+    .animate-number-fade
+  ) {
   animation: none;
+}
+/* BoardUI's checkbox tick rests undrawn and draws with a forwards fill. */
+[data-settle] [data-played].animate-check-draw {
+  animation: none;
+  stroke-dashoffset: 0;
 }
 
 /* Press feedback is a colour step, never a scale: BoardUI's button-press

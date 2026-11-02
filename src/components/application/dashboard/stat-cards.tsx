@@ -197,7 +197,8 @@ function PlainStatCard({ stat }: { stat: Stat }) {
       <div className="flex w-full flex-col gap-0.5">
         <p className="w-full text-body-medium text-text-secondary">{stat.label}</p>
         <div className="flex w-full flex-wrap items-center gap-2">
-          {/* A new figure (a live refresh) swaps in place: BoardUI's number fade. */}
+          {/* A new figure (a live refresh) swaps in place with BoardUI's
+              number fade; never on first paint. */}
           <p className="text-title-1-medium whitespace-nowrap text-text-primary">
             <AnimatedValue value={stat.value} />
           </p>
