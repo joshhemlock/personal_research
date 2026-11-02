@@ -10,12 +10,19 @@ type SparklineProps = {
   up: boolean;
   /** Fill under the line, fading out; needs a document-unique `id`. */
   area?: { id: string };
+  /** Entrance stagger, ms: the line draws itself in after this delay. */
+  delay?: number;
   className?: string;
 };
 
-/** A small trend line in the gain/loss chart tokens. Decorative: the numbers sit beside it. */
-export function Sparkline({ values, up, area, className }: SparklineProps) {
+/**
+ * A small trend line in the gain/loss chart tokens. Decorative: the numbers
+ * sit beside it. On first paint the line draws itself in (animate-draw) and
+ * its fill fades in under it.
+ */
+export function Sparkline({ values, up, area, delay = 0, className }: SparklineProps) {
   const d = linePath(values, W, H, 3);
+  const timing = delay ? { animationDelay: `${delay}ms` } : undefined;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true" className={cx("block", className)}>
       {area && (
@@ -34,17 +41,19 @@ export function Sparkline({ values, up, area, className }: SparklineProps) {
               />
             </linearGradient>
           </defs>
-          <path d={`${d}L${W} ${H} L0 ${H} Z`} fill={`url(#${area.id})`} />
+          <path d={`${d}L${W} ${H} L0 ${H} Z`} fill={`url(#${area.id})`} className="animate-fade" style={timing} />
         </>
       )}
       <path
         d={d}
+        pathLength={1}
         fill="none"
         strokeWidth="1.5"
         strokeLinejoin="round"
         strokeLinecap="round"
         vectorEffect="non-scaling-stroke"
-        className={up ? "stroke-chart-positive" : "stroke-chart-negative"}
+        className={cx("animate-draw", up ? "stroke-chart-positive" : "stroke-chart-negative")}
+        style={timing}
       />
     </svg>
   );

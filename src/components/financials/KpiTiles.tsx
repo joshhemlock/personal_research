@@ -1,66 +1,103 @@
+import { Chip } from "@/components/base/badges/chip";
 import type { Kpi } from "@/lib/mock/financials";
+import { cx } from "@/utils/cx";
+import { AnimatedValue } from "@/components/motion/AnimatedValue";
+import { Replay } from "./Replay";
+import { isNum, stagger } from "./helpers";
 
 /**
- * Mini bar chart: eight bars scaled to the largest, the latest one dark.
- * With negative values the bars hang from a zero line instead; missing values leave a gap.
+ * Mini bar chart for a tile: eight quarters, the latest in the gain/loss
+ * colour of the tile's change, the earlier ones neutral. With negative values
+ * the bars hang from a zero line; a missing quarter leaves a gap. The bars
+ * rise in once, left to right.
  */
-function MiniBars({ values }: { values: (number | null)[] }) {
-  const w = 72;
-  const h = 34;
-  const nums = values.filter((v): v is number => v != null);
+function MiniBars({ values, up }: { values: (number | null)[]; up: boolean }) {
+  const nums = values.filter(isNum);
   const top = Math.max(...nums, 0);
-  const mx = top || 1;
-  const mn = Math.min(...nums, 0);
-  const slot = w / values.length;
-  const bw = slot * 0.62;
-  const scale = (h - 2) / (top - mn);
-  const zero = 2 + top * scale;
-  const bar = (v: number | null, k: number) => {
-    if (v == null) return "";
-    const x = k * slot + (slot - bw) / 2;
-    if (mn < 0) {
-      const [y0, y1] = v >= 0 ? [zero - v * scale, zero] : [zero, zero - v * scale];
-      return `M${x.toFixed(1)} ${y0.toFixed(1)}h${bw.toFixed(1)}V${y1.toFixed(1)}h${(-bw).toFixed(1)}Z`;
-    }
-    const bh = (Math.max(v, 0) / mx) * (h - 2);
-    return `M${x.toFixed(1)} ${(h - bh).toFixed(1)}h${bw.toFixed(1)}V${h}h${(-bw).toFixed(1)}Z`;
-  };
+  const bottom = Math.min(...nums, 0);
+  const span = top - bottom || 1;
+  // Distance of the zero line from the bottom, %.
+  const zero = (-bottom / span) * 100;
   const last = values.length - 1;
   return (
-    <svg width="60" height="30" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden="true" className="min-w-9">
-      <path d={values.slice(0, last).map(bar).join("")} fill="#D4D4D9" />
-      <path d={bar(values[last], last)} fill="#111113" />
-    </svg>
+    <span aria-hidden="true" className="flex h-8 w-24 gap-0.5">
+      {values.map((v, k) => (
+        <span key={k} className="relative h-full min-w-0 flex-1">
+          {v != null && (
+            <span
+              data-rise=""
+              className={cx(
+                "absolute inset-x-0 animate-rise",
+                v >= 0 ? "rounded-t-xs" : "rounded-b-xs",
+                k === last ? (up ? "bg-chart-positive" : "bg-chart-negative") : "bg-foreground-icon-quaternary",
+              )}
+              style={{
+                ...(v >= 0 ? { bottom: `${zero}%` } : { top: `${100 - zero}%`, transformOrigin: "top" }),
+                // At least a sliver, so a tiny quarter still reads as reported.
+                height: `max(2px, ${((Math.abs(v) / span) * 100).toFixed(2)}%)`,
+                ...stagger(k),
+              }}
+            />
+          )}
+        </span>
+      ))}
+    </span>
   );
 }
 
-// Five in a row from 840px (as designed); narrower, wrap 3 + 2, then 2 + 2 + 1,
-// then one per row, rather than leaving a single stretched tile on its own line.
-const TILE =
-  "glass-tile flex min-w-0 flex-[1_1_160px] flex-col gap-1 rounded-[20px] px-4 py-3 @max-[840px]:basis-[30%] @max-[500px]:basis-[40%] @max-[340px]:basis-full";
-
-/** The five headline tiles above the charts. */
-export function KpiTiles({ kpis }: { kpis: Kpi[] }) {
+/**
+ * "+83.4% YoY": in a narrow tile the period suffix is left to screen readers,
+ * so the change stays on one line with the figure.
+ */
+function Delta({ text }: { text: string }) {
+  const m = /^(.*?)(\s+YoY)$/.exec(text);
+  if (!m) return text;
   return (
-    <section aria-label="Headline numbers" className="@container flex flex-wrap gap-2.5">
-      {kpis.map((k) => (
-        <div key={k.label} className={TILE}>
-          <span className="text-[13px] whitespace-nowrap text-ink-3">{k.label}</span>
-          <div className="flex items-end justify-between gap-2">
-            <div className="flex flex-col leading-[1.15]">
-              <span className="text-[24px] font-normal tracking-[-0.02em]">{k.value}</span>
-              {k.delta ? (
-                <span className={`text-[12px] whitespace-nowrap ${k.up ? "text-up-text" : "text-down-text"}`}>
-                  {k.delta}
-                </span>
-              ) : (
-                <span className="text-[12px] whitespace-nowrap text-muted">TTM</span>
-              )}
+    <>
+      {m[1]}
+      <span className="whitespace-pre @max-[12.25rem]:sr-only">{m[2]}</span>
+    </>
+  );
+}
+
+/** Lime up, rose down; neutral without a year-ago figure or when the change rounds to zero ("+0.0 pt"). */
+function deltaTone(k: Kpi): "lime" | "rose" | "neutral" {
+  if (!k.delta) return "neutral";
+  const n = Number(/\d+(?:\.\d+)?/.exec(k.delta)?.[0] ?? NaN);
+  if (n === 0) return "neutral";
+  return k.up ? "lime" : "rose";
+}
+
+type KpiTilesProps = {
+  kpis: Kpi[];
+  /** Changes when a new quarter is reported: the mini bars rise again. */
+  periods: string;
+};
+
+/** The headline tiles above the charts, in BoardUI's plain stat-card recipe with mini bars as the visual. */
+export function KpiTiles({ kpis, periods }: KpiTilesProps) {
+  return (
+    <section aria-label="Headline numbers" className="@container">
+      {/* One row when there is room; three over two, then two up with the last tile full width. */}
+      <Replay on={periods} selector="[data-rise]" effect="rise" step={8} className="flex flex-wrap gap-4">
+        {kpis.map((k) => (
+          <div
+            key={k.label}
+            className="@container flex min-h-33 min-w-0 grow basis-[calc(50%-0.5rem)] flex-col items-start justify-between gap-3 rounded-2xl bg-background-secondary-default p-4 @xl:basis-[calc(33.333%-0.75rem)] @4xl:basis-0"
+          >
+            {k.bars.some(isNum) && <MiniBars values={k.bars} up={k.up} />}
+            <div className="mt-auto flex w-full flex-col gap-0.5">
+              <p className="truncate text-body-medium text-text-secondary">{k.label}</p>
+              <div className="flex w-full flex-wrap items-center gap-x-2 gap-y-1">
+                <AnimatedValue value={k.value} className="text-title-1-medium whitespace-nowrap text-text-primary" />
+                <Chip variant="bold" color={deltaTone(k)}>
+                  {k.delta ? <Delta text={k.delta} /> : "TTM"}
+                </Chip>
+              </div>
             </div>
-            {k.bars.some((v) => v != null) && <MiniBars values={k.bars} />}
           </div>
-        </div>
-      ))}
+        ))}
+      </Replay>
     </section>
   );
 }

@@ -1,92 +1,128 @@
+"use client";
+
+// React Aria tables only render their columns from a client module.
+
 import Link from "next/link";
-import { Icon } from "@/components/ui/Icon";
-import { MINUS, num } from "@/lib/format";
-import { CHART_ICONS } from "./icons";
+import { RiEqualizerLine } from "@remixicon/react";
+import { Accordion, AccordionItem } from "@/components/base/accordion/accordion";
+import { Badge } from "@/components/base/badges/badge";
+import { IconButton } from "@/components/base/buttons/icon-button";
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@/components/base/table/table";
+import { CARD, CARD_TITLE } from "@/components/overview/Card";
+import { MINUS, num, pct } from "@/lib/format";
+import { cx } from "@/utils/cx";
 import { OpenPaletteButton } from "./OpenPaletteButton";
 import type { GroupLinks, PinnedLink } from "./types";
-import { WatchlistGroups } from "./WatchlistGroups";
-
-const COLS = "grid grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_64px_64px] gap-2";
-const ICON_BUTTON =
-  "inline-flex size-9 items-center justify-center rounded-[10px] transition-colors hover:bg-[rgba(17,17,19,0.05)] hover:text-ink";
 
 const abs = (v: number) => (v < 0 ? MINUS : "") + num(Math.abs(v));
+const tone = (v: number) => (v < 0 ? "text-text-negative" : "text-text-positive");
+
+/** Header text aligned to the end of a numeric column (BoardUI's th aligns to the start). */
+function End({ children }: { children: string }) {
+  return <span className="block text-end">{children}</span>;
+}
 
 /** Watchlist panel: pinned symbols, then collapsible groups. */
 export function WatchlistPanel({ pinned, groups }: { pinned: readonly PinnedLink[]; groups: readonly GroupLinks[] }) {
   return (
-    <section aria-labelledby="wl-h" className="glass rounded-[24px] px-[18px] pt-4 pb-1.5">
-      <div className="mb-1 flex items-center justify-between gap-2">
-        <h2 id="wl-h" className="text-[21px] font-normal tracking-[-0.01em]">
+    <section aria-labelledby="wl-h" className={cx(CARD, "flex min-w-0 flex-col overflow-hidden")}>
+      <div className="flex items-center justify-between gap-3 px-5 pt-5 pb-3">
+        <h2 id="wl-h" className={CARD_TITLE}>
           Watchlist
         </h2>
-        <span className="inline-flex text-ink-3">
-          <OpenPaletteButton label="Add symbol" className={ICON_BUTTON}>
-            <Icon name="plus" size={19} />
-          </OpenPaletteButton>
-          <button type="button" aria-label="Open in new window" className={ICON_BUTTON}>
-            <Icon d={CHART_ICONS.external} size={18} linejoin="round" />
-          </button>
-          <button type="button" aria-label="Watchlist settings" className={ICON_BUTTON}>
-            <Icon name="sliders" size={18} />
-          </button>
-        </span>
-      </div>
-      <div role="table" aria-label="Watchlist">
-        <div role="row" className={`${COLS} pt-1 pb-2 text-[13px] text-muted`}>
-          <span role="columnheader">Symbol</span>
-          <span role="columnheader" className="text-right">
-            Last
-          </span>
-          <span role="columnheader" className="text-right">
-            Change
-          </span>
-          <span role="columnheader" className="text-right">
-            Chg %
-          </span>
+        <div className="flex items-center gap-2">
+          <OpenPaletteButton label="Add symbol" />
+          <IconButton size="small" icon={RiEqualizerLine} aria-label="Watchlist settings" />
         </div>
-        {pinned.map((row) => (
-          <PinnedRow key={row.symbol} row={row} />
-        ))}
       </div>
-      <WatchlistGroups groups={groups} />
-    </section>
-  );
-}
 
-function PinnedRow({ row }: { row: PinnedLink }) {
-  const { href } = row;
-  const tone = row.change < 0 ? "text-down-text" : "text-up-text";
-  return (
-    <div
-      role="row"
-      className={`${COLS} relative min-h-[33px] items-center rounded-lg text-[14px] text-ink has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-focus`}
-    >
-      <span role="cell" className="flex items-center gap-2.5">
-        <span
-          aria-hidden="true"
-          className="inline-flex size-[22px] flex-none items-center justify-center rounded-full font-semibold text-white"
-          style={{ background: row.badgeBg, fontSize: row.badge.length > 2 ? 8 : row.badge.length > 1 ? 9 : 11 }}
-        >
-          {row.badge}
-        </span>
-        {href ? (
-          <Link href={href} className="after:absolute after:inset-0 hover:text-focus focus-visible:outline-none">
-            {row.symbol}
-          </Link>
-        ) : (
-          row.symbol
-        )}
-      </span>
-      <span role="cell" className="text-right">
-        {row.last}
-      </span>
-      <span role="cell" className={`text-right ${tone}`}>
-        {abs(row.change)}
-      </span>
-      <span role="cell" className={`text-right ${tone}`}>
-        {abs(row.changePct)}%
-      </span>
-    </div>
+      {/* relative: the screen-reader-only text in cells must stay inside the scroller. */}
+      <Table aria-label="Pinned symbols" size="sm" containerClassName="relative">
+        <TableHeader>
+          <TableColumn isRowHeader textValue="Symbol">
+            <span className="ps-2.5">Symbol</span>
+          </TableColumn>
+          <TableColumn textValue="Last">
+            <End>Last</End>
+          </TableColumn>
+          <TableColumn textValue="Change">
+            <End>Chg</End>
+          </TableColumn>
+          <TableColumn textValue="Change %">
+            <span className="block pe-2.5 text-end">Chg %</span>
+          </TableColumn>
+        </TableHeader>
+        <TableBody items={pinned.map((row) => ({ ...row, id: row.symbol }))}>
+          {(row) => (
+            <TableRow
+              id={row.symbol}
+              href={row.href ?? undefined}
+              textValue={row.symbol}
+              className={cx(row.href && "cursor-pointer hover:bg-background-primary-hover")}
+            >
+              <TableCell>
+                <span className="block ps-2.5 text-body-2-semibold text-text-primary">{row.symbol}</span>
+              </TableCell>
+              <TableCell className="text-end">{row.last}</TableCell>
+              {/* The table's cell colour is unlayered CSS: tone the content instead. */}
+              <TableCell className="text-end">
+                <span className={tone(row.change)}>{abs(row.change)}</span>
+              </TableCell>
+              <TableCell className="text-end">
+                <span className={cx("block pe-2.5", tone(row.changePct))}>{abs(row.changePct)}%</span>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      <Accordion allowsMultipleExpanded className="border-t border-separator-border px-5 pb-1">
+        {groups.map((g) => (
+          <AccordionItem
+            key={g.id}
+            id={g.id}
+            headingLevel={3}
+            title={
+              <span className="flex items-center gap-2 text-body-medium">
+                {g.name}
+                <Badge>{g.items.length}</Badge>
+              </span>
+            }
+            className="[&_[slot=trigger]]:py-3"
+          >
+            <ul className="-mx-2 flex flex-col">
+              {g.items.map((w) => {
+                const cells = (
+                  <>
+                    <span className="text-body-2-semibold text-text-primary">{w.symbol}</span>
+                    <span className="text-end text-body-2-medium text-text-primary">{w.last}</span>
+                    <span className={cx("text-end text-body-2-medium", tone(w.changePct))}>{pct(w.changePct)}</span>
+                  </>
+                );
+                const row = "grid min-h-8 grid-cols-[minmax(0,1fr)_minmax(0,1fr)_4.5rem] items-center gap-2 rounded-lg px-2";
+                return (
+                  <li key={w.symbol}>
+                    {w.href ? (
+                      <Link
+                        href={w.href}
+                        className={cx(
+                          row,
+                          "transition-colors duration-150 hover:bg-background-primary-hover active:bg-background-primary-active",
+                          "outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring",
+                        )}
+                      >
+                        {cells}
+                      </Link>
+                    ) : (
+                      <span className={row}>{cells}</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </section>
   );
 }

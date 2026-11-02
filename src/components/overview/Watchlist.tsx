@@ -2,12 +2,14 @@
 
 // React Aria tables only render their columns from a client module.
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { RiAddLine, RiLayoutColumnLine } from "@remixicon/react";
 import { Chip } from "@/components/base/badges/chip";
 import { IconButton } from "@/components/base/buttons/icon-button";
 import { SegmentedControl, SegmentedControlItem } from "@/components/base/segmented-control/segmented-control";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@/components/base/table/table";
+import { AnimatedValue } from "@/components/motion/AnimatedValue";
+import { runListTransition } from "@/components/motion/list-transition";
 import { deltaColor } from "@/components/shell/delta";
 import { num, pct } from "@/lib/format";
 import { WATCH_GROUPS, type WatchGroup, type WatchRow } from "@/lib/mock/overview";
@@ -24,14 +26,30 @@ function End({ children }: { children: string }) {
   return <span className="block text-end">{children}</span>;
 }
 
-/** Watchlist card: a group filter, then one row per symbol linking to its chart. */
+/** Trend lines draw in down the table, 30ms a row, within the ~240ms stagger cap. */
+const ROW_STAGGER_MS = 30;
+const MAX_STAGGER_MS = 210;
+
+/** Content below the watchlist that glides when it changes height (data-glide-with). */
+const FOLLOWERS = '[data-glide-with="watchlist"]';
+
+/**
+ * Watchlist card: a group filter, then one row per symbol linking to its
+ * chart. Changing the filter is a view transition with a group per row:
+ * rows that leave blur out, rows that arrive condense in, the rows that stay
+ * glide to their new place, and the card and what sits below it follow the
+ * new height (runListTransition; row-* and card-move in globals.css).
+ */
 export function Watchlist({ rows }: { rows: WatchRow[] }) {
   const [filter, setFilter] = useState<WatchFilter>("All");
+  const sectionRef = useRef<HTMLElement>(null);
+  const tableRef = useRef<HTMLTableElement>(null);
   const shown = filter === "All" ? rows : rows.filter((r) => r.group === filter);
+  const order = new Map(shown.map((r, i) => [r.symbol, i]));
   const count = (f: WatchFilter) => (f === "All" ? rows.length : rows.filter((r) => r.group === f).length);
 
   return (
-    <section aria-labelledby="wl-h" className={cx(CARD, "flex min-w-0 flex-col overflow-hidden")}>
+    <section ref={sectionRef} aria-labelledby="wl-h" className={cx(CARD, "flex min-w-0 flex-col overflow-hidden")}>
       <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-5 pb-4">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <h2 id="wl-h" className={CARD_TITLE}>
@@ -42,7 +60,23 @@ export function Watchlist({ rows }: { rows: WatchRow[] }) {
             selectedKeys={[filter]}
             onSelectionChange={(keys) => {
               const next = [...keys][0] as WatchFilter | undefined;
-              if (next) setFilter(next);
+              if (!next) return;
+              const table = tableRef.current;
+              const scroller = table?.parentElement;
+              // Transition snapshots draw above the page, unclipped: when the
+              // table scrolls sideways (narrow screens) its rows would spill
+              // out of the card, so they simply swap there.
+              if (!table || !scroller || scroller.scrollWidth > scroller.clientWidth + 1) {
+                setFilter(next);
+                return;
+              }
+              runListTransition(() => setFilter(next), {
+                name: "watchlist",
+                rows: () => table.tBodies[0]?.rows as Iterable<HTMLElement> | undefined,
+                keyOf: (row) => row.dataset.key,
+                frame: sectionRef.current,
+                followers: () => sectionRef.current?.closest("main")?.querySelectorAll<HTMLElement>(FOLLOWERS),
+              });
             }}
           >
             {FILTERS.map((f) => (
@@ -60,7 +94,7 @@ export function Watchlist({ rows }: { rows: WatchRow[] }) {
       </div>
 
       {/* relative: the screen-reader-only text in cells must stay inside the scroller. */}
-      <Table aria-label="Watchlist" size="sm" className="min-w-[50rem]" containerClassName="relative">
+      <Table ref={tableRef} aria-label="Watchlist" size="sm" className="min-w-[50rem]" containerClassName="relative">
         <TableHeader>
           <TableColumn isRowHeader textValue="Symbol">
             <span className="ps-2.5">Symbol</span>
@@ -89,7 +123,7 @@ export function Watchlist({ rows }: { rows: WatchRow[] }) {
               id={row.symbol}
               href={`/stock/${row.symbol}`}
               textValue={`${row.symbol} ${row.name}`}
-              className="cursor-pointer hover:bg-background-primary-hover"
+              className="cursor-pointer hover:bg-background-primary-hover data-[pressed]:bg-background-primary-active"
             >
               <TableCell>
                 <span className="flex min-w-0 flex-col ps-2.5">
@@ -97,12 +131,21 @@ export function Watchlist({ rows }: { rows: WatchRow[] }) {
                   <span className="max-w-40 truncate text-caption-1-regular text-text-secondary">{row.name}</span>
                 </span>
               </TableCell>
-              <TableCell className="text-end">{num(row.price)}</TableCell>
               <TableCell className="text-end">
-                <Chip color={deltaColor(row.changePct)}>{pct(row.changePct)}</Chip>
+                <AnimatedValue value={num(row.price)} />
+              </TableCell>
+              <TableCell className="text-end">
+                <Chip color={deltaColor(row.changePct)} className="transition-colors duration-200 ease-out">
+                  <AnimatedValue value={pct(row.changePct)} />
+                </Chip>
               </TableCell>
               <TableCell>
-                <Sparkline values={row.trend} up={row.monthPct >= 0} className="h-7 w-24" />
+                <Sparkline
+                  values={row.trend}
+                  up={row.monthPct >= 0}
+                  delay={Math.min((order.get(row.symbol) ?? 0) * ROW_STAGGER_MS, MAX_STAGGER_MS)}
+                  className="h-7 w-24"
+                />
                 <span className="sr-only">One month {pct(row.monthPct, 1)}</span>
               </TableCell>
               <TableCell>

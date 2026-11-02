@@ -1,36 +1,45 @@
-import { Icon } from "@/components/ui/Icon";
+"use client";
+
+import { memo, type CSSProperties } from "react";
+import { Button as AriaButton, Focusable } from "react-aria-components";
+import { RiNotification3Line } from "@remixicon/react";
+import { Tooltip, TooltipTrigger } from "@/components/base/tooltip/tooltip";
 import type { Bar, ChartEvents } from "@/lib/mock/chart";
-import {
-  AXIS,
-  MONTHS,
-  barsAcross,
-  monthOf,
-  monthStarts,
-  pillDate,
-  shortDate,
-  visibleBars,
-  xOf,
-  yearOf,
-  type Geometry,
-} from "./scale";
+import { cx } from "@/utils/cx";
+import type { Crosshair } from "./crosshair";
+import { MONTHS, barsAcross, monthOf, monthStarts, shortDate, visibleBars, xOf, yearOf, type Geometry } from "./scale";
 
 type TimelineProps = {
   bars: readonly Bar[];
   geometry: Geometry;
-  crossIndex: number;
   events: ChartEvents;
+  crosshair: Crosshair;
+  /** Move the crosshair to a bar (a marker was pressed). */
+  onJump: (index: number) => void;
 };
 
-const pc = (f: number) => `${(f * 100).toFixed(3)}%`;
 const mod = (a: number, b: number) => ((a % b) + b) % b;
 
-type Marker = { key: string; x: number; letter: "E" | "D"; label: string };
+/** Centred on a fraction of the axis width (the axis is an inline-size container). */
+const atX = (x: number): CSSProperties => ({ transform: `translate3d(calc(${x} * 100cqw - 50%), 0, 0)` });
+
+type Marker = { key: string; index: number; x: number; letter: "E" | "D"; label: string };
+
+// Event markers: BoardUI status chip pairs (earnings amber-yellow, dividends blue).
+const MARKER = {
+  E: "bg-status-yellow-background text-status-yellow-text",
+  D: "bg-status-blue-background text-status-blue-text",
+} as const;
+
+const MARKER_BUTTON =
+  "flex size-5.5 cursor-pointer items-center justify-center rounded-full text-caption-2-semibold outline-none transition-[filter] duration-150 hover:brightness-95 focus-visible:ring-2 focus-visible:ring-border-focus-ring";
 
 /**
  * Time axis under the volume bars: day ticks, month (or date) labels,
- * earnings / dividend / alert markers and the crosshair date.
+ * earnings / dividend / alert markers (each moves the crosshair to its bar)
+ * and the crosshair's date.
  */
-export function Timeline({ bars, geometry: g, crossIndex, events }: TimelineProps) {
+export const Timeline = memo(function Timeline({ bars, geometry: g, events, crosshair: xh, onJump }: TimelineProps) {
   const N = bars.length;
   const vis = visibleBars(g, N);
   const n = barsAcross(g);
@@ -63,91 +72,115 @@ export function Timeline({ bars, geometry: g, crossIndex, events }: TimelineProp
   }
 
   const markers: Marker[] = [
-    ...events.earnings.filter(inView).map((i) => ({ key: `e${i}`, x: xOf(g, i), letter: "E" as const, label: `Earnings · ${shortDate(bars[i].time)}` })),
-    ...events.dividends.filter(inView).map((i) => ({ key: `d${i}`, x: xOf(g, i), letter: "D" as const, label: `Dividend · ${shortDate(bars[i].time)}` })),
+    ...events.earnings
+      .filter(inView)
+      .map((i) => ({ key: `e${i}`, index: i, x: xOf(g, i), letter: "E" as const, label: `Earnings · ${shortDate(bars[i].time)}` })),
+    ...events.dividends
+      .filter(inView)
+      .map((i) => ({ key: `d${i}`, index: i, x: xOf(g, i), letter: "D" as const, label: `Dividend · ${shortDate(bars[i].time)}` })),
   ];
-  const bells = events.alerts.filter(inView).map((i) => ({ key: `a${i}`, x: xOf(g, i), label: `Alert fired · ${shortDate(bars[i].time)}` }));
-  const crossX = xOf(g, crossIndex);
-  // A label gives way to anything it would touch: a 22px marker, a bell, or
-  // the date pill (about 100px wide). Half a label is ~3.7px a character.
+  const bells = events.alerts
+    .filter(inView)
+    .map((i) => ({ key: `a${i}`, index: i, x: xOf(g, i), label: `Alert fired · ${shortDate(bars[i].time)}` }));
+  // A label gives way to anything it would touch: a 22px marker or a bell.
+  // Half a label is ~3.7px a character.
   const touches = (l: { x: number; text: string }, x: number, halfWidth: number) =>
     Math.abs(x - l.x) * g.width < l.text.length * 3.7 + 2 + halfWidth;
-  labels = labels.filter(
-    (l) => !markers.some((m) => touches(l, m.x, 13)) && !bells.some((b) => touches(l, b.x, 10)) && !touches(l, crossX, 54),
-  );
+  labels = labels.filter((l) => !markers.some((m) => touches(l, m.x, 13)) && !bells.some((b) => touches(l, b.x, 10)));
   // Then keep them at least 56px apart, years first.
   const kept: Label[] = [];
   for (const l of [...labels.filter((l) => l.year), ...labels.filter((l) => !l.year)]) {
     if (kept.every((k) => Math.abs(k.x - l.x) * g.width >= 56)) kept.push(l);
   }
   labels = kept;
-  // Keep the date pill inside the axis.
-  const half = 52 / g.width;
-  const pillX = Math.min(1 - half, Math.max(half, crossX));
 
   return (
-    <div className="relative h-[39px] border-b border-[rgba(17,17,19,0.08)]" style={{ marginRight: AXIS }}>
-      <svg viewBox="0 0 1000 10" preserveAspectRatio="none" aria-hidden="true" className="absolute inset-x-0 bottom-0 h-2 w-full">
-        <path d={ticks || "M0 0"} fill="none" stroke="#B4B4BA" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-      </svg>
-      <span className="pointer-events-none absolute inset-y-0 border-l border-dashed border-ink" style={{ left: pc(crossX) }} />
-      {labels.map((l) => (
-        <span key={l.key} className="absolute top-1.5 -translate-x-1/2 text-[13px] whitespace-nowrap text-ink-2" style={{ left: pc(l.x) }}>
-          {l.text}
-        </span>
-      ))}
-      {markers.map((m) => (
+    <div className="relative h-10 border-b border-separator-border-strong">
+      <div className="absolute inset-y-0 right-19 left-0 [container-type:size]">
+        <svg viewBox="0 0 1000 10" preserveAspectRatio="none" aria-hidden="true" className="absolute inset-x-0 bottom-0 h-2 w-full">
+          <path
+            d={ticks || "M0 0"}
+            fill="none"
+            strokeWidth="1"
+            vectorEffect="non-scaling-stroke"
+            className="stroke-foreground-icon-quaternary"
+          />
+        </svg>
         <span
-          key={m.key}
-          role="img"
-          aria-label={m.label}
-          title={m.label}
-          className={`absolute top-1 flex size-[22px] -translate-x-1/2 items-center justify-center rounded-full text-[11px] font-semibold ${
-            m.letter === "E" ? "bg-amber text-[#3D2400]" : "bg-blue text-white"
-          }`}
-          style={{ left: pc(m.x) }}
-        >
-          <span aria-hidden="true">{m.letter}</span>
-        </span>
-      ))}
-      {bells.map((b) => (
+          ref={xh.ref("axisX")}
+          className="pointer-events-none absolute inset-y-0 left-0 border-l border-dashed border-foreground-icon-secondary opacity-0 will-change-transform"
+        />
+        {labels.map((l) => (
+          <span
+            key={l.key}
+            className={cx(
+              "absolute top-2 left-0 text-caption-1-regular whitespace-nowrap",
+              l.year ? "text-text-primary" : "text-text-secondary",
+            )}
+            style={atX(l.x)}
+          >
+            {l.text}
+          </span>
+        ))}
+        {markers.map((m) => (
+          <span key={m.key} className="absolute top-1.5 left-0" style={atX(m.x)}>
+            <TooltipTrigger>
+              <AriaButton aria-label={m.label} onPress={() => onJump(m.index)} className={cx(MARKER_BUTTON, MARKER[m.letter])}>
+                <span aria-hidden="true">{m.letter}</span>
+              </AriaButton>
+              <Tooltip>{m.label}</Tooltip>
+            </TooltipTrigger>
+          </span>
+        ))}
+        {bells.map((b) => (
+          <span key={b.key} className="absolute top-1.5 left-0" style={atX(b.x)}>
+            <TooltipTrigger>
+              <AriaButton
+                aria-label={b.label}
+                onPress={() => onJump(b.index)}
+                className={cx(MARKER_BUTTON, "text-foreground-icon-tertiary hover:text-foreground-icon-primary")}
+              >
+                <RiNotification3Line aria-hidden className="size-4" />
+              </AriaButton>
+              <Tooltip>{b.label}</Tooltip>
+            </TooltipTrigger>
+          </span>
+        ))}
         <span
-          key={b.key}
-          role="img"
-          aria-label={b.label}
-          title={b.label}
-          className="absolute top-1.5 flex -translate-x-1/2 text-[#8A8A92]"
-          style={{ left: pc(b.x) }}
+          ref={xh.ref("dateTag")}
+          className="pointer-events-none absolute top-1.5 left-0 z-10 rounded-md border border-border-button-default bg-background-primary-default px-2 py-0.5 text-caption-1-medium whitespace-nowrap text-text-primary opacity-0 shadow-xs will-change-transform"
         >
-          <Icon name="bell" size={17} linejoin="round" />
+          <span ref={xh.ref("dateText")} />
         </span>
-      ))}
-      <span
-        className="pointer-events-none absolute top-1 -translate-x-1/2 rounded-full bg-ink px-2.5 py-[3px] text-[12px] font-medium whitespace-nowrap text-white"
-        style={{ left: pc(pillX) }}
-      >
-        {pillDate(bars[crossIndex].time)}
-      </span>
+      </div>
       {events.next ? (
         // The next report or ex-dividend date is past the last bar: it sits
         // in the price-axis gutter, outlined.
-        <span
-          role="img"
-          aria-label={events.next.label}
-          title={events.next.label}
-          className="absolute top-1 left-full ml-2 flex items-center gap-1 text-[12px] whitespace-nowrap text-ink-2"
-        >
-          <span
-            aria-hidden="true"
-            className={`flex size-[22px] items-center justify-center rounded-full border-[1.5px] bg-white text-[11px] font-semibold ${
-              events.next.letter === "E" ? "border-amber text-[#3D2400]" : "border-blue text-blue"
-            }`}
-          >
-            {events.next.letter}
-          </span>
-          <span aria-hidden="true">{events.next.date}</span>
+        <span className="absolute top-1.5 right-0 flex w-19 items-center justify-end gap-1">
+          <TooltipTrigger>
+            <Focusable>
+              <span
+                role="img"
+                tabIndex={0}
+                aria-label={events.next.label}
+                className="flex items-center gap-1 rounded-full text-caption-1-regular whitespace-nowrap text-text-secondary outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring"
+              >
+                <span
+                  aria-hidden="true"
+                  className={cx(
+                    "flex size-5.5 items-center justify-center rounded-full border border-dashed text-caption-2-semibold",
+                    events.next.letter === "E" ? "border-status-yellow-text text-status-yellow-text" : "border-status-blue-text text-status-blue-text",
+                  )}
+                >
+                  {events.next.letter}
+                </span>
+                <span aria-hidden="true">{events.next.date}</span>
+              </span>
+            </Focusable>
+            <Tooltip>{events.next.label}</Tooltip>
+          </TooltipTrigger>
         </span>
       ) : null}
     </div>
   );
-}
+});

@@ -1,18 +1,21 @@
 import Link from "next/link";
-import { Icon } from "@/components/ui/Icon";
+import { Avatar } from "@/components/base/avatar/avatar";
+import { cx } from "@/utils/cx";
 import { OpenPaletteButton } from "./OpenPaletteButton";
 import type { OpenTab } from "./types";
 
-/** Browser-style tabs for the tickers the user has open; the current one is raised. */
+// BoardUI's gray pill tab, as links: the open ticker sits on the tertiary
+// surface, the others take the hover surface.
+const TAB = cx(
+  "flex shrink-0 items-center gap-2 rounded-2lg py-1.5 ps-1.5 pe-2.5 text-body-medium whitespace-nowrap",
+  "transition-colors duration-150 ease outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring",
+);
+
+/** Tabs for the tickers the user has open; the current one is selected. */
 export function TickerTabs({ current, tabs }: { current: string; tabs: readonly OpenTab[] }) {
   return (
-    <nav aria-label="Open tickers" className="mt-auto flex flex-wrap items-end gap-1 pt-1">
-      <OpenPaletteButton
-        label="Open another ticker"
-        className="inline-flex size-12 items-center justify-center rounded-[14px] text-ink-2 transition-colors hover:bg-[rgba(17,17,19,0.05)]"
-      >
-        <Icon name="plus" size={22} />
-      </OpenPaletteButton>
+    <nav aria-label="Open tickers" className="flex flex-wrap items-center gap-1">
+      <OpenPaletteButton label="Open another ticker" className="me-1" />
       {tabs.map(({ symbol, name }) => {
         const on = symbol === current;
         return (
@@ -20,18 +23,14 @@ export function TickerTabs({ current, tabs }: { current: string; tabs: readonly 
             key={symbol}
             href={`/stock/${symbol}`}
             aria-current={on ? "page" : undefined}
-            className={`inline-flex h-12 items-center gap-2.5 rounded-t-2xl px-[18px] text-[15px] transition-colors ${
-              on ? "bg-white text-ink shadow-[0_-6px_16px_-10px_rgba(17,17,19,0.2)]" : "text-muted hover:text-ink"
-            }`}
+            className={cx(
+              TAB,
+              on
+                ? "bg-background-tertiary-default text-text-primary"
+                : "text-text-secondary hover:bg-background-primary-hover hover:text-text-primary active:bg-background-primary-active",
+            )}
           >
-            <span
-              aria-hidden="true"
-              className={`inline-flex size-[26px] items-center justify-center rounded-full text-[12px] font-semibold text-white ${
-                on ? "bg-ink" : "bg-[#8A8A92]"
-              }`}
-            >
-              {symbol.charAt(0)}
-            </span>
+            <Avatar size="xs" initials={symbol.charAt(0)} />
             {name}
           </Link>
         );

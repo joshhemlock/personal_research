@@ -1,12 +1,20 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useDeferredValue, useEffect, useSyncExternalStore, ViewTransition } from "react";
 import Link from "next/link";
+import { Focusable } from "react-aria-components";
+import { RiAddLine } from "@remixicon/react";
+import { Avatar } from "@/components/base/avatar/avatar";
+import { IconButton } from "@/components/base/buttons/icon-button";
+import { LinkButton } from "@/components/base/buttons/link-button";
+import { SearchField } from "@/components/base/search-field/search-field";
+import { SegmentedControl, SegmentedControlItem } from "@/components/base/segmented-control/segmented-control";
+import { Tooltip, TooltipTrigger } from "@/components/base/tooltip/tooltip";
 import type { NoteListItem, NoteType } from "@/lib/mock/notes";
-import { Icon } from "@/components/ui/Icon";
-import { TickerDot } from "@/components/ui/Pill";
-import { CONVICTION } from "./constants";
-import { useNoteDraft } from "./NoteDraft";
+import { cx } from "@/utils/cx";
+import { CARD, CARD_TITLE } from "./constants";
+import { ConvictionDot } from "./ConvictionDot";
+import { useOptionalNoteDraft, type NoteDraft } from "./NoteDraft";
 
 type Kind = "All" | "Theses" | "Earnings" | "Ideas";
 
@@ -38,106 +46,154 @@ const filterStore = {
   },
 };
 
-const RAISED = "bg-white shadow-[0_1px_3px_rgba(17,17,19,0.08),0_8px_20px_-12px_rgba(17,17,19,0.2)]";
+// The note whose row was just clicked: while it loads, the list in the
+// loading state marks it, so the click answers at once.
+let opening: string | null = null;
+const openingListeners = new Set<() => void>();
+const openingStore = {
+  subscribe(listener: () => void) {
+    openingListeners.add(listener);
+    return () => {
+      openingListeners.delete(listener);
+    };
+  },
+  get: () => opening,
+  getServer: () => null,
+  set(id: string | null) {
+    if (id === opening) return;
+    opening = id;
+    openingListeners.forEach((l) => l());
+  },
+};
 
-/** Search box, type filter chips and the list of notes (left column). */
-export function NotesList({ notes }: { notes: NoteListItem[] }) {
-  const draft = useNoteDraft();
-  const { query, kind } = useSyncExternalStore(filterStore.subscribe, filterStore.get, filterStore.getServer);
-
-  const type = KINDS.find((k) => k.kind === kind)?.type;
-  const q = query.trim().toLowerCase();
-  // The open note shows its unsaved title and conviction.
-  const shown = notes
-    .map((n) => (n.id === draft.noteId ? { ...n, title: draft.title.trim() || n.title, conviction: draft.conviction } : n))
+/** The notes that pass a filter; the open note shows its unsaved title and conviction. */
+function visibleNotes(notes: NoteListItem[], f: ListFilter, draft: NoteDraft | null): NoteListItem[] {
+  const type = KINDS.find((k) => k.kind === f.kind)?.type;
+  const q = f.query.trim().toLowerCase();
+  return notes
+    .map((n) => (n.id === draft?.noteId ? { ...n, title: draft.title.trim() || n.title, conviction: draft.conviction } : n))
     .filter((n) => !type || n.type === type)
     .filter((n) => !q || `${n.title} ${n.summary} ${n.type}`.toLowerCase().includes(q));
-  const filtered = q !== "" || kind !== "All";
+}
+
+/**
+ * The notes column: search, type filter and the list of notes.
+ *
+ * The search field and the filter answer at once; the rows follow in a
+ * deferred render, which React runs as a view transition: rows that leave
+ * blur out, rows that arrive blur in, and the rest glide to their new places.
+ */
+/**
+ * Outside a note (the loading state) there is no draft: the list then marks
+ * the row that was clicked, if any.
+ */
+export function NotesList({ notes, headingId }: { notes: NoteListItem[]; headingId: string }) {
+  const draft = useOptionalNoteDraft();
+  const clicked = useSyncExternalStore(openingStore.subscribe, openingStore.get, openingStore.getServer);
+  const openId = draft ? draft.noteId : clicked;
+  // A note on screen: nothing is on its way any more.
+  useEffect(() => {
+    if (draft) openingStore.set(null);
+  }, [draft]);
+  const current = useSyncExternalStore(filterStore.subscribe, filterStore.get, filterStore.getServer);
+  const shownFilter = useDeferredValue(current);
+  const shown = visibleNotes(notes, shownFilter, draft);
+  const filtered = shownFilter.query.trim() !== "" || shownFilter.kind !== "All";
 
   return (
-    <>
-      <label className="flex h-[42px] items-center gap-2 rounded-full bg-track px-[14px] text-ink-3 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus">
-        <Icon name="search" size={17} />
-        <input
-          type="search"
+    <section aria-labelledby={headingId} className={cx(CARD, "flex min-w-0 flex-col gap-4 p-4")}>
+      <div className="flex items-center justify-between gap-2 ps-1">
+        <h2 id={headingId} className={CARD_TITLE}>
+          Research notes
+        </h2>
+        {/* Creating notes arrives with persistence (build step 5). */}
+        <TooltipTrigger delay={300}>
+          <Focusable>
+            <IconButton size="small" icon={RiAddLine} aria-label="New note" />
+          </Focusable>
+          <Tooltip>New note</Tooltip>
+        </TooltipTrigger>
+      </div>
+
+      <div className="flex flex-col gap-2.5">
+        <SearchField
           aria-label="Search notes"
           placeholder="Search notes"
-          value={query}
-          onChange={(e) => filterStore.set({ query: e.target.value })}
-          className="min-w-0 flex-1 border-0 bg-transparent px-[2px] text-[14px] text-ink outline-none placeholder:text-muted"
+          value={current.query}
+          onChange={(query) => filterStore.set({ query })}
         />
-      </label>
-
-      <div role="group" aria-label="Note type" className="flex flex-wrap gap-[6px]">
-        {KINDS.map(({ kind: k }) => {
-          const on = k === kind;
-          return (
-            <button
-              key={k}
-              type="button"
-              aria-pressed={on}
-              onClick={() => filterStore.set({ kind: k })}
-              className={`h-8 rounded-full border px-3 text-[13px] transition-colors duration-150 ${
-                on ? "border-ink bg-ink text-white" : "border-[rgba(17,17,19,0.1)] bg-white/70 text-ink-2 hover:bg-white hover:text-ink"
-              }`}
-            >
-              {k}
-            </button>
-          );
-        })}
+        <SegmentedControl
+          aria-label="Note type"
+          selectedKeys={[current.kind]}
+          onSelectionChange={(keys) => {
+            const next = [...keys][0] as Kind | undefined;
+            if (next) filterStore.set({ kind: next });
+          }}
+          className="flex w-full"
+        >
+          {KINDS.map(({ kind }) => (
+            <SegmentedControlItem key={kind} id={kind} className="flex-1 px-2">
+              {kind}
+            </SegmentedControlItem>
+          ))}
+        </SegmentedControl>
       </div>
 
       <p className="sr-only" aria-live="polite">
         {filtered ? `${shown.length} ${shown.length === 1 ? "note" : "notes"}` : ""}
       </p>
 
-      {shown.length > 0 ? (
-        <ul className="-mx-[6px] flex flex-col gap-1">
+      {/* No enter or exit of its own: it stops the rows' entrance from playing
+          when the whole page appears (a navigation or a loading reveal). */}
+      <ViewTransition default="none">
+        {shown.length === 0 && (
+          <ViewTransition enter="row-enter" exit="row-exit" default="none">
+            <p className="px-1 text-body-regular text-text-secondary">
+              No notes match.{" "}
+              <LinkButton size="small" onClick={() => filterStore.set(ALL)}>
+                Clear filters
+              </LinkButton>
+            </p>
+          </ViewTransition>
+        )}
+        <ul className="-mx-1 flex flex-col gap-0.5">
           {shown.map((n) => {
-            const on = n.id === draft.noteId;
+            const on = n.id === openId;
             return (
-              <li key={n.id}>
-                <Link
-                  href={`/notes/${n.id}`}
-                  aria-current={on ? "page" : undefined}
-                  // Rows were <button>s in the design: browser line height, proportional digits.
-                  className={`flex w-full items-start gap-[10px] rounded-[16px] p-[10px] text-left leading-[normal] text-ink normal-nums transition-[background-color,box-shadow] duration-150 ${
-                    on ? RAISED : "hover:bg-white/70"
-                  }`}
-                >
-                  <TickerDot symbol={n.symbol} size={30} fontSize={12} />
-                  <span className="flex min-w-0 flex-1 flex-col gap-px">
-                    <span className="flex items-center justify-between gap-[6px]">
-                      <span className="truncate text-[14px] font-medium">{n.title}</span>
-                      <span
-                        aria-hidden="true"
-                        className="size-2 flex-none rounded-full"
-                        style={{ background: CONVICTION[n.conviction].dot }}
-                      />
+              <ViewTransition key={n.id} enter="row-enter" exit="row-exit" update="row-move" default="none">
+                <li>
+                  <Link
+                    href={`/notes/${n.id}`}
+                    aria-current={on ? "page" : undefined}
+                    onClick={() => openingStore.set(n.id)}
+                    className={cx(
+                      "flex items-start gap-3 rounded-2xl p-2.5 outline-none",
+                      "transition-colors duration-150 ease focus-visible:ring-2 focus-visible:ring-border-focus-ring",
+                      on
+                        ? "bg-background-secondary-default"
+                        : "hover:bg-background-primary-hover active:bg-background-primary-active",
+                    )}
+                  >
+                    {/* A step above the card in both themes (the neutral avatar matches the card in dark). */}
+                    <Avatar size="md" initials={n.symbol.charAt(0)} className="bg-background-quaternary-default" />
+                    <span className="flex min-w-0 flex-1 flex-col">
+                      <span className="flex items-center justify-between gap-2">
+                        <span className="truncate text-body-medium text-text-primary">{n.title}</span>
+                        <ConvictionDot conviction={n.conviction} />
+                      </span>
+                      <span className="truncate text-body-2-regular text-text-secondary">{n.summary}</span>
+                      <span className="text-caption-1-regular text-text-tertiary">
+                        {n.type} · {n.date}
+                        <span className="sr-only">, {n.conviction.toLowerCase()} conviction</span>
+                      </span>
                     </span>
-                    <span className="truncate text-[13px] text-ink-3">{n.summary}</span>
-                    <span className="text-[12px] text-muted">
-                      {n.type} · {n.date}
-                      <span className="sr-only">, {n.conviction.toLowerCase()} conviction</span>
-                    </span>
-                  </span>
-                </Link>
-              </li>
+                  </Link>
+                </li>
+              </ViewTransition>
             );
           })}
         </ul>
-      ) : (
-        <p className="px-1 py-2 text-[13px] text-muted">
-          No notes match.{" "}
-          <button
-            type="button"
-            className="link text-ink"
-            onClick={() => filterStore.set(ALL)}
-          >
-            Clear filters
-          </button>
-        </p>
-      )}
-    </>
+      </ViewTransition>
+    </section>
   );
 }

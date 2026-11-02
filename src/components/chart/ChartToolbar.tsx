@@ -1,10 +1,31 @@
 "use client";
 
-import { Icon, ICONS } from "@/components/ui/Icon";
+import { memo, useState, type ComponentProps, type ComponentType, type ReactNode } from "react";
+import { Focusable } from "react-aria-components";
+import {
+  RiArrowDownSLine,
+  RiCameraLine,
+  RiFullscreenExitLine,
+  RiFullscreenLine,
+  RiFunctionAddLine,
+  RiLineChartLine,
+  RiListCheck3,
+  RiSettings4Line,
+  RiStackLine,
+  RiStockLine,
+} from "@remixicon/react";
+import { buttonStyles } from "@/components/base/buttons/button";
+import { IconButton } from "@/components/base/buttons/icon-button";
+import { LinkButton } from "@/components/base/buttons/link-button";
+import { Checkbox } from "@/components/base/checkbox/checkbox";
+import { Dropdown, DropdownDivider, DropdownGroup, DropdownPopover, DropdownTrigger } from "@/components/base/dropdown/dropdown";
+import { SegmentedControl, SegmentedControlItem } from "@/components/base/segmented-control/segmented-control";
+import { Switch } from "@/components/base/switch/switch";
+import { Tooltip, TooltipTrigger } from "@/components/base/tooltip/tooltip";
 import type { CompareSeries } from "@/lib/mock/chart";
-import { CHART_ICONS } from "./icons";
-import { CheckRow, Popover } from "./Popover";
+import { cx } from "@/utils/cx";
 import { TIMEFRAMES, type Timeframe } from "./scale";
+import { SERIES_FILL } from "./tokens";
 import type { ChartType, DisplayPrefs, SeriesKey, Visibility } from "./types";
 
 type ChartToolbarProps = {
@@ -12,7 +33,7 @@ type ChartToolbarProps = {
   onTf: (tf: Timeframe) => void;
   type: ChartType;
   onType: (type: ChartType) => void;
-  compare: readonly Pick<CompareSeries, "key" | "symbol" | "name" | "color">[];
+  compare: readonly Pick<CompareSeries, "key" | "symbol" | "name">[];
   show: Visibility;
   onShow: (key: SeriesKey, on: boolean) => void;
   legend: boolean;
@@ -24,118 +45,256 @@ type ChartToolbarProps = {
   onFullscreen: () => void;
 };
 
-const SEGMENT = "rounded-full transition-colors duration-150";
-const ON = "bg-ink text-white";
-const OFF = "bg-transparent text-ink-3 hover:text-ink";
-const PILL =
-  "glass-chip inline-flex h-11 items-center gap-2 rounded-full px-4 text-[14px] text-ink transition-colors hover:bg-white aria-expanded:bg-white";
-const ICON_BUTTON =
-  "inline-flex size-10 items-center justify-center rounded-[12px] text-ink-3 transition-colors hover:bg-[rgba(17,17,19,0.05)] hover:text-ink aria-expanded:bg-[rgba(17,17,19,0.05)]";
-// Compare / Indicators drop their labels when the main column gets narrow.
-const NARROW_LABEL = "@max-[860px]:sr-only";
+type IconComponent = ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>;
 
-const TYPES: { value: ChartType; label: string; icon: string }[] = [
-  { value: "candles", label: "Candlestick chart", icon: CHART_ICONS.candles },
-  { value: "line", label: "Line chart", icon: CHART_ICONS.line },
+const TYPES: { value: ChartType; label: string; icon: IconComponent }[] = [
+  { value: "candles", label: "Candlestick chart", icon: RiStockLine },
+  { value: "line", label: "Line chart", icon: RiLineChartLine },
 ];
 
-/** Time range, chart type, Compare and Indicators menus, layers toggle and chart actions. */
+/** A single-select change handler for BoardUI's segmented control. */
+const pick =
+  <T extends string>(set: (value: T) => void) =>
+  (keys: Iterable<unknown>) => {
+    const next = [...keys][0] as T | undefined;
+    if (next !== undefined) set(next);
+  };
+
+/**
+ * Time range, chart type, Compare and Indicators menus, legend toggle and
+ * chart actions. Each group is memoised on its own props, so a change
+ * re-renders only the control that shows it.
+ */
 export function ChartToolbar(p: ChartToolbarProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <div role="group" aria-label="Time range" className="glass-chip flex flex-wrap gap-[2px] rounded-full p-[3px]">
-        {TIMEFRAMES.map((tf) => (
-          <button
-            key={tf}
-            type="button"
-            aria-pressed={tf === p.tf}
-            onClick={() => p.onTf(tf)}
-            className={`${SEGMENT} h-[38px] min-w-11 px-3 text-[14px] font-medium ${tf === p.tf ? ON : OFF}`}
-          >
-            {tf}
-          </button>
-        ))}
-      </div>
-
-      <div role="group" aria-label="Chart type" className="glass-chip flex gap-[2px] rounded-full p-[3px]">
-        {TYPES.map((t) => (
-          <button
-            key={t.value}
-            type="button"
-            aria-pressed={t.value === p.type}
-            aria-label={t.label}
-            onClick={() => p.onType(t.value)}
-            className={`${SEGMENT} inline-flex h-[38px] w-11 items-center justify-center ${t.value === p.type ? ON : OFF}`}
-          >
-            <Icon d={t.icon} size={19} linejoin="round" />
-          </button>
-        ))}
-      </div>
-
-      <Popover label="Compare" icon={CHART_ICONS.compare} buttonClassName={PILL} labelClassName={NARROW_LABEL}>
-        <p className="px-3 pt-1.5 pb-1 text-[12px] text-muted">Overlay, rebased to the first bar</p>
-        {p.compare.map((c) => (
-          <CheckRow key={c.key} checked={p.show[c.key]} onChange={(on) => p.onShow(c.key, on)} dot={c.color}>
-            <span className="font-medium">{c.symbol}</span>
-            <span className="truncate text-ink-3">{c.name}</span>
-          </CheckRow>
-        ))}
-      </Popover>
-
-      <Popover label="Indicators" icon={CHART_ICONS.indicators} buttonClassName={PILL} labelClassName={NARROW_LABEL}>
-        <CheckRow checked={p.show.sma} onChange={(on) => p.onShow("sma", on)} dot="#7FA6F2">
-          <span className="font-medium">SMA 50</span>
-          <span className="truncate text-ink-3">50-day average</span>
-        </CheckRow>
-        <CheckRow checked={p.show.volume} onChange={(on) => p.onShow("volume", on)} dot="#111113">
-          <span className="font-medium">Volume</span>
-        </CheckRow>
-      </Popover>
-
-      <button
-        type="button"
-        aria-label="Chart layers"
-        aria-pressed={p.legend}
-        onClick={() => p.onLegend(!p.legend)}
-        className={`inline-flex size-11 items-center justify-center rounded-[12px] text-ink-2 transition-colors ${
-          p.legend ? "bg-track" : "hover:bg-track"
-        }`}
-      >
-        <Icon d={CHART_ICONS.layers} size={19} />
-      </button>
-
+      <RangeControl tf={p.tf} onTf={p.onTf} />
+      <TypeControl type={p.type} onType={p.onType} />
+      <CompareMenu compare={p.compare} show={p.show} onShow={p.onShow} />
+      <IndicatorsMenu sma={p.show.sma} volume={p.show.volume} onShow={p.onShow} />
+      <LegendToggle legend={p.legend} onLegend={p.onLegend} />
       <span className="flex-1" />
-
-      <span className="inline-flex gap-[2px] text-ink-3">
-        <button type="button" aria-label="Save snapshot" onClick={p.onSnapshot} className={ICON_BUTTON}>
-          <Icon d={CHART_ICONS.snapshot} size={20} linejoin="round" />
-        </button>
-        <button
-          type="button"
-          aria-label={p.fullscreen ? "Exit full screen" : "Full screen"}
-          onClick={p.onFullscreen}
-          className={ICON_BUTTON}
-        >
-          <Icon d={p.fullscreen ? CHART_ICONS.exitFullscreen : CHART_ICONS.fullscreen} size={20} linejoin="round" />
-        </button>
-        <Popover label="Chart settings" icon={ICONS.sliders} iconOnly iconSize={20} align="right" buttonClassName={ICON_BUTTON}>
-          <CheckRow checked={p.prefs.grid} onChange={(grid) => p.onPrefs({ ...p.prefs, grid })}>
-            Grid lines
-          </CheckRow>
-          <CheckRow checked={p.prefs.priceLine} onChange={(priceLine) => p.onPrefs({ ...p.prefs, priceLine })}>
-            Last price line
-          </CheckRow>
-          <CheckRow checked={p.prefs.alertLine} onChange={(alertLine) => p.onPrefs({ ...p.prefs, alertLine })}>
-            Alert lines
-          </CheckRow>
-          <p className="mt-1 border-t border-[rgba(17,17,19,0.06)] px-3 pt-2 pb-1.5 text-[12px] text-muted">
-            Charts by{" "}
-            <a href="https://www.tradingview.com/" target="_blank" rel="noreferrer" className="link text-ink-2">
-              TradingView
-            </a>
-          </p>
-        </Popover>
-      </span>
+      <ChartActions
+        prefs={p.prefs}
+        onPrefs={p.onPrefs}
+        onSnapshot={p.onSnapshot}
+        fullscreen={p.fullscreen}
+        onFullscreen={p.onFullscreen}
+      />
     </div>
+  );
+}
+
+const RangeControl = memo(function RangeControl({ tf, onTf }: Pick<ChartToolbarProps, "tf" | "onTf">) {
+  return (
+    <SegmentedControl aria-label="Time range" selectedKeys={[tf]} onSelectionChange={pick(onTf)}>
+      {TIMEFRAMES.map((t) => (
+        <SegmentedControlItem key={t} id={t} className="min-w-9">
+          {t}
+        </SegmentedControlItem>
+      ))}
+    </SegmentedControl>
+  );
+});
+
+const TypeControl = memo(function TypeControl({ type, onType }: Pick<ChartToolbarProps, "type" | "onType">) {
+  return (
+    <SegmentedControl aria-label="Chart type" selectedKeys={[type]} onSelectionChange={pick(onType)}>
+      {TYPES.map(({ value, label, icon: Icon }) => (
+        <TooltipTrigger key={value}>
+          <SegmentedControlItem id={value} aria-label={label} className="px-2">
+            <Icon aria-hidden className="size-5" />
+          </SegmentedControlItem>
+          <Tooltip>{label}</Tooltip>
+        </TooltipTrigger>
+      ))}
+    </SegmentedControl>
+  );
+});
+
+const CompareMenu = memo(function CompareMenu({ compare, show, onShow }: Pick<ChartToolbarProps, "compare" | "show" | "onShow">) {
+  return (
+    <Menu label="Compare" icon={RiStackLine}>
+      <DropdownGroup label="Overlay, rebased to the first bar">
+        {compare.map((c) => (
+          <MenuCheck key={c.key} checked={show[c.key]} onChange={(on) => onShow(c.key, on)} dot={SERIES_FILL[c.key]}>
+            <span className="text-text-primary">{c.symbol}</span>
+            <span className="truncate text-text-secondary">{c.name}</span>
+          </MenuCheck>
+        ))}
+      </DropdownGroup>
+    </Menu>
+  );
+});
+
+type IndicatorsProps = { sma: boolean; volume: boolean; onShow: ChartToolbarProps["onShow"] };
+
+const IndicatorsMenu = memo(function IndicatorsMenu({ sma, volume, onShow }: IndicatorsProps) {
+  return (
+    <Menu label="Indicators" icon={RiFunctionAddLine}>
+      <MenuCheck checked={sma} onChange={(on) => onShow("sma", on)} dot={SERIES_FILL.sma}>
+        <span className="text-text-primary">SMA 50</span>
+        <span className="truncate text-text-secondary">50-day average</span>
+      </MenuCheck>
+      <MenuCheck checked={volume} onChange={(on) => onShow("volume", on)} dot={SERIES_FILL.volume}>
+        <span className="text-text-primary">Volume</span>
+      </MenuCheck>
+    </Menu>
+  );
+});
+
+const LegendToggle = memo(function LegendToggle({ legend, onLegend }: Pick<ChartToolbarProps, "legend" | "onLegend">) {
+  return (
+    <Hint label={legend ? "Hide legend" : "Show legend"}>
+      <IconButton
+        icon={RiListCheck3}
+        aria-label="Legend"
+        aria-pressed={legend}
+        onClick={() => onLegend(!legend)}
+        className="aria-pressed:border-border-button-hover aria-pressed:bg-background-secondary-default"
+      />
+    </Hint>
+  );
+});
+
+type ActionsProps = Pick<ChartToolbarProps, "prefs" | "onPrefs" | "onSnapshot" | "fullscreen" | "onFullscreen">;
+
+const ChartActions = memo(function ChartActions({ prefs, onPrefs, onSnapshot, fullscreen, onFullscreen }: ActionsProps) {
+  return (
+    <div className="flex items-center gap-2">
+      <Hint label="Save snapshot">
+        <IconButton icon={RiCameraLine} aria-label="Save snapshot" onClick={onSnapshot} />
+      </Hint>
+      <Hint label={fullscreen ? "Exit full screen" : "Full screen"}>
+        <IconButton
+          icon={fullscreen ? RiFullscreenExitLine : RiFullscreenLine}
+          aria-label={fullscreen ? "Exit full screen" : "Full screen"}
+          onClick={onFullscreen}
+        />
+      </Hint>
+      <Menu label="Chart settings" icon={RiSettings4Line} iconOnly placement="bottom end">
+        <DropdownGroup label="Show">
+          <SettingRow isSelected={prefs.grid} onChange={(grid) => onPrefs({ ...prefs, grid })}>
+            Grid lines
+          </SettingRow>
+          <SettingRow isSelected={prefs.priceLine} onChange={(priceLine) => onPrefs({ ...prefs, priceLine })}>
+            Last price line
+          </SettingRow>
+          <SettingRow isSelected={prefs.alertLine} onChange={(alertLine) => onPrefs({ ...prefs, alertLine })}>
+            Alert lines
+          </SettingRow>
+        </DropdownGroup>
+        <DropdownDivider />
+        <p className="px-2 pb-1 text-caption-1-regular text-text-secondary">
+          Charts by{" "}
+          <LinkButton href="https://www.tradingview.com/" target="_blank" rel="noreferrer" variant="secondary" size="xs">
+            TradingView
+          </LinkButton>
+        </p>
+      </Menu>
+    </div>
+  );
+});
+
+/** BoardUI tooltip on a plain button (Focusable adapts it into a trigger). */
+function Hint({ label, children }: { label: string; children: ComponentProps<typeof Focusable>["children"] }) {
+  return (
+    <TooltipTrigger>
+      <Focusable>{children}</Focusable>
+      <Tooltip>{label}</Tooltip>
+    </TooltipTrigger>
+  );
+}
+
+type MenuProps = {
+  label: string;
+  icon: IconComponent;
+  /** Only the icon (the label is its accessible name and tooltip). */
+  iconOnly?: boolean;
+  placement?: "bottom start" | "bottom end";
+  children: ReactNode;
+};
+
+// The trigger wears BoardUI's secondary button / icon button recipe.
+const TRIGGER = cx(buttonStyles.base, buttonStyles.size.medium, buttonStyles.variant.secondary, "shadow-xs");
+const ICON_TRIGGER = cx(
+  "inline-flex size-9 shrink-0 items-center justify-center rounded-2lg border border-border-button-default bg-background-primary-default text-foreground-icon-primary shadow-xs",
+  "transition-[background-color,border-color] duration-150 ease hover:border-border-button-hover hover:bg-background-primary-hover",
+  "active:border-border-button-active active:bg-background-primary-active",
+);
+
+/** A toolbar button that opens a BoardUI dropdown panel; its chevron turns while open. */
+function Menu({ label, icon: Icon, iconOnly = false, placement = "bottom start", children }: MenuProps) {
+  const [open, setOpen] = useState(false);
+  const trigger = (
+    <DropdownTrigger
+      aria-label={iconOnly ? label : undefined}
+      className={cx(iconOnly ? ICON_TRIGGER : TRIGGER, open && "border-border-button-hover bg-background-primary-hover")}
+    >
+      <Icon aria-hidden className="size-5 shrink-0" />
+      {iconOnly ? null : (
+        <>
+          {/* Compare / Indicators drop their labels when the column gets narrow. */}
+          <span className="px-1 @max-[44rem]:sr-only">{label}</span>
+          <RiArrowDownSLine
+            aria-hidden
+            className={cx("size-4 shrink-0 text-foreground-icon-secondary transition-transform duration-200 ease-out", open && "rotate-180")}
+          />
+        </>
+      )}
+    </DropdownTrigger>
+  );
+  return (
+    <Dropdown isOpen={open} onOpenChange={setOpen}>
+      {iconOnly ? (
+        <TooltipTrigger isDisabled={open}>
+          {trigger}
+          <Tooltip>{label}</Tooltip>
+        </TooltipTrigger>
+      ) : (
+        trigger
+      )}
+      <DropdownPopover aria-label={label} placement={placement} className="w-64">
+        {children}
+      </DropdownPopover>
+    </Dropdown>
+  );
+}
+
+type MenuCheckProps = {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  /** Series colour (a token fill class). */
+  dot: string;
+  children: ReactNode;
+};
+
+/** A checkbox row in a menu, in BoardUI's menu-row shape. */
+function MenuCheck({ checked, onChange, dot, children }: MenuCheckProps) {
+  return (
+    <Checkbox
+      isSelected={checked}
+      onChange={onChange}
+      className="w-full rounded-2lg p-2 transition-colors hover:bg-dropdown-item-hover-background"
+    >
+      <span className="flex min-w-0 items-center gap-2">
+        <span aria-hidden="true" className={cx("size-2 shrink-0 rounded-full", dot)} />
+        {children}
+      </span>
+    </Checkbox>
+  );
+}
+
+/** A switch row in the settings menu: label first, switch at the end. */
+function SettingRow({ isSelected, onChange, children }: { isSelected: boolean; onChange: (on: boolean) => void; children: ReactNode }) {
+  return (
+    <Switch
+      size="sm"
+      isSelected={isSelected}
+      onChange={onChange}
+      className="w-full flex-row-reverse justify-between rounded-2lg p-2 transition-colors hover:bg-dropdown-item-hover-background"
+    >
+      <span className="text-body-medium text-text-primary">{children}</span>
+    </Switch>
   );
 }

@@ -1,62 +1,90 @@
 "use client";
 
-import { useState } from "react";
-import { Icon } from "@/components/ui/Icon";
-import { Segmented } from "@/components/ui/Segmented";
+import { useCallback, useRef, useState } from "react";
+import type { Key } from "react-aria-components";
+import { RiAddLine, RiArrowUpDownLine, RiSearchLine } from "@remixicon/react";
+import { Avatar } from "@/components/base/avatar/avatar";
+import { Chip, type ChipColor } from "@/components/base/badges/chip";
+import { IconButton } from "@/components/base/buttons/icon-button";
+import { Tab, TabList, TabPanel, Tabs } from "@/components/base/tabs/tabs";
+import { CARD, CARD_TITLE } from "@/components/overview/Card";
 import type { AlertItem, AlertTab } from "@/lib/mock/chart";
-import { CHART_ICONS } from "./icons";
+import { cx } from "@/utils/cx";
+import { playEntrance } from "./motion";
 
-const TABS: { value: AlertTab; label: string }[] = [
-  { value: "Alerts", label: "Alerts" },
-  { value: "History", label: "History" },
-  { value: "System", label: "System" },
-];
+const TABS: AlertTab[] = ["Alerts", "History", "System"];
 
-const ICON_BUTTON =
-  "inline-flex size-9 items-center justify-center rounded-[10px] transition-colors hover:bg-[rgba(17,17,19,0.05)] hover:text-ink";
+/** Chip colour for an alert's state ("Active", "Triggered", "Filing"…). */
+function stateColor(state: string): ChipColor {
+  switch (state) {
+    case "Active":
+      return "lime";
+    case "Triggered":
+      return "yellow";
+    case "Filing":
+    case "Calendar":
+    case "Transcript":
+      return "blue";
+    default:
+      return "gray";
+  }
+}
 
-/** Alerts panel: active alerts, what fired, and system notices (latest two each). */
+/** Alerts panel: active alerts, what fired, and system notices (latest two each), as BoardUI tabs. */
 export function AlertsPanel({ alerts }: { alerts: Record<AlertTab, AlertItem[]> }) {
-  const [tab, setTab] = useState<AlertTab>("Alerts");
+  const [tab, setTab] = useState<Key>("Alerts");
+  // The first panel is part of the page's entrance; a panel the user
+  // switches to condenses in as it mounts.
+  const switched = useRef(false);
+  const enter = useCallback((el: HTMLDivElement | null) => {
+    if (switched.current) playEntrance(el, "enter");
+  }, []);
   return (
-    <section aria-label="Alerts" className="glass rounded-[24px] px-[18px] pt-3 pb-2">
-      <Segmented options={TABS} value={tab} onChange={setTab} label="Alert views" className="flex-nowrap" buttonClassName="h-10 flex-1 text-[15px]" />
-      <div className="mt-1 flex items-center justify-between text-ink-3">
-        <button type="button" aria-label="New alert" className={ICON_BUTTON}>
-          <Icon name="plus" size={19} />
-        </button>
-        <span className="inline-flex">
-          <button type="button" aria-label="Search alerts" className={ICON_BUTTON}>
-            <Icon name="search" size={18} />
-          </button>
-          <button type="button" aria-label="Sort alerts" className={ICON_BUTTON}>
-            <Icon d={CHART_ICONS.sort} size={18} linejoin="round" />
-          </button>
-          <button type="button" aria-label="Alert settings" className={ICON_BUTTON}>
-            <Icon name="sliders" size={18} />
-          </button>
-        </span>
+    <section aria-labelledby="al-h" className={cx(CARD, "flex min-w-0 flex-col gap-2 p-5")}>
+      <div className="flex items-center justify-between gap-3">
+        <h2 id="al-h" className={CARD_TITLE}>
+          Alerts
+        </h2>
+        <div className="flex items-center gap-2">
+          <IconButton size="small" icon={RiSearchLine} aria-label="Search alerts" />
+          <IconButton size="small" icon={RiArrowUpDownLine} aria-label="Sort alerts" />
+          <IconButton size="small" icon={RiAddLine} aria-label="New alert" />
+        </div>
       </div>
-      <ul aria-label={tab}>
-        {alerts[tab].slice(0, 2).map((a) => (
-          <li key={a.text} className="flex flex-col gap-1 py-[7px]">
-            <span className="text-[15px]">{a.text}</span>
-            <span className="flex items-center gap-2 text-[13px] text-ink-2">
-              <span
-                aria-hidden="true"
-                className="inline-flex size-5 items-center justify-center rounded-full bg-ink text-[10px] font-semibold text-white"
-              >
-                {a.symbol.charAt(0)}
-              </span>
-              {a.scope}
-              <span aria-hidden="true" className="text-[#A1A1A8]">
-                ·
-              </span>
-              <span style={{ color: a.stateColor }}>{a.state}</span>
-            </span>
-          </li>
+      <Tabs
+        selectedKey={tab}
+        onSelectionChange={(key) => {
+          switched.current = true;
+          setTab(key);
+        }}
+        className="gap-1"
+      >
+        <TabList aria-label="Alert views">
+          {TABS.map((t) => (
+            <Tab key={t} id={t} count={alerts[t].length}>
+              {t}
+            </Tab>
+          ))}
+        </TabList>
+        {TABS.map((t) => (
+          <TabPanel key={t} id={t} ref={enter}>
+            <ul className="flex flex-col">
+              {alerts[t].slice(0, 2).map((a) => (
+                <li key={a.text} className="flex flex-col gap-1.5 border-b border-separator-border py-3 last:border-b-0 last:pb-0">
+                  <span className="text-body-medium text-text-primary">{a.text}</span>
+                  <span className="flex items-center gap-2 text-body-2-regular text-text-secondary">
+                    <Avatar size="xs" initials={a.symbol.charAt(0)} />
+                    <span className="min-w-0 truncate">{a.scope}</span>
+                    <Chip variant="caption" color={stateColor(a.state)} className="ms-auto py-0.5">
+                      {a.state}
+                    </Chip>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </TabPanel>
         ))}
-      </ul>
+      </Tabs>
     </section>
   );
 }

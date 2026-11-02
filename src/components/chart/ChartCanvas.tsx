@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useEffectEvent, useImperativeHandle, useRef, type HTMLAttributes, type Ref } from "react";
+import {
+  useEffect,
+  useEffectEvent,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  type HTMLAttributes,
+  type Ref,
+} from "react";
 import {
   AreaSeries,
   CandlestickSeries,
@@ -18,11 +26,13 @@ import {
   type Time,
 } from "lightweight-charts";
 import type { Bar, CompareKey } from "@/lib/mock/chart";
+import { cx } from "@/utils/cx";
 import { DashedLine, ViewportProbe } from "./primitives";
 import { PAD_ABOVE, PAD_BELOW, type BarWindow, type Geometry } from "./scale";
+import { observeTheme, readPalette, rgba, type Palette } from "./tokens";
 
 /** A rebased comparison line. */
-export type ChartLine = { key: CompareKey; stroke: string; width: number; values: readonly number[]; visible: boolean };
+export type ChartLine = { key: CompareKey; width: number; values: readonly number[]; visible: boolean };
 
 /** Bar under the pointer and the price at its height; null when it leaves the chart. */
 export type ChartPointer = { index: number; price: number } | null;
@@ -59,13 +69,10 @@ type Api = {
 
 type Box = { width: number; height: number };
 
-const UP = "#4DB07F";
-const DOWN = "#EA5B52";
 const CLEAR = "rgba(0, 0, 0, 0)";
-const FLAT = "rgba(17, 17, 19, 0.05)";
 
 // The library types line widths as whole pixels, but its renderer takes any
-// number; the design strokes the overlay lines at 1.6 and 1.8px.
+// number; the comparison lines are stroked at 1.6 and 1.8px.
 const width = (w: number) => w as LineWidth;
 
 // Overlay series never show their own labels or markers.
@@ -75,7 +82,7 @@ const QUIET = { priceScaleId: "right", lastValueVisible: false, priceLineVisible
  * Canvas size and offset inside the plot box. The library only draws on even
  * pixel sizes and centres bar i at (i + 0.5) × spacing − 1px; pick the even
  * width and whole-pixel shift that put bar centres within half a pixel of
- * the design's grid, (i + 0.5) × box / bars.
+ * the overlays' grid, (i + 0.5) × box / bars.
  */
 function canvasFit(box: Box) {
   const w = Math.round(box.width);
@@ -84,9 +91,9 @@ function canvasFit(box: Box) {
 }
 
 /**
- * Room above and below the data (design: 12% and 18% of its range). The
- * library maps prices onto height − 1 px; a pixel off the bottom margin puts
- * every price where the design's scale does.
+ * Room above and below the data (12% and 18% of its range). The library maps
+ * prices onto height − 1 px; a pixel off the bottom margin puts every price
+ * where the overlays' scale does.
  */
 function scaleMargins(paneHeight: number) {
   const span = 1 + PAD_ABOVE + PAD_BELOW;
@@ -96,9 +103,13 @@ function scaleMargins(paneHeight: number) {
 
 /**
  * The price chart itself: TradingView Lightweight Charts drawing candles (or a
- * line), the comparison lines and the dotted SMA on a transparent background.
- * Axes, grid, crosshair and labels are HTML overlays drawn by the parent from
- * the geometry this component reports through `onGeometry`.
+ * line), the comparison lines and the dotted SMA on a transparent background,
+ * in the theme's chart tokens (re-read when the theme flips). Axes, grid,
+ * crosshair and labels are HTML overlays drawn by the parent from the
+ * geometry this component reports through `onGeometry`.
+ *
+ * Every change to what is drawn is applied in a layout effect, inside the
+ * same commit as the overlays, so a view transition captures them together.
  */
 export function ChartCanvas({
   bars,
@@ -111,11 +122,12 @@ export function ChartCanvas({
   onPointer,
   handleRef,
   hostProps,
-  className = "",
+  className,
 }: ChartCanvasProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const apiRef = useRef<Api | null>(null);
+  const paletteRef = useRef<Palette | null>(null);
   const shiftRef = useRef(0);
   /** The range we last fitted; any other range means the user scrolled or zoomed. */
   const fittedRef = useRef<IRange<number> | null>(null);
@@ -153,6 +165,68 @@ export function ChartCanvas({
     onPointer({ index: Math.max(0, Math.min(bars.length - 1, Math.round(p.logical))), price });
   });
 
+  // ---------------------------------------------------------------- appliers
+
+  const applyBars = useEffectEvent(() => {
+    const api = apiRef.current;
+    if (!api) return;
+    api.candles.setData(bars.map((b) => ({ time: b.time, open: b.o, high: b.h, low: b.l, close: b.c })));
+    api.area.setData(bars.map((b) => ({ time: b.time, value: b.c })));
+  });
+
+  const applySma = useEffectEvent(() => {
+    const api = apiRef.current;
+    if (!api) return;
+    const points: { time: string; value: number }[] = [];
+    sma.forEach((value, i) => {
+      if (value !== null) points.push({ time: bars[i].time, value });
+    });
+    api.sma.setData(points);
+    api.smaLine.setValues(sma);
+  });
+
+  const applySmaVisible = useEffectEvent(() => {
+    apiRef.current?.sma.applyOptions({ visible: smaVisible });
+  });
+
+  const applyLines = useEffectEvent(() => {
+    const api = apiRef.current;
+    if (!api) return;
+    for (const line of lines) {
+      api.lines[line.key].applyOptions({ lineWidth: width(line.width), visible: line.visible });
+      api.lines[line.key].setData(line.values.map((value, i) => ({ time: bars[i].time, value })));
+    }
+    // A symbol without a sector index has only the market line.
+    for (const key of Object.keys(api.lines) as CompareKey[]) {
+      if (!lines.some((l) => l.key === key)) api.lines[key].setData([]);
+    }
+  });
+
+  /** Colours from the theme tokens, for the current mode, chart type and window. */
+  const applyColors = useEffectEvent(() => {
+    const api = apiRef.current;
+    const p = (paletteRef.current ??= readPalette());
+    if (!api) return;
+    api.chart.applyOptions({ layout: { textColor: rgba(p.text), fontFamily: p.font } });
+    api.candles.applyOptions(
+      candles
+        ? { upColor: rgba(p.up), downColor: rgba(p.down), wickUpColor: rgba(p.up), wickDownColor: rgba(p.down), wickVisible: true }
+        : { upColor: CLEAR, downColor: CLEAR, wickVisible: false },
+    );
+    // Line mode follows the sparklines: the gain or loss token over the window.
+    const rising = bars[win.to].c >= bars[win.from].c;
+    const tone = rising ? p.positive : p.negative;
+    api.area.applyOptions({
+      visible: !candles,
+      lineColor: rgba(tone),
+      topColor: rgba(tone, 0.18),
+      bottomColor: rgba(tone, 0),
+    });
+    api.smaLine.setColor(rgba(p.sma));
+    api.lines.sector.applyOptions({ color: rgba(p.sector) });
+    api.lines.market.applyOptions({ color: rgba(p.market) });
+  });
+
   // Create the chart once; the effects below feed it data and options.
   useEffect(() => {
     const host = hostRef.current;
@@ -171,7 +245,7 @@ export function ChartCanvas({
       height: size.height,
       layout: {
         background: { type: ColorType.Solid, color: CLEAR },
-        // The attribution link to tradingview.com is in the chart settings menu.
+        // The TradingView credit sits under the chart and in the settings menu.
         attributionLogo: false,
       },
       grid: { vertLines: { visible: false }, horzLines: { visible: false } },
@@ -197,35 +271,42 @@ export function ChartCanvas({
     const sector = chart.addSeries(LineSeries, { ...QUIET, lineType: LineType.Simple });
     const market = chart.addSeries(LineSeries, { ...QUIET, lineType: LineType.Simple });
     const smaSeries = chart.addSeries(LineSeries, { ...QUIET, lineVisible: false, autoscaleInfoProvider: () => null });
-    const smaLine = new DashedLine({ color: "#7FA6F2", width: 1.4, dash: [2, 4] });
+    const smaLine = new DashedLine({ color: CLEAR, width: 1.4, dash: [2, 4] });
     smaSeries.attachPrimitive(smaLine);
     const area = chart.addSeries(AreaSeries, {
       ...QUIET,
       visible: false,
-      lineColor: "#111113",
       lineWidth: width(1.8),
-      topColor: FLAT,
-      bottomColor: FLAT,
-      // Candles stay on the scale (transparent) in line mode, as in the design.
+      // Candles stay on the scale (transparent) in line mode.
       autoscaleInfoProvider: () => null,
     });
     const candleSeries = chart.addSeries(CandlestickSeries, {
       priceScaleId: "right",
       lastValueVisible: false,
       priceLineVisible: false,
-      upColor: UP,
-      downColor: DOWN,
       borderVisible: false,
-      wickUpColor: UP,
-      wickDownColor: DOWN,
     });
     candleSeries.attachPrimitive(new ViewportProbe(() => report()));
     apiRef.current = { chart, candles: candleSeries, area, sma: smaSeries, smaLine, lines: { sector, market } };
+
+    paletteRef.current = readPalette();
+    applyBars();
+    applySma();
+    applyLines();
+    applyColors();
+    applySmaVisible();
+    fit();
 
     const onMove = (p: MouseEventParams<Time>) => move(p);
     const onDoubleClick = () => fit();
     chart.subscribeCrosshairMove(onMove);
     chart.subscribeDblClick(onDoubleClick);
+
+    // Light / dark: re-read the tokens and recolour.
+    const stopTheme = observeTheme(() => {
+      paletteRef.current = readPalette();
+      applyColors();
+    });
 
     // Grow with the page. Keep the exact fit unless the user has scrolled or zoomed.
     const resize = new ResizeObserver(([entry]) => {
@@ -241,7 +322,14 @@ export function ChartCanvas({
     });
     resize.observe(host);
 
+    // Fade the plot in once its first frame is drawn. The attribute stays
+    // when Next hides the page (Activity), so a page shown again (which
+    // re-creates the chart) doesn't fade in a second time.
+    const reveal = requestAnimationFrame(() => container.setAttribute("data-ready", ""));
+
     return () => {
+      cancelAnimationFrame(reveal);
+      stopTheme();
       resize.disconnect();
       chart.unsubscribeCrosshairMove(onMove);
       chart.unsubscribeDblClick(onDoubleClick);
@@ -252,54 +340,12 @@ export function ChartCanvas({
     };
   }, []);
 
-  useEffect(() => {
-    const api = apiRef.current;
-    if (!api) return;
-    api.candles.setData(bars.map((b) => ({ time: b.time, open: b.o, high: b.h, low: b.l, close: b.c })));
-    api.area.setData(bars.map((b) => ({ time: b.time, value: b.c })));
-  }, [bars]);
-
-  useEffect(() => {
-    const api = apiRef.current;
-    if (!api) return;
-    const points: { time: string; value: number }[] = [];
-    sma.forEach((value, i) => {
-      if (value !== null) points.push({ time: bars[i].time, value });
-    });
-    api.sma.setData(points);
-    api.smaLine.setValues(sma);
-  }, [bars, sma]);
-
-  useEffect(() => {
-    apiRef.current?.sma.applyOptions({ visible: smaVisible });
-  }, [smaVisible]);
-
-  useEffect(() => {
-    const api = apiRef.current;
-    if (!api) return;
-    for (const line of lines) {
-      const series = api.lines[line.key];
-      series.applyOptions({ color: line.stroke, lineWidth: width(line.width), visible: line.visible });
-      series.setData(line.values.map((value, i) => ({ time: bars[i].time, value })));
-    }
-    // A symbol without a sector index has only the market line.
-    for (const key of Object.keys(api.lines) as CompareKey[]) {
-      if (!lines.some((l) => l.key === key)) api.lines[key].setData([]);
-    }
-  }, [bars, lines]);
-
-  useEffect(() => {
-    const api = apiRef.current;
-    if (!api) return;
-    api.candles.applyOptions(
-      candles ? { upColor: UP, downColor: DOWN, wickVisible: true } : { upColor: CLEAR, downColor: CLEAR, wickVisible: false },
-    );
-    api.area.applyOptions({ visible: !candles });
-  }, [candles]);
-
-  useEffect(() => {
-    fit();
-  }, [win.from, win.to]);
+  useLayoutEffect(() => applyBars(), [bars]);
+  useLayoutEffect(() => applySma(), [bars, sma]);
+  useLayoutEffect(() => applySmaVisible(), [smaVisible]);
+  useLayoutEffect(() => applyLines(), [bars, lines]);
+  useLayoutEffect(() => applyColors(), [candles, bars, win.from, win.to]);
+  useLayoutEffect(() => fit(), [win.from, win.to]);
 
   useImperativeHandle(
     handleRef,
@@ -313,7 +359,7 @@ export function ChartCanvas({
         canvas.height = shot.height;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
-        ctx.fillStyle = "#F7F7F8";
+        ctx.fillStyle = rgba((paletteRef.current ??= readPalette()).surface);
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(shot, 0, 0);
         canvas.toBlob((blob) => {
@@ -332,8 +378,18 @@ export function ChartCanvas({
 
   // `isolate`: the library z-indexes its canvases; keep them under the overlays.
   return (
-    <div ref={hostRef} {...hostProps} className={`absolute inset-0 isolate ${className}`}>
-      <div ref={canvasRef} className="absolute top-0 left-0" />
+    <div
+      ref={hostRef}
+      {...hostProps}
+      className={cx(
+        "absolute inset-0 isolate rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring",
+        className,
+      )}
+    >
+      <div
+        ref={canvasRef}
+        className="absolute top-0 left-0 opacity-0 transition-opacity duration-300 ease-out data-ready:opacity-100"
+      />
     </div>
   );
 }

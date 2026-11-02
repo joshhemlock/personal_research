@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SegmentedControl, SegmentedControlItem } from "@/components/base/segmented-control/segmented-control";
+import { AnimatedValue } from "@/components/motion/AnimatedValue";
 import { pct } from "@/lib/format";
 import type { SectorMove, SectorPeriod } from "@/lib/mock/overview";
 import { cx } from "@/utils/cx";
@@ -25,11 +26,15 @@ type SectorPerformanceProps = {
   scale: Record<SectorPeriod, number>;
 };
 
-/** Sector heat tiles with a 1D / 1W / 1M period toggle. */
+/**
+ * Sector heat tiles with a 1D / 1W / 1M period toggle. Switching period
+ * steps each tile's heat colour over 200ms and swaps its figure in place
+ * (BoardUI's number fade); nothing moves.
+ */
 export function SectorPerformance({ sectors, periods, scale }: SectorPerformanceProps) {
   const [period, setPeriod] = useState<SectorPeriod>(periods[0]);
   return (
-    <section aria-labelledby="sec-h" className={cx(CARD, "flex min-w-0 flex-col gap-4 p-5")}>
+    <section aria-labelledby="sec-h" data-glide-with="watchlist" className={cx(CARD, "flex min-w-0 flex-col gap-4 p-5")}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="sec-h" className={CARD_TITLE}>
           Sector performance
@@ -64,9 +69,13 @@ export function SectorPerformance({ sectors, periods, scale }: SectorPerformance
               )}
             >
               <span className="text-body-2-medium text-text-primary">{s.name}</span>
-              <span className={cx("text-headline-medium", v >= 0 ? "text-text-positive" : "text-text-negative")}>
-                {pct(v)}
-              </span>
+              <AnimatedValue
+                value={pct(v)}
+                className={cx(
+                  "text-headline-medium transition-colors duration-200 ease-out",
+                  v >= 0 ? "text-text-positive" : "text-text-negative",
+                )}
+              />
             </li>
           );
         })}

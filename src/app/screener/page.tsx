@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Settle } from "@/components/motion/Settle";
 import { AppShell } from "@/components/shell/AppShell";
 import { FiltersPanel } from "@/components/screener/FiltersPanel";
 import { ResultsCard } from "@/components/screener/ResultsCard";
@@ -15,15 +16,20 @@ export default async function ScreenerPage() {
   return (
     <AppShell active="screener">
       <ScreenerProvider live={live}>
-        <FiltersPanel />
-        <main aria-label="Screen results" className="flex min-w-0 flex-[999_1_620px] flex-col gap-3 pb-1">
-          <div className="flex flex-wrap items-center gap-x-[14px] gap-y-[10px]">
-            <h1 className="text-[26px] font-normal tracking-[-0.02em]">Screener</h1>
-            <ScreenTabs />
-          </div>
-          <SummaryTiles />
-          <ResultsCard />
-        </main>
+        {/* contents: the two columns stay items of the shell's wrapping row.
+            Settle retires the first-paint entrances (sparkline draws) once
+            played, so returning to the screen doesn't replay them. */}
+        <Settle className="contents">
+          <FiltersPanel />
+          <main aria-label="Screen results" className="flex min-w-0 flex-[999_1_620px] flex-col gap-4">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+              <h1 className="text-title-1-medium text-text-primary">Screener</h1>
+              <ScreenTabs />
+            </div>
+            <SummaryTiles />
+            <ResultsCard />
+          </main>
+        </Settle>
       </ScreenerProvider>
     </AppShell>
   );

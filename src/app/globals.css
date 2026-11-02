@@ -109,8 +109,19 @@
  *   animate-grow         a horizontal bar growing from its start (360ms)
  *   animate-draw         an SVG line drawing itself; give the path
  *                        pathLength="1" (600ms)
+ *   animate-fade         a fill or wash fading in alongside a draw (600ms)
+ *   animate-wait         a placeholder that only shows if the wait lasts
+ *                        (fades in after 150ms, so quick handovers never
+ *                        flash it)
  * Stagger with an inline `animationDelay` (about 30-40ms a step, capped
  * around 240ms in total) so lists never feel slow.
+ *
+ * Entrances play once per screen. Next keeps recent screens mounted but
+ * hidden (Activity) and showing one again restarts its CSS animations, so a
+ * screen wraps its content in `data-settled` once they have run (see
+ * components/motion/Settle) and the rule below retires them. A figure that
+ * changes later animates with <AnimatedValue> (Web Animations), which a
+ * re-show doesn't replay.
  * --------------------------------------------------------------------------- */
 @theme {
   --ease-board: cubic-bezier(0.22, 1, 0.36, 1);
@@ -174,8 +185,33 @@
   animation: grow 360ms var(--ease-board) both;
 }
 @utility animate-draw {
-  stroke-dasharray: 1;
+  /* A gap longer than the path: no zero-length dash (a round-cap dot) waits
+     at the far end while the line is undrawn. */
+  stroke-dasharray: 1 2;
   animation: draw 600ms var(--ease-board) both;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@utility animate-fade {
+  animation: fade-in 600ms var(--ease-board) both;
+}
+@utility animate-wait {
+  animation: fade-in 200ms ease-out 150ms both;
+}
+
+/* A screen whose entrances have played (components/motion/Settle). */
+[data-settled] :is(.animate-enter, .animate-pop, .animate-rise, .animate-grow, .animate-draw, .animate-fade) {
+  animation: none;
+}
+
+/* Press feedback is a colour step, never a scale: BoardUI's button-press
+   motion also shrinks buttons 2% while held, which its motion language
+   rules out. Its colour steps (hover/active tokens) stay. */
+.button-press-motion:active {
+  transform: none;
 }
 
 /* Page changes. AppShell wraps each screen's columns in a React
@@ -207,6 +243,44 @@
 }
 ::view-transition-new(.content-enter) {
   animation: page-in 300ms var(--ease-board) both;
+}
+
+/* The page stays clickable while a transition runs: React shrinks the
+   overlay for its own transitions; this covers the rest (theme reveal). */
+::view-transition {
+  pointer-events: none;
+}
+
+/* Rows of a filtered list (the Overview watchlist; runListTransition in
+   components/motion, or a React <ViewTransition enter="row-enter"
+   exit="row-exit" update="row-move"> around a plain row): leaving rows blur
+   out fast, arriving rows condense in, and the rows that stay glide to
+   their new place. The card and the content below a list that changed
+   height glide with it (card-move). */
+::view-transition-group(.row-move),
+::view-transition-group(.card-move) {
+  animation-duration: 360ms;
+  animation-timing-function: var(--ease-board);
+}
+::view-transition-new(.row-enter):only-child {
+  animation: row-in 360ms var(--ease-board) both;
+}
+::view-transition-old(.row-exit):only-child {
+  animation: row-out 180ms var(--ease-exit) both;
+}
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+    filter: blur(2px);
+  }
+}
+@keyframes row-out {
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+    filter: blur(2px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

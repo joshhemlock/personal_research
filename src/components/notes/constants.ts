@@ -1,42 +1,75 @@
+import type { ComponentType } from "react";
+import { RiBarChartBoxLine, RiFilter3Line, RiMicLine, RiStickyNoteLine } from "@remixicon/react";
 import type { Conviction, LinkKind } from "@/lib/mock/notes";
-import { ICONS } from "@/components/ui/Icon";
 
-/** Dot color and suggested position size for each conviction level. */
-export const CONVICTION: Record<Conviction, { dot: string; size: string }> = {
-  Low: { dot: "#B4B4BA", size: "starter, up to 1%" },
-  Medium: { dot: "#F5A524", size: "standard, 2–3%" },
-  High: { dot: "#2E9B63", size: "core, 4–5%" },
+/** BoardUI's card surface (as on the Overview). */
+export const CARD = "rounded-3xl border border-border-button-default bg-background-primary-default";
+
+/** Card title (BoardUI's card-title style). */
+export const CARD_TITLE = "text-title-3-medium text-text-primary";
+
+/**
+ * The screen's grid, sized by its own width (the sidebar can collapse):
+ * one column on phones; the list beside the editor from 50rem, with the
+ * context cards in a row underneath; all three side by side from 74rem.
+ * The loading skeleton uses the same classes.
+ */
+export const NOTES_GRID = {
+  root: "@container/notes min-w-0 flex-1 basis-full",
+  grid: "grid grid-cols-1 items-start gap-4 @min-[50rem]/notes:grid-cols-[17.5rem_minmax(0,1fr)] @min-[74rem]/notes:grid-cols-[17.5rem_minmax(0,1fr)_18.5rem]",
+  editor: "@container flex min-w-0 flex-col gap-5 p-4 @min-[50rem]/notes:p-6",
+  context:
+    "grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(18rem,100%),1fr))] items-start gap-4 @min-[50rem]/notes:col-span-2 @min-[74rem]/notes:col-span-1 @min-[74rem]/notes:grid-cols-1",
+};
+
+/**
+ * View-transition name of the notes list. The list is the same on every note
+ * (and in the loading state), so as a named pair it cross-fades into itself
+ * (nothing moves but the open row) instead of swapping with the rest.
+ */
+export const LIST_TRANSITION = "notes-list";
+
+/** Section heading inside the note editor. */
+export const SECTION_TITLE = "text-headline-semibold text-text-primary";
+
+/**
+ * Dot colour and suggested position size for each conviction level. The
+ * colours are CSS variables of BoardUI / app tokens, applied inline because
+ * they follow data: grey for low, amber for medium, the gain green for high.
+ */
+export const CONVICTION: Record<Conviction, { color: string; size: string }> = {
+  Low: { color: "var(--color-foreground-icon-tertiary)", size: "starter, up to 1%" },
+  Medium: { color: "var(--color-chart-earnings)", size: "standard, 2–3%" },
+  High: { color: "var(--color-chart-positive)", size: "core, 4–5%" },
 };
 
 export const CONVICTIONS: Conviction[] = ["Low", "Medium", "High"];
 
-/** Stroke icons (24 grid) used only on the notes screen, from the design. */
-export const NOTE_ICONS = {
-  bold: "M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z",
-  italic: "M10 5h8M6 19h8M14 5l-4 14",
-  list: "M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01",
-  link: "M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1",
-  chart: "M4 18l5-6 4 3 7-8",
-  share: "M12 4v11M7 9l5-5 5 5M5 20h14",
-  mic: "M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3zM6 11a6 6 0 0 0 12 0M12 17v3",
-} as const;
+type IconComponent = ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>;
 
-export const LINK_ICONS: Record<LinkKind, string> = {
-  transcript: NOTE_ICONS.mic,
-  financials: ICONS.financials,
-  screen: ICONS.screener,
-  note: ICONS.notes,
+/** Icon of each kind of linked item. */
+export const LINK_ICONS: Record<LinkKind, IconComponent> = {
+  transcript: RiMicLine,
+  financials: RiBarChartBoxLine,
+  screen: RiFilter3Line,
+  note: RiStickyNoteLine,
 };
 
 /**
  * Styles for the editable rich-text regions of a note (thesis, drivers…),
  * including what the toolbar can insert: bold, italic, lists, links and
- * chart embeds. A softer focus ring than the global one suits a text body.
+ * chart embeds. The focus ring is BoardUI's, softened for a text body.
  */
-export const RICH_TEXT =
-  "min-h-[1.4em] rounded-[6px] focus-visible:outline-offset-4 focus-visible:outline-[rgba(47,95,204,0.45)] " +
-  "[&_b]:font-semibold [&_strong]:font-semibold [&_a]:underline [&_a]:underline-offset-2 " +
-  "[&_ul]:list-disc [&_ul]:pl-[18px] [&_ol]:list-decimal [&_ol]:pl-[18px]";
+export const RICH_TEXT = [
+  "min-h-[1.4em] rounded-lg outline-none",
+  "focus-visible:ring-2 focus-visible:ring-border-focus-ring/40 focus-visible:ring-offset-4 focus-visible:ring-offset-background-primary-default",
+  "[&_b]:font-semibold [&_strong]:font-semibold",
+  "[&_a]:text-text-primary [&_a]:underline [&_a]:decoration-text-tertiary [&_a]:underline-offset-2",
+  "[&_ul]:list-disc [&_ul]:ps-5 [&_ol]:list-decimal [&_ol]:ps-5 marker:text-text-tertiary",
+].join(" ");
 
 /** Selector of the editable rich-text regions the formatting toolbar acts on. */
 export const RICH_TEXT_SELECTOR = "[data-rich-text]";
+
+/** Marks the note editor; the toolbar acts on the regions inside it. */
+export const EDITOR_ATTR = "data-note-editor";

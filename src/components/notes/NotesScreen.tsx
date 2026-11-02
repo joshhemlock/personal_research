@@ -1,12 +1,18 @@
+import { ViewTransition } from "react";
 import Link from "next/link";
+import { Avatar } from "@/components/base/avatar/avatar";
+import { Chip } from "@/components/base/badges/chip";
+import { Breadcrumb, BreadcrumbItem } from "@/components/base/breadcrumb/breadcrumb";
+import { Settle } from "@/components/motion/Settle";
+import { deltaColor } from "@/components/shell/delta";
 import type { NoteMarket } from "@/lib/data/notes";
 import type { Note } from "@/lib/mock/notes";
 import { NOTE_LIST, longDate, noteTitle, savedLabel, shortDate } from "@/lib/mock/notes";
-import { num, pct, tone } from "@/lib/format";
-import { Icon } from "@/components/ui/Icon";
-import { TickerDot } from "@/components/ui/Pill";
+import { num, pct } from "@/lib/format";
+import { cx } from "@/utils/cx";
 import { Catalysts } from "./Catalysts";
 import { Checklist } from "./Checklist";
+import { CARD, EDITOR_ATTR, LIST_TRANSITION, NOTES_GRID } from "./constants";
 import { ConvictionPicker } from "./ConvictionPicker";
 import { FormatToolbar } from "./FormatToolbar";
 import { LinkedItems } from "./LinkedItems";
@@ -17,7 +23,13 @@ import { BreadcrumbName, NoteTitle } from "./NoteTitle";
 import { Scenarios } from "./Scenarios";
 import { SinceNote } from "./SinceNote";
 
-const CHIP = "inline-flex h-7 items-center rounded-full bg-track text-[13px]";
+/**
+ * Switching notes is a navigation inside this screen: the editor and the
+ * context cards cross-fade from the old note to the new one (BoardUI's quick
+ * blur-out and condensing blur-in). Named pairs, so it works whichever page
+ * instance the router shows; the notes list stays put.
+ */
+const SWAP = "page-exit page-enter";
 
 type NotesScreenProps = {
   note: Note;
@@ -30,113 +42,94 @@ type NotesScreenProps = {
   idPrefix: string;
 };
 
-/**
- * The research notes screen for one note: notes list, editor and context
- * column, rendered as the shell's columns (inside <AppShell>). Below the
- * `split` breakpoint the context column moves under the list and editor as
- * a row of panels, so the editor keeps its room.
- */
+/** The research notes screen for one note: notes list, editor and context cards. */
 export function NotesScreen({ note, market, idPrefix }: NotesScreenProps) {
   const title = noteTitle(note);
   const { price, changePct: change, paths } = market;
-  const t = tone(change ?? 0);
   const id = (part: string) => `${idPrefix}-${part}`;
 
   return (
     <NoteDraftProvider noteId={note.id} symbol={note.symbol} title={title} conviction={note.conviction}>
-      <aside aria-labelledby={id("list-h")} className="glass flex min-w-0 flex-[1_1_280px] flex-col gap-3 rounded-[24px] p-4">
-        <div className="flex items-center justify-between gap-2">
-          <h2 id={id("list-h")} className="text-[21px] font-normal tracking-[-0.01em]">
-            Research notes
-          </h2>
-          {/* Creating notes arrives with persistence (build step 5). */}
-          <button
-            type="button"
-            aria-label="New note"
-            title="New note"
-            className="inline-flex size-10 items-center justify-center rounded-full bg-ink text-white transition-colors duration-150 hover:bg-[#2A2A2E]"
-          >
-            <Icon name="plus" size={18} strokeWidth={1.8} />
-          </button>
+      {/* Entrances (the chart's draw-in) play once, not again when Next
+          shows this note's page again. */}
+      <Settle className={NOTES_GRID.root}>
+        <div className={NOTES_GRID.grid}>
+          <ViewTransition name={LIST_TRANSITION} share="auto" default="none">
+            <NotesList notes={NOTE_LIST} headingId={id("list-h")} />
+          </ViewTransition>
+
+          <ViewTransition name="note-editor" share={SWAP} default="none">
+            <article {...{ [EDITOR_ATTR]: "" }} aria-labelledby={id("title")} className={cx(CARD, NOTES_GRID.editor)}>
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 @min-[34rem]:flex-nowrap">
+                <Breadcrumb className="-ms-1 w-auto min-w-0">
+                  <BreadcrumbItem href="/notes">Notes</BreadcrumbItem>
+                  <BreadcrumbItem href={`/stock/${note.symbol}`}>{note.symbol}</BreadcrumbItem>
+                  <BreadcrumbItem current>
+                    <BreadcrumbName />
+                  </BreadcrumbItem>
+                </Breadcrumb>
+                <FormatToolbar
+                  chart={
+                    paths && {
+                      caption: `${note.symbol} since ${shortDate(note.started.date)}${change == null ? "" : ` · ${pct(change, 1)}`}`,
+                      href: `/stock/${note.symbol}`,
+                      line: paths.line,
+                      area: paths.area,
+                      up: (change ?? 0) >= 0,
+                    }
+                  }
+                />
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                  <NoteTitle id={id("title")} />
+                  <span className="text-caption-1-medium whitespace-nowrap text-text-tertiary">Saved {savedLabel(note)}</span>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <Link
+                    href={`/stock/${note.symbol}`}
+                    className="group rounded-md outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring"
+                  >
+                    <Chip
+                      color="gray"
+                      variant="subtle"
+                      className="gap-1.5 ps-1 transition-colors duration-150 ease group-hover:bg-background-secondary-hover"
+                    >
+                      <Avatar size="xs" initials={note.symbol.charAt(0)} className="bg-background-quaternary-default" />
+                      {note.symbol}
+                    </Chip>
+                  </Link>
+                  <Chip color="soft" variant="subtle">
+                    {note.type}
+                  </Chip>
+                  <Chip color="soft" variant="subtle">
+                    Started {longDate(note.started.date)} at {num(market.startPrice)}
+                  </Chip>
+                  {change != null && (
+                    <Chip color={deltaColor(change, 1)} variant="subtle">
+                      {pct(change, 1)} since
+                    </Chip>
+                  )}
+                </div>
+              </div>
+
+              <ConvictionPicker labelId={id("conviction-l")} />
+              <Scenarios initial={note.scenarios} price={price} headingId={id("fv-h")} />
+              <NoteBody note={note} idPrefix={idPrefix} />
+              <Catalysts items={market.catalysts} headingId={id("catalysts-h")} />
+            </article>
+          </ViewTransition>
+
+          <ViewTransition name="note-context" share={SWAP} default="none">
+            <aside aria-label="Note context" className={NOTES_GRID.context}>
+              <SinceNote note={note} market={market} headingId={id("since-h")} gradientId={id("since-fill")} />
+              <Checklist items={note.checklist} headingId={id("checklist-h")} />
+              <LinkedItems items={note.linked} headingId={id("linked-h")} />
+            </aside>
+          </ViewTransition>
         </div>
-        <NotesList notes={NOTE_LIST} />
-      </aside>
-
-      <main
-        aria-labelledby={id("title")}
-        className="glass flex min-w-0 flex-[999_1_560px] flex-col gap-[14px] rounded-[24px] px-6 pt-4 pb-5 max-sm:px-4"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="text-[13px] text-muted">
-            <nav aria-label="Breadcrumb" className="inline">
-              <Link href="/notes" className="hover:text-ink">
-                Notes
-              </Link>
-              {" / "}
-              <Link href={`/stock/${note.symbol}`} className="hover:text-ink">
-                {note.symbol}
-              </Link>
-              {" / "}
-              <BreadcrumbName />
-            </nav>
-            {` · Saved ${savedLabel(note)}`}
-          </div>
-          <FormatToolbar
-            chart={
-              paths && {
-                caption: `${note.symbol} since ${shortDate(note.started.date)}${change == null ? "" : ` · ${pct(change, 1)}`}`,
-                href: `/stock/${note.symbol}`,
-                line: paths.line,
-                area: paths.area,
-                stroke: t.stroke,
-                fill: t.fill,
-              }
-            }
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <NoteTitle id={id("title")} />
-          <div className="flex flex-wrap items-center gap-[6px]">
-            <Link
-              href={`/stock/${note.symbol}`}
-              className={`${CHIP} gap-[6px] pr-[10px] pl-[3px] text-ink transition-colors duration-150 hover:bg-[rgba(17,17,19,0.08)]`}
-            >
-              <TickerDot symbol={note.symbol} size={22} fontSize={10} />
-              {note.symbol}
-            </Link>
-            <span className={`${CHIP} px-[10px]`}>{note.type}</span>
-            <span className={`${CHIP} px-[10px] text-ink-2`}>
-              Started {longDate(note.started.date)} at {num(market.startPrice)}
-            </span>
-            {change != null && (
-              <span
-                className={`inline-flex h-7 items-center rounded-full px-[10px] text-[13px] ${
-                  change >= 0 ? "bg-up-pill text-up-pill-text" : "bg-down-pill text-down-pill-text"
-                }`}
-              >
-                {pct(change, 1)} since
-              </span>
-            )}
-          </div>
-        </div>
-
-        <ConvictionPicker />
-        <Scenarios initial={note.scenarios} price={price} />
-        <NoteBody note={note} idPrefix={idPrefix} />
-        <Catalysts items={market.catalysts} headingId={id("catalysts-h")} />
-      </main>
-
-      {/* No grow (the design has 1, worth 0.2px): with the shell's fixed rail
-          column this puts every column within 0.01px of the design at 1512px. */}
-      <aside
-        aria-label="Note context"
-        className="flex min-w-0 flex-[0_1_300px] flex-col gap-3 max-split:grid max-split:basis-full max-split:grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] max-split:content-start"
-      >
-        <SinceNote note={note} market={market} headingId={id("since-h")} />
-        <Checklist items={note.checklist} headingId={id("checklist-h")} />
-        <LinkedItems items={note.linked} headingId={id("linked-h")} />
-      </aside>
+      </Settle>
     </NoteDraftProvider>
   );
 }

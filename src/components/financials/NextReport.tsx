@@ -1,7 +1,9 @@
+import { Chip } from "@/components/base/badges/chip";
 import type { FinancialsData } from "@/lib/mock/financials";
+import { Card } from "./Card";
 
-/** Dark card with the next earnings date and consensus. */
-export function NextReport({ report }: { report: FinancialsData["nextReport"] }) {
+/** The next earnings date and the consensus going into it. */
+export function NextReport({ id, report }: { id?: string; report: FinancialsData["nextReport"] }) {
   const stats = [
     { label: "Revenue est.", value: report.revenueEst },
     { label: "EPS est.", value: report.epsEst },
@@ -13,26 +15,25 @@ export function NextReport({ report }: { report: FinancialsData["nextReport"] })
         : null,
   ].filter((s) => s !== null);
   return (
-    <section
-      aria-labelledby="nx-h"
-      className="flex flex-col gap-2 rounded-[24px] bg-account px-[18px] py-[14px] text-white shadow-[0_14px_34px_-18px_rgba(17,17,19,0.5)]"
-    >
-      <div className="flex items-center justify-between gap-2.5">
-        <h2 id="nx-h" className="m-0 text-[19px] font-normal">
-          Next report
-        </h2>
-        <span className="inline-flex h-6 items-center rounded-[6px] bg-amber px-[9px] text-[12px] font-medium text-[#2A1A00]">
+    <Card
+      id={id}
+      titleId="nx-h"
+      title="Next report"
+      className="scroll-mt-6"
+      note={
+        <Chip variant="bold" color="orange">
           {report.when}
-        </span>
-      </div>
-      <dl className="m-0 grid grid-cols-3 gap-2.5">
+        </Chip>
+      }
+    >
+      <dl className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-2">
         {stats.map((s) => (
-          <div key={s.label} className="flex flex-col leading-[1.25]">
-            <dt className="text-[12px] text-[#B4B4BB]">{s.label}</dt>
-            <dd className="m-0 text-[18px]">{s.value}</dd>
+          <div key={s.label} className="flex min-w-0 flex-col gap-0.5 rounded-xl bg-background-secondary-default px-2.5 py-2">
+            <dt className="text-caption-1-regular text-text-secondary">{s.label}</dt>
+            <dd className="text-headline-medium text-text-primary">{s.value}</dd>
           </div>
         ))}
       </dl>
-    </section>
+    </Card>
   );
 }

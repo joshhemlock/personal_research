@@ -1,8 +1,7 @@
 import { ViewTransition, type ReactNode } from "react";
-import { isSample } from "@/lib/data/source";
 import type { NavKey } from "./nav";
-import { ShellFrame } from "./ShellFrame";
-import { TopBar, type HeaderQuote } from "./TopBar";
+import { DEFAULT_ASK_LABEL, DEFAULT_SYMBOL, type HeaderQuote } from "./page-state";
+import { ShellPagePublisher } from "./ShellPage";
 
 type AppShellProps = {
   /** Which navigation item is the current page, if any. */
@@ -20,18 +19,28 @@ type AppShellProps = {
 };
 
 /**
- * BoardUI's dashboard layout around every screen: the sidebar (a drawer on
- * phones), the top bar, then the screen's columns on the page ground.
+ * A screen's content inside the persistent shell. The sidebar and top bar
+ * live in the root layout (ShellFrame) and stay mounted across navigations;
+ * this hands them the screen's bits (active item, symbol, quote, ask label)
+ * and lays out the screen's columns.
+ *
+ * The columns sit in a React <ViewTransition> with no DOM node above it in
+ * the screen, so a navigation swaps screens with BoardUI's blur-out /
+ * blur-in (page-exit / page-enter in globals.css) while the shell stays put.
  */
-export function AppShell({ active, symbol = "NVDA", quote, askLabel = "Ask a research question", children }: AppShellProps) {
+export function AppShell({
+  active,
+  symbol = DEFAULT_SYMBOL,
+  quote,
+  askLabel = DEFAULT_ASK_LABEL,
+  children,
+}: AppShellProps) {
   return (
-    <ShellFrame sidebar={{ active, symbol, askLabel, live: !isSample }}>
-      <TopBar quote={quote} />
-      {/* Keyed by screen: navigating to another screen (or symbol) swaps the
-          columns with BoardUI's blur-out / blur-in (see globals.css). */}
+    <>
+      <ShellPagePublisher active={active} symbol={symbol} quote={quote} askLabel={askLabel} />
       <ViewTransition key={`${active ?? "page"}:${symbol}`} enter="page-enter" exit="page-exit" default="none">
         <div className="flex min-w-0 flex-wrap items-stretch gap-4">{children}</div>
       </ViewTransition>
-    </ShellFrame>
+    </>
   );
 }

@@ -14,19 +14,27 @@ type UpcomingEarningsProps = {
   reported: string[];
 };
 
+/** Rows condense in on first paint, 40ms apart (~240ms cap). */
+const STAGGER_MS = 40;
+const MAX_STAGGER_MS = 240;
+
 /** Next earnings dates for watchlist names, each linking to its financials. */
 export function UpcomingEarnings({ events, today, windowDays, reported }: UpcomingEarningsProps) {
   return (
     <Card titleId="er-h" title="Upcoming earnings" note={`Next ${windowDays} days`}>
       {events.length === 0 && <p className="text-body-regular text-text-secondary">No watchlist reports in this window.</p>}
       <ul className="-mx-2 flex flex-col">
-        {events.map((e) => {
+        {events.map((e, i) => {
           const days = daysBetween(today, e.date);
           return (
-            <li key={`${e.symbol}-${e.date}`}>
+            <li
+              key={`${e.symbol}-${e.date}`}
+              className="animate-enter"
+              style={{ animationDelay: `${Math.min(i * STAGGER_MS, MAX_STAGGER_MS)}ms` }}
+            >
               <Link
                 href={`/stock/${e.symbol}/financials`}
-                className="flex items-center gap-3 rounded-2xl p-2 outline-none transition-colors duration-150 ease hover:bg-background-primary-hover focus-visible:ring-2 focus-visible:ring-border-focus-ring"
+                className="flex items-center gap-3 rounded-2xl p-2 outline-none transition-colors duration-150 ease hover:bg-background-primary-hover active:bg-background-primary-active focus-visible:ring-2 focus-visible:ring-border-focus-ring"
               >
                 <span className="flex size-12 shrink-0 flex-col items-center justify-center rounded-xl bg-background-secondary-default">
                   <span className="text-caption-2-semibold text-text-secondary uppercase">{monthShort(e.date)}</span>

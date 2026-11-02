@@ -31,7 +31,7 @@ export type DashStyle = { color: string; width: number; dash: number[] };
 
 /**
  * A polyline through one value per bar, stroked with a round-capped dash
- * pattern (the design's dotted SMA: `stroke-dasharray: 2 4`, 1.4px). Built-in
+ * pattern (the dotted SMA: `stroke-dasharray: 2 4`, 1.4px). Built-in
  * line styles only offer square dots of the line width. Attach it to a series
  * on the same price scale; it hides with that series.
  */
@@ -42,7 +42,7 @@ export class DashedLine implements ISeriesPrimitive<Time> {
   private values: readonly (number | null)[] = [];
   private readonly views: readonly IPrimitivePaneView[];
 
-  constructor(private readonly style: DashStyle) {
+  constructor(private style: DashStyle) {
     const renderer: IPrimitivePaneRenderer = { draw: (target) => this.draw(target) };
     this.views = [{ renderer: () => renderer }];
   }
@@ -61,6 +61,13 @@ export class DashedLine implements ISeriesPrimitive<Time> {
 
   paneViews() {
     return this.views;
+  }
+
+  /** Recolour (the theme changed). */
+  setColor(color: string) {
+    if (color === this.style.color) return;
+    this.style = { ...this.style, color };
+    this.requestUpdate?.();
   }
 
   setValues(values: readonly (number | null)[]) {

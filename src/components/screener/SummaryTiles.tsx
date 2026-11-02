@@ -1,11 +1,12 @@
 "use client";
 
+import { AnimatedValue } from "@/components/motion/AnimatedValue";
 import { fmtCount, fmtGrowth, fmtPct1, fmtPe } from "./screen";
 import { useScreener } from "./ScreenerProvider";
 
 const DASH = "—";
 
-/** Five frosted tiles summarising the current matches. */
+/** Five stat tiles (BoardUI's plain stat-card look) summarising the current matches. */
 export function SummaryTiles() {
   const { summary: s, medianBase } = useScreener().result;
   const tiles = [
@@ -16,23 +17,24 @@ export function SummaryTiles() {
     { k: "Median ROIC", v: s.roic === null ? DASH : fmtPct1(s.roic) },
   ];
   return (
-    <section aria-label="Match summary" className="flex flex-wrap gap-[10px]">
-      {tiles.map((t) => (
-        // Below the split width the five tiles stay on one row longer: labels
-        // may wrap, and values keep to the bottom so they still line up.
-        <div
-          key={t.k}
-          className="glass-tile flex min-w-0 flex-[1_1_150px] flex-col gap-[2px] rounded-[20px] px-4 py-3 max-split:basis-[110px] max-split:justify-between"
-        >
-          <span className="text-[13px] whitespace-nowrap text-ink-3 max-split:text-balance max-split:whitespace-normal">
-            {t.k}
-          </span>
-          <span className="text-[24px] font-normal tracking-[-0.02em]">{t.v}</span>
-        </div>
-      ))}
+    <section aria-label="Match summary" className="flex flex-col gap-2">
+      <dl className="flex flex-wrap gap-3">
+        {tiles.map((t) => (
+          // Labels may wrap on narrow tiles; values keep to the bottom so they line up.
+          <div
+            key={t.k}
+            className="flex min-w-0 flex-[1_1_8.5rem] flex-col justify-between gap-0.5 rounded-2xl bg-background-secondary-default p-4"
+          >
+            <dt className="text-body-medium text-text-secondary">{t.k}</dt>
+            <dd className="text-title-1-medium whitespace-nowrap text-text-primary">
+              <AnimatedValue value={t.v} />
+            </dd>
+          </div>
+        ))}
+      </dl>
       {medianBase !== null && (
         // Live data: medians are fetched for a capped number of matches.
-        <p className="basis-full px-1 text-[12px] text-muted">
+        <p className="px-1 text-caption-1-regular text-text-tertiary">
           {`Medians are of the ${fmtCount(medianBase)} largest matches by market cap.`}
         </p>
       )}

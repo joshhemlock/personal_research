@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AppShell } from "@/components/shell/AppShell";
 import { LinkButton } from "@/components/base/buttons/link-button";
+import { Settle } from "@/components/motion/Settle";
 import { Greeting } from "@/components/overview/Greeting";
 import { IndexTiles } from "@/components/overview/IndexTiles";
 import { Movers } from "@/components/overview/Movers";
@@ -21,7 +22,9 @@ export default async function OverviewPage() {
       {/* Sized by its own width (the sidebar can collapse): the side column
           sits beside the watchlist once there is room for both. */}
       <main className="@container min-w-0 flex-1 basis-full">
-        <div className="flex flex-col gap-6">
+        {/* Entrances (sparklines drawing, bars growing, lists staggering in)
+            play once; coming back to the screen just shows it. */}
+        <Settle className="flex flex-col gap-6">
           <Greeting
             title={data.greeting}
             today={data.marketDate}
@@ -36,6 +39,7 @@ export default async function OverviewPage() {
             </div>
             <aside
               aria-label="Movers, earnings and research queue"
+              data-glide-with="watchlist"
               className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(18rem,100%),1fr))] items-start gap-4"
             >
               <Movers
@@ -52,14 +56,14 @@ export default async function OverviewPage() {
             </aside>
           </div>
           {!isSample && (
-            <p className="text-caption-1-regular text-text-tertiary">
+            <p data-glide-with="watchlist" className="text-caption-1-regular text-text-tertiary">
               Market data:{" "}
               <LinkButton href="https://www.tradingview.com/" target="_blank" rel="noreferrer" variant="secondary" size="xs">
                 TradingView
               </LinkButton>
             </p>
           )}
-        </div>
+        </Settle>
       </main>
     </AppShell>
   );

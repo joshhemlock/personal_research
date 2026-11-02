@@ -1,76 +1,124 @@
+import { LinkButton } from "@/components/base/buttons/link-button";
 import type { NoteMarket } from "@/lib/data/notes";
 import type { Note } from "@/lib/mock/notes";
 import { shortDate } from "@/lib/mock/notes";
-import { pct, tone } from "@/lib/format";
+import { pct } from "@/lib/format";
+import { cx } from "@/utils/cx";
+import { CARD, CARD_TITLE } from "./constants";
 
-const ROW = "grid grid-cols-[minmax(0,1.3fr)_1fr_1fr] gap-2";
+type SinceNoteProps = {
+  note: Note;
+  market: NoteMarket;
+  headingId: string;
+  /** Document-unique id for the chart's fill gradient. */
+  gradientId: string;
+};
 
-/** Price since the note was started, and key metrics then vs. now. */
-export function SinceNote({ note, market, headingId }: { note: Note; market: NoteMarket; headingId: string }) {
+/**
+ * Price since the note was started, and key metrics then vs. now. The line
+ * draws itself in when the note opens; later data refreshes only move it.
+ */
+export function SinceNote({ note, market, headingId, gradientId }: SinceNoteProps) {
   const { changePct: change, paths, rows, attribution } = market;
-  const t = tone(change ?? 0);
+  const up = (change ?? 0) >= 0;
+  const tone = up ? "var(--color-chart-positive)" : "var(--color-chart-negative)";
   const since = shortDate(note.started.date);
-  const trend = change == null ? "" : `, ${change >= 0 ? "up" : "down"} ${Math.abs(change).toFixed(1)} percent`;
+  const trend = change == null ? "" : `, ${up ? "up" : "down"} ${Math.abs(change).toFixed(1)} percent`;
 
   return (
-    <section aria-labelledby={headingId} className="glass flex flex-col gap-2 rounded-[24px] px-[18px] py-[14px]">
-      <div className="flex items-baseline justify-between gap-2">
-        <h2 id={headingId} className="text-[19px] font-normal">
+    <section aria-labelledby={headingId} className={cx(CARD, "flex min-w-0 flex-col gap-3 overflow-hidden pt-5")}>
+      <div className="flex items-baseline justify-between gap-3 px-5">
+        <h2 id={headingId} className={CARD_TITLE}>
           Since this note
         </h2>
-        <span className="text-[17px]" style={change == null ? undefined : { color: t.color }}>
+        <span
+          className="text-title-3-medium"
+          style={{ color: change == null ? "var(--color-text-secondary)" : up ? "var(--color-text-positive)" : "var(--color-text-negative)" }}
+        >
           {change == null ? "—" : pct(change, 1)}
         </span>
       </div>
-      {paths ? (
-        <svg
-          viewBox="0 0 300 70"
-          preserveAspectRatio="none"
-          role="img"
-          aria-label={`${note.symbol} price since ${since}${trend}`}
-          className="h-[70px] w-full"
-        >
-          <path d={paths.area} fill={t.fill} />
-          <path d={paths.line} fill="none" stroke={t.stroke} strokeWidth={1.8} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-        </svg>
-      ) : (
-        <p className="flex h-[70px] items-center justify-center rounded-[12px] bg-[rgba(17,17,19,0.035)] text-[13px] text-muted">
-          Price history unavailable
-        </p>
-      )}
-      <div role="table" aria-label="Then versus now">
-        <div role="row" className={`${ROW} py-1 text-[12px] text-muted`}>
-          <span role="columnheader">Metric</span>
-          <span role="columnheader" className="text-right">
-            {since}
-          </span>
-          <span role="columnheader" className="text-right">
-            Now
-          </span>
-        </div>
-        {rows.map((r) => (
-          <div key={r.metric} role="row" className={`${ROW} border-t border-hairline py-[5px] text-[14px]`}>
-            <span role="rowheader" className="text-ink-2">
-              {r.metric}
-            </span>
-            <span role="cell" className="text-right text-muted">
-              {r.then}
-            </span>
-            <span role="cell" className="text-right">
-              {r.now}
-            </span>
-          </div>
-        ))}
+
+      <div className="px-5">
+        {paths ? (
+          <svg
+            viewBox="0 0 300 70"
+            preserveAspectRatio="none"
+            role="img"
+            aria-label={`${note.symbol} price since ${since}${trend}`}
+            className="block h-18 w-full animate-enter"
+          >
+            <defs>
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopOpacity="0.24" style={{ stopColor: tone }} />
+                <stop offset="1" stopOpacity="0" style={{ stopColor: tone }} />
+              </linearGradient>
+            </defs>
+            <path d={paths.area} fill={`url(#${gradientId})`} />
+            <path
+              d={paths.line}
+              pathLength={1}
+              fill="none"
+              strokeWidth={1.75}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              // No non-scaling-stroke: with it Chrome measures the draw's
+              // dashes in screen space and stops short on a stretched chart.
+              // The card barely stretches the box, so the stroke stays even.
+              className="animate-draw"
+              style={{ stroke: tone }}
+            />
+          </svg>
+        ) : (
+          <p className="flex h-18 items-center justify-center rounded-xl bg-background-secondary-default text-body-2-regular text-text-secondary">
+            Price history unavailable
+          </p>
+        )}
       </div>
-      {attribution && (
-        <a
-          href={attribution.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="self-end text-[12px] text-muted hover:text-ink-2 hover:underline"
-        >
-          Data: {attribution.name}
-        </a>
+
+      <table className="bui-table bui-table-sm">
+        <caption className="sr-only">Then versus now</caption>
+        <thead>
+          <tr>
+            {/* BoardUI's cells set their own padding and start alignment:
+                the inner spans line the columns up with the card's edges. */}
+            <th scope="col">
+              <span className="block ps-2.5">Metric</span>
+            </th>
+            <th scope="col">
+              <span className="block text-end">{since}</span>
+            </th>
+            <th scope="col">
+              <span className="block pe-2.5 text-end">Now</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.metric}>
+              <td>
+                <span className="block ps-2.5 text-text-secondary">{r.metric}</span>
+              </td>
+              <td>
+                <span className="block text-end text-text-secondary">{r.then}</span>
+              </td>
+              <td>
+                <span className="block pe-2.5 text-end">{r.now}</span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {attribution ? (
+        <p className="-mt-1 px-5 pb-4 text-end text-caption-1-regular text-text-tertiary">
+          Data:{" "}
+          <LinkButton href={attribution.href} target="_blank" rel="noopener noreferrer" variant="secondary" size="xs">
+            {attribution.name}
+          </LinkButton>
+        </p>
+      ) : (
+        <span aria-hidden="true" className="-mt-3 h-2" />
       )}
     </section>
   );

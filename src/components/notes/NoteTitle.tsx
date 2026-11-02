@@ -34,7 +34,7 @@ export function NoteTitle({ id }: { id: string }) {
         setTitle(text || lastGood);
         setLastGood(text || lastGood);
       }}
-      className="rounded-[8px] text-[30px] font-normal tracking-[-0.02em] focus-visible:outline-offset-4 focus-visible:outline-[rgba(47,95,204,0.45)]"
+      className="-mx-1 rounded-lg px-1 text-title-1-medium text-text-primary outline-none transition-colors duration-150 ease hover:bg-background-primary-hover focus-visible:bg-transparent focus-visible:ring-2 focus-visible:ring-border-focus-ring/40"
     >
       {initial}
     </h1>
@@ -44,9 +44,5 @@ export function NoteTitle({ id }: { id: string }) {
 /** Last breadcrumb item: the open note's (edited) name. */
 export function BreadcrumbName() {
   const { title, symbol } = useNoteDraft();
-  return (
-    <span aria-current="page" className="text-ink">
-      {titleName(title.trim(), symbol)}
-    </span>
-  );
+  return <>{titleName(title.trim(), symbol)}</>;
 }

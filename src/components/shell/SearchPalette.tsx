@@ -147,7 +147,8 @@ type SearchPaletteProps = {
 };
 
 /**
- * ⌘K / Ctrl+K search: jump to a ticker, a screen or a note. BoardUI's command
+ * ⌘K / Ctrl+K search (the shortcut lives in SearchTrigger, which loads this
+ * module on demand): jump to a ticker, a screen or a note. BoardUI's command
  * palette with Compound's own ranking: local tickers, pages and notes, plus
  * live listings from /api/search. Arrow keys move, Enter opens, Escape clears
  * and then closes.
@@ -155,6 +156,12 @@ type SearchPaletteProps = {
 export function SearchPalette({ isOpen, onOpenChange, live }: SearchPaletteProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  // Every opening starts from an empty query, however it was opened.
+  const [wasOpen, setWasOpen] = useState(isOpen);
+  if (isOpen !== wasOpen) {
+    setWasOpen(isOpen);
+    if (isOpen) setQuery("");
+  }
   const remote = useRemoteTickers(query);
   const results = useMemo(
     () => merge(search(query), remote.query === query && query.trim() ? remote.items : []),
@@ -166,6 +173,8 @@ export function SearchPalette({ isOpen, onOpenChange, live }: SearchPaletteProps
     <CommandPalette
       isOpen={isOpen}
       onOpenChange={onOpenChange}
+      // SearchTrigger owns ⌘K, so it works before this module has loaded.
+      shortcut={false}
       aria-label="Search"
       placeholder="Search tickers, companies, notes"
       inputValue={query}

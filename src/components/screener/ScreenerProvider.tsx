@@ -1,13 +1,27 @@
 "use client";
 
-import { createContext, use, useCallback, useEffect, useMemo, useReducer, useRef, useState, type Dispatch, type ReactNode } from "react";
 import {
+  createContext,
+  use,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type RefObject,
+} from "react";
+import {
+  CAP_BUCKETS,
   DEFAULT_WATCHED,
   EMPTY_FILTERS,
   SAVED_SCREENS,
   type CapBucket,
   type LiveScreener,
   type MetricKey,
+  SECTORS,
   type SavedScreen,
   type ScreenFilters,
   type ScreenPage,
@@ -19,6 +33,7 @@ import {
   type SortKey,
   type UniverseId,
 } from "@/lib/mock/screener";
+import { transitionRows } from "./rowTransition";
 import { PAGE_SIZE, defaultDir, filtersKey, median, queryKey, runScreen, toQuery, type ColumnKey } from "./screen";
 
 export type ScreenerState = {
@@ -34,6 +49,12 @@ export type ScreenerState = {
   created: number;
   /** Threshold row just added with "Add filter"; its input takes focus. */
   lastAdded: MetricKey | null;
+  /**
+   * Bumped whenever the filters are replaced wholesale (another screen, a new
+   * one, Reset): the threshold fields keep their own text while typing and
+   * start over from the new values.
+   */
+  formVersion: number;
 };
 
 export type ScreenerAction =
@@ -41,8 +62,8 @@ export type ScreenerAction =
   | { type: "newScreen" }
   | { type: "saveScreen" }
   | { type: "universe"; value: UniverseId }
-  | { type: "toggleCap"; value: CapBucket }
-  | { type: "toggleSector"; value: Sector }
+  | { type: "caps"; value: CapBucket[] }
+  | { type: "sectors"; value: Sector[] }
   | { type: "threshold"; key: MetricKey; value: string }
   | { type: "addThreshold"; key: MetricKey }
   | { type: "removeThreshold"; key: MetricKey }
@@ -65,6 +86,7 @@ const initialState: ScreenerState = {
   hiddenColumns: [],
   created: 0,
   lastAdded: null,
+  formVersion: 0,
 };
 
 function toggle<T>(list: readonly T[], item: T): T[] {
@@ -86,7 +108,9 @@ function reduce(state: ScreenerState, action: ScreenerAction): ScreenerState {
   switch (action.type) {
     case "openScreen": {
       const s = state.screens.find((x) => x.id === action.id);
-      return s ? { ...state, activeId: s.id, filters: s.filters, sort: s.sort, page: 0 } : state;
+      return s
+        ? { ...state, activeId: s.id, filters: s.filters, sort: s.sort, page: 0, formVersion: state.formVersion + 1 }
+        : state;
     }
     case "newScreen": {
       const n = state.created + 1;
@@ -104,6 +128,7 @@ function reduce(state: ScreenerState, action: ScreenerAction): ScreenerState {
         sort: screen.sort,
         page: 0,
         created: n,
+        formVersion: state.formVersion + 1,
       };
     }
     case "saveScreen":
@@ -115,10 +140,10 @@ function reduce(state: ScreenerState, action: ScreenerAction): ScreenerState {
       };
     case "universe":
       return withFilters(state, { ...f, universe: action.value });
-    case "toggleCap":
-      return withFilters(state, { ...f, caps: toggle(f.caps, action.value) });
-    case "toggleSector":
-      return withFilters(state, { ...f, sectors: toggle(f.sectors, action.value) });
+    case "caps":
+      return withFilters(state, { ...f, caps: CAP_BUCKETS.filter((c) => action.value.includes(c)) });
+    case "sectors":
+      return withFilters(state, { ...f, sectors: SECTORS.filter((s) => action.value.includes(s)) });
     case "threshold":
       return withFilters(state, {
         ...f,
@@ -133,7 +158,7 @@ function reduce(state: ScreenerState, action: ScreenerAction): ScreenerState {
     case "removeThreshold":
       return withFilters(state, { ...f, thresholds: f.thresholds.filter((t) => t.key !== action.key) });
     case "reset":
-      return withFilters(state, EMPTY_FILTERS);
+      return { ...withFilters(state, EMPTY_FILTERS), formVersion: state.formVersion + 1 };
     case "sortBy":
       return { ...state, sort: { key: action.key, dir: defaultDir(action.key) }, page: 0 };
     case "sortColumn": {
@@ -147,6 +172,21 @@ function reduce(state: ScreenerState, action: ScreenerAction): ScreenerState {
       return { ...state, watched: toggle(state.watched, action.symbol) };
     case "toggleColumn":
       return { ...state, hiddenColumns: toggle(state.hiddenColumns, action.key) };
+  }
+}
+
+/** Sample data: whether an action changes the rows on screen (and so runs as a view transition). */
+function changesRows(action: ScreenerAction, watchlistUniverse: boolean): boolean {
+  switch (action.type) {
+    case "saveScreen":
+    case "addThreshold":
+    case "toggleColumn":
+      return false;
+    case "toggleWatch":
+      // Starring only changes the rows when the universe is the watchlist.
+      return watchlistUniverse;
+    default:
+      return true;
   }
 }
 
@@ -170,7 +210,15 @@ export type ScreenerResult = {
 
 type ScreenerContextValue = {
   state: ScreenerState;
+  /**
+   * Applies an edit. With sample data the rows follow at once, so edits that
+   * change them run inside a view transition (rowTransition.ts) and the rows
+   * glide into place. With live data the rows change when the server answers,
+   * and that update is the transition.
+   */
   dispatch: Dispatch<ScreenerAction>;
+  /** The results <table>, whose rows the view transitions animate. */
+  tableRef: RefObject<HTMLTableElement | null>;
   result: ScreenerResult;
   /** Live-data setup; null with sample data. */
   live: LiveScreener | null;
@@ -181,6 +229,22 @@ type ScreenerContextValue = {
 };
 
 const ScreenerContext = createContext<ScreenerContextValue | null>(null);
+
+type WatchContextValue = { watched: readonly string[]; toggle: (symbol: string) => void };
+
+/**
+ * The starred symbols on their own, for the table's star buttons: a star
+ * toggle then re-renders the stars, not the table around them.
+ */
+const WatchContext = createContext<WatchContextValue | null>(null);
+
+export function useWatch(): WatchContextValue {
+  const ctx = use(WatchContext);
+  if (!ctx) throw new Error("useWatch must be used inside <ScreenerProvider>");
+  return ctx;
+}
+
+const NO_WATCHED: string[] = [];
 
 export function useScreener(): ScreenerContextValue {
   const ctx = use(ScreenerContext);
@@ -202,8 +266,8 @@ const NO_RESULT: ScreenerResult = {
   failed: false,
 };
 
-/** Debounce for filter edits (typing a threshold); paging and sorting ask at once. */
-const EDIT_DELAY_MS = 400;
+/** Debounce for filter edits (chips, thresholds); paging and sorting ask at once. */
+const EDIT_DELAY_MS = 250;
 
 function resultsUrl(key: string, exporting = false): string {
   return `/screener/results?q=${encodeURIComponent(key)}${exporting ? "&export=1" : ""}`;
@@ -211,7 +275,10 @@ function resultsUrl(key: string, exporting = false): string {
 
 /** Sample data: filter, sort and page the sample universe here. */
 function useSampleResult(state: ScreenerState, enabled: boolean): { result: ScreenerResult; matches: ScreenRow[] } | null {
-  const { filters, sort, watched } = state;
+  const { filters, sort } = state;
+  // Stars only change the matches when the universe is the watchlist; elsewhere
+  // a star toggle leaves the rows (and the table) as they are.
+  const watched = filters.universe === "watchlist" ? state.watched : NO_WATCHED;
   const matches = useMemo(
     () => (enabled ? runScreen(filters, sort, watched) : null),
     [enabled, filters, sort, watched],
@@ -246,7 +313,12 @@ function useSampleResult(state: ScreenerState, enabled: boolean): { result: Scre
 }
 
 /** Live data: the server runs the screen on TradingView; ask it whenever the screen changes. */
-function useLiveResult(state: ScreenerState, dispatch: Dispatch<ScreenerAction>, live: LiveScreener | null) {
+function useLiveResult(
+  state: ScreenerState,
+  dispatch: Dispatch<ScreenerAction>,
+  live: LiveScreener | null,
+  tableRef: RefObject<HTMLTableElement | null>,
+) {
   const { filters, sort, page, watched } = state;
   const key = useMemo(() => queryKey(toQuery(filters, sort, page, watched)), [filters, sort, page, watched]);
   const [data, setData] = useState<ScreenPage | null>(live?.initial ?? null);
@@ -269,11 +341,14 @@ function useLiveResult(state: ScreenerState, dispatch: Dispatch<ScreenerAction>,
           const res = await fetch(resultsUrl(key), { signal: controller.signal });
           if (!res.ok) throw new Error(`Screener results: ${res.status}`);
           const next = (await res.json()) as ScreenPage;
-          setData(next);
-          // Unstarring rows of "My watchlist" (or a smaller result) can leave the page empty.
-          if (next.total > 0 && next.rows.length === 0 && query.page > 0) {
-            dispatch({ type: "page", page: Math.ceil(next.total / PAGE_SIZE) - 1 });
-          }
+          // The rows glide from the previous answer to this one.
+          transitionRows(tableRef.current, () => {
+            setData(next);
+            // Unstarring rows of "My watchlist" (or a smaller result) can leave the page empty.
+            if (next.total > 0 && next.rows.length === 0 && query.page > 0) {
+              dispatch({ type: "page", page: Math.ceil(next.total / PAGE_SIZE) - 1 });
+            }
+          });
         } catch {
           if (!controller.signal.aborted) setFailedKey(key);
         }
@@ -285,7 +360,7 @@ function useLiveResult(state: ScreenerState, dispatch: Dispatch<ScreenerAction>,
       controller.abort();
     };
     // `attempt` re-runs a failed request.
-  }, [live, key, shownKey, attempt, dispatch]);
+  }, [live, key, shownKey, attempt, dispatch, tableRef]);
 
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
@@ -311,9 +386,20 @@ function useLiveResult(state: ScreenerState, dispatch: Dispatch<ScreenerAction>,
 
 /** Holds the screen being edited and its results for every Screener widget. */
 export function ScreenerProvider({ children, live = null }: { children: ReactNode; live?: LiveScreener | null }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, rawDispatch] = useReducer(reducer, initialState);
+  const tableRef = useRef<HTMLTableElement>(null);
   const sample = useSampleResult(state, live === null);
-  const fromServer = useLiveResult(state, dispatch, live);
+  const fromServer = useLiveResult(state, rawDispatch, live, tableRef);
+  const watchlistUniverse = state.filters.universe === "watchlist";
+
+  const dispatch = useCallback(
+    (action: ScreenerAction) => {
+      if (live === null && changesRows(action, watchlistUniverse)) {
+        transitionRows(tableRef.current, () => rawDispatch(action));
+      } else rawDispatch(action);
+    },
+    [live, watchlistUniverse],
+  );
   const result = sample?.result ?? fromServer.result ?? NO_RESULT;
   const sampleMatches = sample?.matches;
   const liveKey = fromServer.key;
@@ -326,8 +412,16 @@ export function ScreenerProvider({ children, live = null }: { children: ReactNod
   }, [sampleMatches, liveKey]);
 
   const value = useMemo(
-    () => ({ state, dispatch, result, live, exportMatches, retry: fromServer.retry }),
-    [state, result, live, exportMatches, fromServer.retry],
+    () => ({ state, dispatch, tableRef, result, live, exportMatches, retry: fromServer.retry }),
+    [state, dispatch, result, live, exportMatches, fromServer.retry],
   );
-  return <ScreenerContext value={value}>{children}</ScreenerContext>;
+  const watch = useMemo(
+    () => ({ watched: state.watched, toggle: (symbol: string) => dispatch({ type: "toggleWatch", symbol }) }),
+    [state.watched, dispatch],
+  );
+  return (
+    <ScreenerContext value={value}>
+      <WatchContext value={watch}>{children}</WatchContext>
+    </ScreenerContext>
+  );
 }

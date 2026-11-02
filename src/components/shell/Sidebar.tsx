@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   RiBarChartBoxLine,
   RiBook2Line,
@@ -30,13 +32,10 @@ import { version } from "../../../package.json";
 import { cx } from "@/utils/cx";
 import { BrandMark } from "./Logo";
 import type { NavKey } from "./nav";
+import { pageForPath } from "./page-state";
+import { useShellPage } from "./ShellPage";
 
 export type SidebarProps = {
-  active?: NavKey;
-  /** Symbol the Chart and Financials rows open. */
-  symbol: string;
-  /** Label of the "ask" tool (scoped to the screen, e.g. "Ask about this note"). */
-  askLabel: string;
   /** Live market data (TradingView) rather than the sample set. */
   live: boolean;
   /** Inside the phone drawer: always expanded, with a close button. */
@@ -49,8 +48,19 @@ export type SidebarProps = {
 // buttons did.
 const notYet = () => {};
 
-/** BoardUI's dashboard sidebar, set up with Compound's brand, screens and tools. */
-export function Sidebar({ active, symbol, askLabel, live, mobile = false, onClose, className }: SidebarProps) {
+/**
+ * BoardUI's dashboard sidebar, set up with Compound's brand, screens and
+ * tools. It lives in the persistent shell: the active item, the symbol the
+ * Chart and Financials rows open and the ask label follow the screen on view
+ * (useShellPage). A pressed row is marked straight away, before its screen
+ * has loaded, so the selection glides the moment the row is clicked.
+ */
+export function Sidebar({ live, mobile = false, onClose, className }: SidebarProps) {
+  const { active, symbol, askLabel } = useShellPage();
+  const pathname = usePathname();
+  // The row pressed on this URL; it stops counting once the URL changes.
+  const [pressed, setPressed] = useState<{ key: NavKey | undefined; from: string } | null>(null);
+  const selected = pressed && pressed.from === pathname ? pressed.key : active;
   const items: DashboardNavItem[] = [
     { key: "overview", label: "Overview", icon: RiDashboardLine, href: "/" },
     { key: "chart", label: "Chart", icon: RiStockLine, href: `/stock/${symbol}` },
@@ -88,7 +98,10 @@ export function Sidebar({ active, symbol, askLabel, live, mobile = false, onClos
       mobile={mobile}
       onClose={onClose}
       fluid={mobile}
-      selected={active ?? ""}
+      selected={selected ?? ""}
+      onNavigate={(href) => {
+        if (href !== pathname) setPressed({ key: pageForPath(href).active, from: pathname });
+      }}
       items={items}
       quickSearch={false}
       sections={[tools]}

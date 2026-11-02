@@ -1,31 +1,31 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import { ICONS } from "@/components/ui/Icon";
-import { TickerDot } from "@/components/ui/Pill";
-import { num, pct } from "@/lib/format";
-import type { ChartData } from "@/lib/mock/chart";
-import { ChartCanvas, type ChartHandle, type ChartLine, type ChartPointer } from "./ChartCanvas";
-import { ChartStage, type StageLine } from "./ChartStage";
-import { ChartToolbar } from "./ChartToolbar";
-import { SeriesChips } from "./SeriesChips";
-import { Timeline } from "./Timeline";
-import { VolumeStrip } from "./VolumeStrip";
-import { FLUSH_BOTTOM } from "./layout";
 import {
-  designGeometry,
-  pillDate,
-  rebase,
-  shortDate,
-  sma,
-  visibleBars,
-  windowFor,
-  type BarWindow,
-  type Geometry,
-  type Timeframe,
-} from "./scale";
-import type { ChartType, Cross, DisplayPrefs, SecurityInfo, SeriesKey, Tool, Visibility } from "./types";
+  ViewTransition,
+  addTransitionType,
+  startTransition,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { CARD } from "@/components/overview/Card";
+import type { ChartData } from "@/lib/mock/chart";
+import { cx } from "@/utils/cx";
+import { ChartBody } from "./ChartBody";
+import type { ChartHandle } from "./ChartCanvas";
+import { ChartHeader } from "./ChartHeader";
+import { ChartToolbar } from "./ChartToolbar";
+import { Crosshair } from "./crosshair";
+import { STAGE_HEIGHT } from "./columns";
+import { windowFor, type Timeframe } from "./scale";
+import { SeriesChips } from "./SeriesChips";
+import type { ChartType, DisplayPrefs, SecurityInfo, SeriesKey, Tool, Visibility } from "./types";
+// The chart's own view-transition recipe (`chart-swap`).
+import "./chart.css";
 
 type ChartWorkspaceProps = {
   security: SecurityInfo;
@@ -35,23 +35,35 @@ type ChartWorkspaceProps = {
   lastTick: string;
   /** Credit TradingView for the chart and data (live data). */
   attribution?: boolean;
-  /** Rendered last, pushed to the bottom (the open-ticker tabs). */
+  /** Rendered last (the open-ticker tabs). */
   children?: ReactNode;
 };
 
-// 516px at the design's 982px-tall viewport; taller windows get a taller chart.
-const STAGE_HEIGHT = "h-[clamp(516px,calc(100vh-466px),880px)]";
+const STAGE_FULLSCREEN = "h-[max(20rem,calc(100dvh-17rem))]";
 
-/** Where the crosshair rests for a window (the design puts it 64% of the way in). */
-const restingCross = (win: BarWindow): Cross => ({ index: win.from + Math.round((win.to - win.from + 1) * 0.64), price: null });
+/** The plot cross-fades when what it shows changes (see chart.css); nothing else animates it. */
+const SWAP = { "chart-swap": "chart-swap", default: "none" };
 
 /**
- * The chart screen's main column: header, toolbar, price chart with its
- * overlays, series chips, volume, timeline. Owns the chart state.
+ * Run a chart change as a transition tagged `chart-swap`: the plot, volume and
+ * time axis cross-fade from the old picture to the new one on the compositor,
+ * while the controls that caused it update in place.
+ */
+function swap(update: () => void) {
+  startTransition(() => {
+    addTransitionType("chart-swap");
+    update();
+  });
+}
+
+/**
+ * The chart screen's main column: header, then a card with the toolbar,
+ * price chart, volume, time axis and series chips. Owns the chart settings;
+ * the plot's geometry and crosshair live further down (ChartBody, Crosshair)
+ * so pointer moves and scrolls never re-render the controls.
  */
 export function ChartWorkspace({ security, data, addNoteHref, lastTick, attribution = false, children }: ChartWorkspaceProps) {
   const { bars, compare } = data;
-  const N = bars.length;
   const { symbol } = security;
 
   const [tf, setTf] = useState<Timeframe>("6M");
@@ -60,35 +72,12 @@ export function ChartWorkspace({ security, data, addNoteHref, lastTick, attribut
   const [legend, setLegend] = useState(true);
   const [prefs, setPrefs] = useState<DisplayPrefs>({ grid: true, priceLine: true, alertLine: true });
   const [tool, setTool] = useState<Tool>("select");
-  const [watching, setWatching] = useState(security.watched);
-  const [cross, setCross] = useState<Cross>(() => restingCross(windowFor("6M", bars)));
-  /** Bar under the pointer (the OHLC readout follows it); null when away. */
-  const [hover, setHover] = useState<number | null>(null);
-  const [measured, setMeasured] = useState<Geometry | null>(null);
   const [fullscreen, setFullscreen] = useState(false);
+  const [crosshair] = useState(() => new Crosshair());
   const mainRef = useRef<HTMLElement>(null);
   const chartRef = useRef<ChartHandle>(null);
 
   const win = useMemo(() => windowFor(tf, bars), [tf, bars]);
-  const sma50 = useMemo(() => sma(bars, 50), [bars]);
-  const rebased = useMemo(() => compare.map((c) => rebase(c.values, bars, win.from)), [compare, bars, win.from]);
-  const sectorOn = show.sector;
-  const marketOn = show.market;
-  const lines = useMemo<StageLine[]>(
-    () => compare.map((c, i) => ({ ...c, rebased: rebased[i], visible: c.key === "sector" ? sectorOn : marketOn })),
-    [compare, rebased, sectorOn, marketOn],
-  );
-  const chartLines = useMemo<ChartLine[]>(
-    () => lines.map((l) => ({ key: l.key, stroke: l.stroke, width: l.width, values: l.rebased, visible: l.visible })),
-    [lines],
-  );
-  // Until the chart reports its own coordinates (and on the server), place the
-  // overlays with the same scale maths.
-  const estimate = useMemo(
-    () => designGeometry(bars, win, lines.filter((l) => l.visible).map((l) => l.rebased)),
-    [bars, win, lines],
-  );
-  const g = measured ?? estimate;
 
   useEffect(() => {
     const main = mainRef.current;
@@ -101,154 +90,72 @@ export function ChartWorkspace({ security, data, addNoteHref, lastTick, attribut
     };
   }, []);
 
-  const changeTf = (next: Timeframe) => {
-    setTf(next);
-    setCross(restingCross(windowFor(next, bars)));
-  };
-  const setVisible = (key: SeriesKey, on: boolean) => setShow((s) => ({ ...s, [key]: on }));
-  const toggle = (key: SeriesKey) => setShow((s) => ({ ...s, [key]: !s[key] }));
-
-  const onPointer = (p: ChartPointer) => {
-    if (!p) {
-      setHover(null);
-      return;
-    }
-    setHover(p.index);
-    setCross({ index: p.index, price: tool === "cross" ? p.price : null });
-  };
-
-  // Keyboard: the chart is a slider over the visible bars.
-  const { from: first, to: lastVisible } = visibleBars(g, N);
-  const onChartKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    const step = e.shiftKey ? 5 : 1;
-    const next =
-      e.key === "ArrowLeft" || e.key === "ArrowDown" ? cross.index - step
-      : e.key === "ArrowRight" || e.key === "ArrowUp" ? cross.index + step
-      : e.key === "Home" ? first
-      : e.key === "End" ? lastVisible
-      : null;
-    if (next === null) return;
-    e.preventDefault();
-    setCross({ index: Math.max(first, Math.min(lastVisible, next)), price: null });
-  };
-
-  const toggleFullscreen = () => {
+  const onTf = useCallback((next: Timeframe) => swap(() => setTf(next)), []);
+  const onType = useCallback((next: ChartType) => swap(() => setType(next)), []);
+  const onShow = useCallback((key: SeriesKey, on: boolean) => swap(() => setShow((s) => ({ ...s, [key]: on }))), []);
+  const onToggle = useCallback((key: SeriesKey) => swap(() => setShow((s) => ({ ...s, [key]: !s[key] }))), []);
+  const onLegend = useCallback((on: boolean) => swap(() => setLegend(on)), []);
+  const onPrefs = useCallback((next: DisplayPrefs) => swap(() => setPrefs(next)), []);
+  const fileName = useRef("");
+  useLayoutEffect(() => {
+    fileName.current = `${symbol}-${tf}.png`;
+  });
+  const onSnapshot = useCallback(() => chartRef.current?.snapshot(fileName.current), []);
+  const onFullscreen = useCallback(() => {
     if (document.fullscreenElement) void document.exitFullscreen();
     else void mainRef.current?.requestFullscreen();
-  };
-
-  const bar = bars[hover ?? N - 1];
-  const crossBar = bars[cross.index];
-  const overlays = lines.filter((l) => l.visible).map((l) => (l.key === "market" ? l.name : l.symbol));
-  const chartLabel =
-    `${symbol} ${type === "candles" ? "candlestick" : "line"} chart, ${tf}, ${shortDate(bars[win.from].time)} to ${shortDate(bars[N - 1].time)}` +
-    (overlays.length ? `, with ${overlays.join(" and ")} overlay${overlays.length > 1 ? "s" : ""}` : "");
-  const up = security.changePct >= 0;
+  }, []);
 
   return (
     <main
       ref={mainRef}
       aria-label={`${security.name} chart`}
-      className={`@container flex min-w-0 flex-[999_1_640px] flex-col gap-2.5 ${FLUSH_BOTTOM} ${fullscreen ? "overflow-auto bg-shell p-4" : ""}`}
+      className={cx("@container flex min-w-0 flex-col gap-4", fullscreen && "overflow-auto bg-background-full p-4")}
     >
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5">
-        <span className="glass-chip inline-flex h-[46px] items-center gap-2.5 rounded-full pr-3 pl-[5px]">
-          <TickerDot symbol={symbol} size={34} fontSize={15} />
-          <h1 className="text-[16px] font-medium">
-            {security.name} <span className="text-muted">·</span> {security.exchange}
-          </h1>
-          <span
-            className={`inline-flex h-[22px] items-center rounded-full px-2 text-[12px] font-semibold ${
-              up ? "bg-up-pill text-up-pill-text" : "bg-down-pill text-down-pill-text"
-            }`}
-          >
-            {pct(security.changePct)}
-          </span>
-        </span>
-        <Link
-          href={addNoteHref}
-          className="inline-flex h-11 items-center rounded-full bg-[#5E5E66] px-5 text-[15px] font-medium text-white transition-colors hover:bg-[#4A4A51]"
-        >
-          Add note
-        </Link>
-        <button
-          type="button"
-          aria-pressed={watching}
-          onClick={() => setWatching((w) => !w)}
-          className={`inline-flex h-11 items-center gap-2 rounded-full border px-5 text-[15px] font-medium transition-colors ${
-            watching ? "border-go bg-go text-white hover:bg-[#247650]" : "border-[rgba(17,17,19,0.1)] bg-white/80 text-ink hover:bg-white"
-          }`}
-        >
-          <svg width="17" height="17" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" fill={watching ? "#FFFFFF" : "none"} aria-hidden="true">
-            <path d={ICONS.star} />
-          </svg>
-          {watching ? "Watching" : "Watch"}
-        </button>
-        <span className="pl-1 text-[15px] text-ink-2 [word-spacing:2px]">
-          O {num(bar.o)} H {num(bar.h)} L {num(bar.l)} C {num(bar.c)}
-        </span>
-      </div>
+      <ChartHeader security={security} latest={bars[bars.length - 1]} addNoteHref={addNoteHref} crosshair={crosshair} />
 
-      <ChartToolbar
-        tf={tf}
-        onTf={changeTf}
-        type={type}
-        onType={setType}
-        compare={compare}
-        show={show}
-        onShow={setVisible}
-        legend={legend}
-        onLegend={setLegend}
-        prefs={prefs}
-        onPrefs={setPrefs}
-        onSnapshot={() => chartRef.current?.snapshot(`${symbol}-${tf}.png`)}
-        fullscreen={fullscreen}
-        onFullscreen={toggleFullscreen}
-      />
-
-      <ChartStage
-        symbol={symbol}
-        bars={bars}
-        geometry={g}
-        cross={cross}
-        lines={lines}
-        smaVisible={show.sma}
-        smaLast={sma50[N - 1]}
-        alertLevel={data.alertLevel}
-        legend={legend}
-        prefs={prefs}
-        tool={tool}
-        onTool={setTool}
-        onToggle={toggle}
-        className={fullscreen ? "min-h-[360px] flex-1" : STAGE_HEIGHT}
-      >
-        <ChartCanvas
-          bars={bars}
-          sma={sma50}
-          smaVisible={show.sma}
-          lines={chartLines}
-          window={win}
-          candles={type === "candles"}
-          onGeometry={setMeasured}
-          onPointer={onPointer}
-          handleRef={chartRef}
-          className={tool === "select" ? "cursor-default" : "cursor-crosshair"}
-          hostProps={{
-            role: "slider",
-            tabIndex: 0,
-            "aria-label": chartLabel,
-            "aria-valuemin": first,
-            "aria-valuemax": lastVisible,
-            "aria-valuenow": cross.index,
-            "aria-valuetext": `${pillDate(crossBar.time)}: open ${num(crossBar.o)}, high ${num(crossBar.h)}, low ${num(crossBar.l)}, close ${num(crossBar.c)}`,
-            onKeyDown: onChartKey,
-          }}
+      <section aria-label="Price chart" className={cx(CARD, "flex min-w-0 flex-col gap-4 p-4 @min-[40rem]:p-5")}>
+        <ChartToolbar
+          tf={tf}
+          onTf={onTf}
+          type={type}
+          onType={onType}
+          compare={compare}
+          show={show}
+          onShow={onShow}
+          legend={legend}
+          onLegend={onLegend}
+          prefs={prefs}
+          onPrefs={onPrefs}
+          onSnapshot={onSnapshot}
+          fullscreen={fullscreen}
+          onFullscreen={onFullscreen}
         />
-      </ChartStage>
+        <ViewTransition update={SWAP} default="none">
+          <ChartBody
+            symbol={symbol}
+            bars={bars}
+            compare={compare}
+            events={data.events}
+            alertLevel={data.alertLevel}
+            dayUp={security.changePct >= 0}
+            tf={tf}
+            win={win}
+            type={type}
+            show={show}
+            legend={legend}
+            prefs={prefs}
+            tool={tool}
+            onTool={setTool}
+            onToggle={onToggle}
+            crosshair={crosshair}
+            chartRef={chartRef}
+            stageClassName={fullscreen ? STAGE_FULLSCREEN : STAGE_HEIGHT}
+          />
+        </ViewTransition>
+        <SeriesChips symbol={symbol} compare={compare} show={show} onToggle={onToggle} lastTick={lastTick} attribution={attribution} />
+      </section>
 
-      <SeriesChips symbol={symbol} compare={compare} show={show} onToggle={toggle} lastTick={lastTick} attribution={attribution} />
-      {show.volume ? <VolumeStrip bars={bars} geometry={g} crossIndex={cross.index} /> : null}
-      <Timeline bars={bars} geometry={g} crossIndex={cross.index} events={data.events} />
       {fullscreen ? null : children}
     </main>
   );

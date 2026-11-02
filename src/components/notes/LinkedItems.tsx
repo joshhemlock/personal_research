@@ -1,33 +1,39 @@
 import Link from "next/link";
 import type { LinkedItem } from "@/lib/mock/notes";
-import { Icon } from "@/components/ui/Icon";
-import { LINK_ICONS } from "./constants";
+import { cx } from "@/utils/cx";
+import { CARD, CARD_TITLE, LINK_ICONS } from "./constants";
 
 /** Transcripts, statements, screens and notes this note refers to. */
 export function LinkedItems({ items, headingId }: { items: LinkedItem[]; headingId: string }) {
   return (
-    <section aria-labelledby={headingId} className="glass rounded-[24px] px-[18px] pt-[14px] pb-2">
-      <h2 id={headingId} className="mb-1 text-[19px] font-normal">
+    <section aria-labelledby={headingId} className={cx(CARD, "flex min-w-0 flex-col gap-2 p-5 pb-3")}>
+      <h2 id={headingId} className={CARD_TITLE}>
         Linked
       </h2>
-      <ul>
-        {items.map((l) => (
-          <li key={l.href + l.title}>
-            {/* 42px rows plus the 1px top border (content-box in the design). */}
-            <Link
-              href={l.href}
-              className="group flex min-h-[43px] items-center gap-[10px] border-t border-hairline text-ink"
-            >
-              <span className="inline-flex size-[30px] flex-none items-center justify-center rounded-[9px] bg-track text-ink-2 transition-colors duration-150 group-hover:bg-[rgba(17,17,19,0.08)]">
-                <Icon d={LINK_ICONS[l.kind]} size={16} strokeWidth={1.7} linejoin="round" />
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col leading-[1.25]">
-                <span className="text-[14px] group-hover:text-focus">{l.title}</span>
-                <span className="text-[12px] text-muted">{l.meta}</span>
-              </span>
-            </Link>
-          </li>
-        ))}
+      <ul className="-mx-2 flex flex-col">
+        {items.map((l) => {
+          const Icon = LINK_ICONS[l.kind];
+          return (
+            <li key={l.href + l.title}>
+              <Link
+                href={l.href}
+                className={cx(
+                  "flex items-center gap-3 rounded-2xl p-2 outline-none",
+                  "transition-colors duration-150 ease hover:bg-background-primary-hover active:bg-background-primary-active",
+                  "focus-visible:ring-2 focus-visible:ring-border-focus-ring",
+                )}
+              >
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-background-secondary-default">
+                  <Icon aria-hidden className="size-4.5 text-foreground-icon-secondary" />
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate text-body-medium text-text-primary">{l.title}</span>
+                  <span className="truncate text-body-2-regular text-text-secondary">{l.meta}</span>
+                </span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );

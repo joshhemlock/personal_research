@@ -3,11 +3,14 @@
 import { useTemplateCopy } from "@/components/foundations/template-copy/template-copy";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type ComponentType,
+  type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from "react";
 import {
@@ -26,14 +29,27 @@ import {
   RiSideBarFill,
   RiUserSmileLine,
 } from "@remixicon/react";
-import { SettingsModal } from "@/components/application/settings/settings-modal";
 import { ThemeToggle } from "@/components/application/theme/theme-toggle";
 import { Badge } from "@/components/base/badges/badge";
 import { CloseButton } from "@/components/base/buttons/close-button";
 import { Kbd } from "@/components/base/kbd/kbd";
 import { cx } from "@/utils/cx";
 import { DashboardTeamMenu } from "./dashboard-team-menu";
-import { DashboardUserMenu } from "./dashboard-user-menu";
+
+// Only the default regions use these; an app that brings its own header and
+// secondary rows never loads them.
+const SettingsModal = dynamic(
+  () => import("@/components/application/settings/settings-modal").then((m) => m.SettingsModal),
+  { ssr: false },
+);
+const DashboardUserMenu = dynamic(() => import("./dashboard-user-menu").then((m) => m.DashboardUserMenu));
+
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+/** A plain primary click: one that navigates in this tab. */
+function isPlainClick(event: ReactMouseEvent) {
+  return event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+}
 
 /**
  * Figma sources:
@@ -92,6 +108,9 @@ function NavItem({
   collapsed = false,
   href,
   onClick,
+  navKey,
+  glide = false,
+  onNavigate,
 }: {
   icon: IconComponent;
   label: string;
@@ -102,28 +121,38 @@ function NavItem({
   href?: string;
   /** Action rows (e.g. Settings → modal) are buttons instead of links. */
   onClick?: () => void;
+  /** The row's key, for the selection indicator to find it. */
+  navKey?: string;
+  /** The rail's gliding indicator draws the selected fill instead of the row. */
+  glide?: boolean;
+  /** Told when the row's link is followed in this tab. */
+  onNavigate?: (href: string) => void;
 }) {
   const localize = useTemplateCopy();
   const className = cx(
-    "flex items-center justify-between overflow-hidden rounded-2lg p-2 text-start",
+    "relative flex items-center justify-between overflow-hidden rounded-2lg p-2 text-start",
     "transition-[width,background-color] duration-300 ease-in-out",
     "outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring",
     collapsed ? "w-9" : "w-full",
     isSelected
-      ? "bg-linear-to-b from-accent-500 to-accent-600 shadow-nav-selected"
-      : "hover:bg-background-secondary-hover",
+      ? !glide && "bg-linear-to-b from-accent-500 to-accent-600 shadow-nav-selected"
+      : // Hover and press follow the pointer at the 150ms colour step.
+        "hover:bg-background-secondary-hover hover:duration-150 active:bg-background-tertiary-hover active:duration-150",
   );
+  // Label and glyph whiten on the indicator's clock, so they arrive with it.
+  const tint = "transition-colors duration-300 ease-board";
   const content = (
     <>
       <span className="flex min-w-0 items-center gap-2">
         <Icon
-          className={cx("size-5 shrink-0", isSelected ? "text-white" : "text-foreground-icon-secondary")}
+          className={cx("size-5 shrink-0", tint, isSelected ? "text-white" : "text-foreground-icon-secondary")}
           aria-hidden
         />
         <Collapsible collapsed={collapsed}>
           <span
             className={cx(
               "text-body-medium whitespace-nowrap",
+              tint,
               isSelected ? "text-white" : "text-text-secondary",
             )}
           >
@@ -141,6 +170,10 @@ function NavItem({
         aria-current={isSelected ? "page" : undefined}
         aria-label={label}
         title={collapsed ? label : undefined}
+        data-nav-key={navKey}
+        onClick={(event) => {
+          if (isPlainClick(event)) onNavigate?.(href);
+        }}
         className={className}
       >
         {content}
@@ -151,6 +184,7 @@ function NavItem({
         onClick={onClick}
         aria-label={label}
         title={collapsed ? label : undefined}
+        data-nav-key={navKey}
         className={cx("cursor-pointer", className)}
       >
         {content}
@@ -181,6 +215,17 @@ export interface DashboardSidebarSlotState {
   collapsed: boolean;
 }
 
+/** Where the selection indicator sits in the primary nav. */
+type Glide = {
+  /** Offset of the selected row in the nav, px. */
+  top: number;
+  height: number;
+  /** A primary row is selected (otherwise the indicator fades out in place). */
+  shown: boolean;
+  /** Glide to the new row; false places it without travel (first paint, reflow, reappearing). */
+  move: boolean;
+};
+
 /** Kept as a name for callers that typed their `selected` prop; any key works. */
 export type DashboardNavKey = string;
 
@@ -209,6 +254,8 @@ function NavRows({
   selected,
   collapsed,
   secondaryMatch,
+  glide,
+  onNavigate,
 }: {
   items: DashboardNavItem[];
   query: string;
@@ -216,6 +263,8 @@ function NavRows({
   collapsed: boolean;
   /** Whether Support or Settings matches, so "No results" only shows when nothing does. */
   secondaryMatch: boolean;
+  glide: boolean;
+  onNavigate?: (href: string) => void;
 }) {
   const localize = useTemplateCopy();
   const shown = items.filter((item) => item.label.toLocaleLowerCase().includes(query));
@@ -227,12 +276,15 @@ function NavRows({
       return (
         <NavItem
           key={item.key}
+          navKey={item.key}
           icon={item.icon}
           label={item.label}
           href={item.href}
           onClick={item.onPress}
           isSelected={isSelected}
           collapsed={collapsed}
+          glide={glide}
+          onNavigate={onNavigate}
           badge={
             item.badge !== undefined ? (
               <Badge color={isSelected ? "primary" : "neutral"}>{item.badge}</Badge>
@@ -257,6 +309,7 @@ export function DashboardSidebar({
   secondaryItems,
   footer,
   navLabel = "Main",
+  onNavigate,
   className,
 }: {
   /** Rendered inside the mobile drawer: always expanded, close button instead of collapse. */
@@ -288,6 +341,8 @@ export function DashboardSidebar({
   footer?: (state: DashboardSidebarSlotState) => ReactNode;
   /** Accessible name of the primary navigation. */
   navLabel?: string;
+  /** Told when a primary or section row's link is followed, before the next screen has loaded. */
+  onNavigate?: (href: string) => void;
   className?: string;
 } = {}) {
   const localize = useTemplateCopy();
@@ -299,6 +354,8 @@ export function DashboardSidebar({
   const searchTriggerRef = useRef<HTMLButtonElement>(null);
   const searchFieldRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const [glide, setGlide] = useState<Glide | null>(null);
   const collapsed = mobile ? false : collapsedState;
   const normalizedQuery = query.trim().toLocaleLowerCase();
   const matches = (label: string) => label.toLocaleLowerCase().includes(normalizedQuery);
@@ -323,6 +380,29 @@ export function DashboardSidebar({
       window.requestAnimationFrame(() => searchTriggerRef.current?.focus());
     }
   };
+
+  // The selected fill is one indicator that glides between rows (transform
+  // only) rather than a background jumping from row to row. Until it has
+  // been placed (first paint, before hydration) the selected row draws its
+  // own fill, so the selection never flashes.
+  const rowKeys = items.map((item) => item.key).join(" ");
+  useIsomorphicLayoutEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const place = (animate: boolean) => {
+      const row = selected ? nav.querySelector<HTMLElement>(`[data-nav-key="${CSS.escape(selected)}"]`) : null;
+      setGlide((prev) => {
+        if (!row) return prev && prev.shown ? { ...prev, shown: false, move: false } : prev;
+        const next = { top: row.offsetTop, height: row.offsetHeight, shown: true, move: animate && !!prev?.shown };
+        return prev && prev.shown && prev.top === next.top && prev.height === next.height ? prev : next;
+      });
+    };
+    place(true);
+    // Rows can reflow (fonts, a filtered list): follow without gliding.
+    const observer = new ResizeObserver(() => place(false));
+    observer.observe(nav);
+    return () => observer.disconnect();
+  }, [selected, rowKeys, normalizedQuery]);
 
   useEffect(() => {
     if (!searchActive) return;
@@ -570,13 +650,34 @@ export function DashboardSidebar({
               collapsed column is exactly as wide as a 36px item, so padding
               here pushes every item 2px right and the rail's own clip shaves
               that much off its selected fill and hover state. */}
-          <nav aria-label={navLabel} className={cx("flex w-full flex-col gap-1", !collapsed && "px-0.5")}>
+          <nav
+            ref={navRef}
+            aria-label={navLabel}
+            className={cx("relative flex w-full flex-col gap-1", !collapsed && "px-0.5")}
+          >
+            {glide && (
+              <span
+                aria-hidden
+                className={cx(
+                  "pointer-events-none absolute top-0 rounded-2lg bg-linear-to-b from-accent-500 to-accent-600 shadow-nav-selected",
+                  // Width and inset follow the rows' own collapse morph.
+                  glide.move
+                    ? "transition-[translate,opacity,width] duration-300 ease-board"
+                    : "transition-[opacity,width] duration-300 ease-in-out",
+                  collapsed ? "start-0 w-9" : "start-0.5 w-[calc(100%-4px)]",
+                  glide.shown ? "opacity-100" : "opacity-0",
+                )}
+                style={{ translate: `0 ${glide.top}px`, height: glide.height }}
+              />
+            )}
             <NavRows
               items={items}
               query={normalizedQuery}
               selected={selected}
               collapsed={collapsed}
               secondaryMatch={secondaryMatch}
+              glide={glide?.shown ?? false}
+              onNavigate={onNavigate}
             />
           </nav>
 
@@ -606,6 +707,7 @@ export function DashboardSidebar({
                     onClick={item.onPress}
                     isSelected={selected === item.key}
                     collapsed={collapsed}
+                    onNavigate={onNavigate}
                   />
                 ))}
               </div>

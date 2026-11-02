@@ -1,34 +1,44 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { Icon } from "@/components/ui/Icon";
-import { NOTE_ICONS, RICH_TEXT_SELECTOR } from "./constants";
+import { useEffect, useRef, useState, type ComponentType, type KeyboardEvent } from "react";
+import { Focusable } from "react-aria-components";
+import { RiBold, RiItalic, RiLineChartLine, RiLinkM, RiListUnordered, RiShareForwardLine } from "@remixicon/react";
+import { IconButton } from "@/components/base/buttons/icon-button";
+import { Tooltip, TooltipTrigger } from "@/components/base/tooltip/tooltip";
+import { EDITOR_ATTR, RICH_TEXT_SELECTOR } from "./constants";
 
 type Toggle = "bold" | "italic" | "list";
 type Action = Toggle | "link" | "chart" | "share";
 
-const BUTTONS: { action: Action; label: string; d: string }[] = [
-  { action: "bold", label: "Bold", d: NOTE_ICONS.bold },
-  { action: "italic", label: "Italic", d: NOTE_ICONS.italic },
-  { action: "list", label: "Bulleted list", d: NOTE_ICONS.list },
-  { action: "link", label: "Link", d: NOTE_ICONS.link },
-  { action: "chart", label: "Embed chart", d: NOTE_ICONS.chart },
-  { action: "share", label: "Share", d: NOTE_ICONS.share },
+type IconComponent = ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>;
+
+const BUTTONS: { action: Action; label: string; icon: IconComponent }[] = [
+  { action: "bold", label: "Bold", icon: RiBold },
+  { action: "italic", label: "Italic", icon: RiItalic },
+  { action: "list", label: "Bulleted list", icon: RiListUnordered },
+  { action: "link", label: "Link", icon: RiLinkM },
+  { action: "chart", label: "Embed chart", icon: RiLineChartLine },
+  { action: "share", label: "Share", icon: RiShareForwardLine },
 ];
 
 const COMMANDS: Record<Toggle, string> = { bold: "bold", italic: "italic", list: "insertUnorderedList" };
 const NONE: Record<Toggle, boolean> = { bold: false, italic: false, list: false };
 const isToggle = (a: Action): a is Toggle => a in COMMANDS;
 
+/** A toggle that is on: BoardUI's selected tint, one step stronger border. */
+const PRESSED =
+  "aria-pressed:border-border-button-active aria-pressed:bg-pill-tab-blue-selected-background aria-pressed:text-button-ghost-foreground";
+
 /** What "Embed chart" inserts: the price since the note as a small figure. */
 export type ChartEmbed = {
   /** e.g. "NVDA since Aug 12 · +15.0%" */
   caption: string;
   href: string;
+  /** Line and area paths in a 300×70 box. */
   line: string;
   area: string;
-  stroke: string;
-  fill: string;
+  /** Gain or loss colours. */
+  up: boolean;
 };
 
 function esc(s: string): string {
@@ -90,22 +100,60 @@ function safeHref(raw: string | null): string | null {
   }
 }
 
+/**
+ * The embedded chart: BoardUI tokens throughout (the classes are written out
+ * here so Tailwind generates them). Its entrance runs once, from script
+ * (embedIn), so it never replays when the page is shown again.
+ */
 function chartHtml(c: ChartEmbed): string {
+  const tone = c.up ? "var(--color-chart-positive)" : "var(--color-chart-negative)";
   return (
-    `<figure contenteditable="false" data-embed="chart" class="my-2 flex flex-col gap-1 rounded-[14px] bg-[rgba(17,17,19,0.04)] px-3 py-[10px]">` +
-    `<svg viewBox="0 0 300 70" preserveAspectRatio="none" role="img" aria-label="${esc(c.caption)}" class="h-[56px] w-full">` +
-    `<path d="${esc(c.area)}" fill="${esc(c.fill)}"></path>` +
-    `<path d="${esc(c.line)}" fill="none" stroke="${esc(c.stroke)}" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>` +
+    `<figure contenteditable="false" data-embed="chart" class="my-2 flex flex-col gap-1.5 rounded-2xl border border-border-button-default bg-background-secondary-default px-3 py-2.5">` +
+    `<svg viewBox="0 0 300 70" preserveAspectRatio="none" role="img" aria-label="${esc(c.caption)}" class="block h-14 w-full">` +
+    `<path d="${esc(c.area)}" style="fill: color-mix(in srgb, ${tone} 14%, transparent)"></path>` +
+    `<path d="${esc(c.line)}" fill="none" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" style="stroke: ${tone}"></path>` +
     `</svg>` +
-    `<figcaption class="text-[12px] leading-[1.4] text-muted">${esc(c.caption)} · <a href="${esc(c.href)}">Open chart</a></figcaption>` +
+    `<figcaption class="text-caption-1-regular text-text-secondary">${esc(c.caption)} · <a href="${esc(c.href)}">Open chart</a></figcaption>` +
     `</figure><p><br></p>`
   );
+}
+
+const EASE_BOARD = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+/**
+ * Plays the entrance of charts just embedded in `root`: the figure condenses
+ * in (BoardUI's enter) while the chart is revealed from its start, as if
+ * drawn (a clip, since a dash draw stops short on a stretched chart).
+ * Skipped under reduced motion.
+ */
+function embedIn(root: Element) {
+  const figures = root.querySelectorAll<HTMLElement>('[data-embed="chart"]:not([data-shown])');
+  const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  for (const fig of figures) {
+    fig.setAttribute("data-shown", "");
+    if (still) continue;
+    fig.animate(
+      [
+        { opacity: 0, transform: "scale(0.985)", filter: "blur(2px)" },
+        { opacity: 1, transform: "none", filter: "none" },
+      ],
+      { duration: 360, easing: EASE_BOARD },
+    );
+    fig.querySelector("svg")?.animate([{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)" }], {
+      duration: 600,
+      easing: EASE_BOARD,
+    });
+  }
 }
 
 /**
  * Formatting toolbar of the note editor. Acts on the selection inside the
  * contentEditable body regions (marked with data-rich-text) through
  * document.execCommand, so edits stay on the browser's undo stack.
+ *
+ * BoardUI icon buttons, each named by a tooltip; the toggles report their
+ * state with aria-pressed. Short confirmations ("Link copied") show in the
+ * tooltip of the button that caused them, and in a live region.
  */
 export function FormatToolbar({ chart }: { chart: ChartEmbed | null }) {
   const saved = useRef<Range | null>(null);
@@ -114,14 +162,15 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed | null }) {
   const timer = useRef<number | undefined>(undefined);
   const [pressed, setPressed] = useState(NONE);
   const [focusIndex, setFocusIndex] = useState(0);
-  const [status, setStatus] = useState("");
+  const [hovered, setHovered] = useState<Action | null>(null);
+  const [flash, setFlash] = useState<{ action: Action; message: string } | null>(null);
   /** The editor this toolbar belongs to. */
-  const editor = (): Element => toolbar.current?.closest("main") ?? document.body;
+  const editor = (): Element => toolbar.current?.closest(`[${EDITOR_ATTR}]`) ?? document.body;
 
   useEffect(() => {
     document.execCommand("defaultParagraphSeparator", false, "p");
     const onSelection = () => {
-      const range = bodyRange(toolbar.current?.closest("main") ?? document.body);
+      const range = bodyRange(toolbar.current?.closest(`[${EDITOR_ATTR}]`) ?? document.body);
       if (range) {
         saved.current = range.cloneRange();
         const next = {
@@ -139,14 +188,15 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed | null }) {
       // Also runs when the page is hidden on navigation: drop transient UI.
       document.removeEventListener("selectionchange", onSelection);
       window.clearTimeout(timer.current);
-      setStatus("");
+      setFlash(null);
+      setHovered(null);
     };
   }, []);
 
-  const flash = (message: string) => {
-    setStatus(message);
+  const notify = (action: Action, message: string) => {
+    setFlash({ action, message });
     window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setStatus(""), 2400);
+    timer.current = window.setTimeout(() => setFlash(null), 2400);
   };
 
   const toggleLink = () => {
@@ -180,7 +230,7 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed | null }) {
     const url = window.location.href;
     try {
       await navigator.clipboard.writeText(url);
-      flash("Link to this note copied");
+      notify("share", "Link to this note copied");
     } catch {
       window.prompt("Copy the link to this note", url);
     }
@@ -192,9 +242,14 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed | null }) {
     } else if (action === "link") {
       toggleLink();
     } else if (restoreSelection(editor(), saved.current)) {
-      if (action !== "chart") document.execCommand(COMMANDS[action]);
-      else if (chart) document.execCommand("insertHTML", false, chartHtml(chart));
-      else flash("No price history to embed right now");
+      if (action !== "chart") {
+        document.execCommand(COMMANDS[action]);
+      } else if (chart) {
+        document.execCommand("insertHTML", false, chartHtml(chart));
+        embedIn(editor());
+      } else {
+        notify("chart", "No price history to embed right now");
+      }
     }
   };
 
@@ -214,47 +269,51 @@ export function FormatToolbar({ chart }: { chart: ChartEmbed | null }) {
   };
 
   return (
-    <div className="relative">
+    <>
       <div
         ref={toolbar}
         role="toolbar"
         aria-label="Formatting"
         onKeyDown={onKeyDown}
-        className="flex gap-[2px] rounded-full bg-track p-[3px]"
+        className="flex shrink-0 items-center gap-1"
       >
         {BUTTONS.map((b, i) => {
+          const message = flash?.action === b.action ? flash.message : null;
           return (
-            <button
-              key={b.action}
-              ref={(el) => {
-                buttons.current[i] = el;
-              }}
-              type="button"
-              aria-label={b.label}
-              title={b.label}
-              aria-pressed={isToggle(b.action) ? pressed[b.action] : undefined}
-              tabIndex={i === focusIndex ? 0 : -1}
-              onFocus={() => setFocusIndex(i)}
-              // Keep the caret and selection in the note while clicking.
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => run(b.action)}
-              className="inline-flex h-[34px] w-9 items-center justify-center rounded-full text-ink-2 transition-[background-color,color,box-shadow] duration-150 hover:bg-white/70 hover:text-ink aria-pressed:bg-white aria-pressed:text-ink aria-pressed:shadow-seg"
-            >
-              <Icon d={b.d} size={17} strokeWidth={1.8} linejoin="round" />
-            </button>
+            <span key={b.action} className="contents">
+              {/* The toggles, then the actions. */}
+              {i === 3 && <span aria-hidden="true" className="mx-1 h-5 w-px bg-separator-border" />}
+              <TooltipTrigger
+                delay={300}
+                isOpen={message != null || hovered === b.action}
+                onOpenChange={(open) => setHovered((h) => (open ? b.action : h === b.action ? null : h))}
+              >
+                <Focusable>
+                  <IconButton
+                    ref={(el) => {
+                      buttons.current[i] = el;
+                    }}
+                    size="small"
+                    icon={b.icon}
+                    aria-label={b.label}
+                    aria-pressed={isToggle(b.action) ? pressed[b.action] : undefined}
+                    tabIndex={i === focusIndex ? 0 : -1}
+                    onFocus={() => setFocusIndex(i)}
+                    // Keep the caret and selection in the note while clicking.
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => run(b.action)}
+                    className={PRESSED}
+                  />
+                </Focusable>
+                <Tooltip>{message ?? b.label}</Tooltip>
+              </TooltipTrigger>
+            </span>
           );
         })}
       </div>
-      <p
-        role="status"
-        className={
-          status
-            ? "absolute top-[calc(100%+6px)] right-0 z-10 rounded-full bg-ink px-3 py-[5px] text-[12px] whitespace-nowrap text-white shadow-[0_8px_20px_-8px_rgba(17,17,19,0.4)]"
-            : "sr-only"
-        }
-      >
-        {status}
+      <p role="status" className="sr-only">
+        {flash?.message ?? ""}
       </p>
-    </div>
+    </>
   );
 }

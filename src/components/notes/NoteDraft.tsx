@@ -3,7 +3,7 @@
 import { createContext, use, useMemo, useState, type ReactNode } from "react";
 import type { Conviction } from "@/lib/mock/notes";
 
-type NoteDraft = {
+export type NoteDraft = {
   noteId: string;
   symbol: string;
   /** Full title as edited, e.g. "NVDA — Core thesis". */
@@ -46,6 +46,11 @@ export function useNoteDraft(): NoteDraft {
   const draft = use(DraftContext);
   if (!draft) throw new Error("useNoteDraft must be used inside <NoteDraftProvider>");
   return draft;
+}
+
+/** The open note's draft, or null outside a note (the loading state's notes list). */
+export function useOptionalNoteDraft(): NoteDraft | null {
+  return use(DraftContext);
 }
 
 /** "NVDA — Core thesis" → "Core thesis" (the breadcrumb leaf). */

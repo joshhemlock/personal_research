@@ -1,22 +1,35 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { Focusable } from "react-aria-components";
+import { RiAddLine } from "@remixicon/react";
+import { IconButton } from "@/components/base/buttons/icon-button";
+import { Tooltip, TooltipTrigger } from "@/components/base/tooltip/tooltip";
+
+type OpenPaletteButtonProps = {
+  label: string;
+  size?: "small" | "medium";
+  className?: string;
+};
 
 /**
- * Opens the ⌘K command palette (to jump to another ticker) by sending the
- * shortcut the search pill listens for.
+ * A plus icon button (usable from server components) that opens the ⌘K command palette (to jump to another
+ * ticker) by sending the shortcut the palette listens for.
  */
-export function OpenPaletteButton({ label, className, children }: { label: string; className: string; children: ReactNode }) {
+export function OpenPaletteButton({ label, size = "small", className }: OpenPaletteButtonProps) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      aria-haspopup="dialog"
-      aria-keyshortcuts="Meta+K Control+K"
-      onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, ctrlKey: true }))}
-      className={className}
-    >
-      {children}
-    </button>
+    <TooltipTrigger>
+      <Focusable>
+        <IconButton
+          size={size}
+          icon={RiAddLine}
+          aria-label={label}
+          aria-haspopup="dialog"
+          aria-keyshortcuts="Meta+K Control+K"
+          onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, ctrlKey: true }))}
+          className={className}
+        />
+      </Focusable>
+      <Tooltip>{label}</Tooltip>
+    </TooltipTrigger>
   );
 }

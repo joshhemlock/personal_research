@@ -1,0 +1,47 @@
+/*
+ * The price chart's swap: changing the range, chart type, a series or a
+ * display option runs as a React transition tagged `chart-swap`, and the
+ * plot, volume and time axis cross-fade from the old picture to the new one
+ * (see ChartWorkspace). Both images ride the compositor; nothing is laid out
+ * per frame.
+ *
+ * A true cross-fade: the two images share one duration and easing, so their
+ * opacities always sum to 1, and plus-lighter blending keeps pixels that did
+ * not change (grid, labels, candles both pictures share) solid throughout.
+ * What changed blurs out as the new picture condenses in (2px, BoardUI's
+ * entrance blur).
+ */
+::view-transition-group(.chart-swap) {
+  animation-duration: 260ms;
+  animation-timing-function: var(--ease-board);
+}
+::view-transition-image-pair(.chart-swap) {
+  isolation: isolate;
+}
+::view-transition-old(.chart-swap) {
+  animation: chart-swap-out 260ms var(--ease-board) both;
+  mix-blend-mode: plus-lighter;
+}
+::view-transition-new(.chart-swap) {
+  animation: chart-swap-in 260ms var(--ease-board) both;
+  mix-blend-mode: plus-lighter;
+}
+@keyframes chart-swap-out {
+  to {
+    opacity: 0;
+    filter: blur(2px);
+  }
+}
+@keyframes chart-swap-in {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(.chart-swap),
+  ::view-transition-old(.chart-swap),
+  ::view-transition-new(.chart-swap) {
+    animation: none;
+  }
+}

@@ -1,65 +1,78 @@
 import Link from "next/link";
-import { Icon } from "@/components/ui/Icon";
-import { TickerDot } from "@/components/ui/Pill";
-import { num, signed, pct } from "@/lib/format";
-import { CHART_ICONS } from "./icons";
+import { RiArrowRightUpLine, RiBarChartBoxLine, RiEdit2Line, RiFileTextLine } from "@remixicon/react";
+import { Avatar } from "@/components/base/avatar/avatar";
+import { Chip } from "@/components/base/badges/chip";
+import { ButtonLink } from "@/components/base/buttons/button";
+import { CARD, CARD_TITLE } from "@/components/overview/Card";
+import { AnimatedValue } from "@/components/motion/AnimatedValue";
+import { deltaColor } from "@/components/shell/delta";
+import { num, pct, signed } from "@/lib/format";
+import { cx } from "@/utils/cx";
 import type { TickerCardData } from "./types";
-
-const ICON_LINK =
-  "inline-flex size-9 items-center justify-center rounded-[10px] transition-colors hover:bg-[rgba(17,17,19,0.05)] hover:text-ink";
-
-const tone = (v: number) => (v < 0 ? "text-down-text" : "text-up-text");
 
 /** Price card for the open symbol with the user's base-case fair value. */
 export function TickerCard({ card }: { card: TickerCardData }) {
   const note = card.noteHref;
+  const actions = [
+    { href: `/stock/${card.symbol}/financials`, label: "Open financials", icon: RiBarChartBoxLine },
+    { href: note, label: "Open research note", icon: RiFileTextLine },
+    { href: note, label: "Edit thesis", icon: RiEdit2Line },
+  ];
   return (
-    <section aria-labelledby="tk-h" className="glass flex flex-col gap-[9px] rounded-[24px] px-[18px] py-4">
+    <section aria-labelledby="tk-h" className={cx(CARD, "flex min-w-0 flex-col gap-4 p-5")}>
       <div className="flex items-center justify-between gap-2">
-        <span className="inline-flex items-center gap-2.5">
-          <TickerDot symbol={card.symbol} size={34} fontSize={15} />
-          <h2 id="tk-h" className="text-[22px] font-medium">
+        <span className="flex min-w-0 items-center gap-2.5">
+          <Avatar size="md" initials={card.symbol.charAt(0)} />
+          <h2 id="tk-h" className={CARD_TITLE}>
             {card.symbol}
           </h2>
         </span>
-        <span className="inline-flex text-ink-3">
-          <Link href={`/stock/${card.symbol}/financials`} aria-label="Open financials" className={ICON_LINK}>
-            <Icon name="financials" size={18} />
-          </Link>
-          <Link href={note} aria-label="Open research note" className={ICON_LINK}>
-            <Icon name="notes" size={18} linejoin="round" />
-          </Link>
-          <Link href={note} aria-label="Edit thesis" className={ICON_LINK}>
-            <Icon d={CHART_ICONS.edit} size={18} linejoin="round" />
-          </Link>
+        <span className="flex items-center gap-2">
+          {actions.map((a) => (
+            <ButtonLink key={a.label} href={a.href} variant="secondary" size="small" iconOnly leadingIcon={a.icon} aria-label={a.label} />
+          ))}
         </span>
       </div>
+
       <div className="flex flex-col gap-0.5">
-        <span className="text-[16px]">
-          {card.name} <span className="text-muted">↗ ·</span> {card.exchange}
+        <span className="text-body-medium text-text-primary">
+          {card.name} <span className="text-text-secondary">· {card.exchange}</span>
         </span>
-        {card.classification ? <span className="text-[13px] text-ink-3">{card.classification}</span> : null}
+        {card.classification ? <span className="text-body-2-regular text-text-secondary">{card.classification}</span> : null}
       </div>
-      <div className="flex flex-col gap-0.5">
-        <span className="flex flex-wrap items-baseline gap-2">
-          <span className="text-[28px] font-normal tracking-[-0.02em]">{num(card.price)}</span>
-          <span className="text-[14px]">{card.currency}</span>
-          <span className={`text-[18px] ${tone(card.change)}`}>
-            {signed(card.change)} ({pct(card.changePct)})
-          </span>
+
+      <div className="flex flex-col gap-1">
+        <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          {/* A new quote cross-fades in; first paint and re-shows don't animate. */}
+          <AnimatedValue value={num(card.price)} className="text-title-1-medium text-text-primary" />
+          <span className="text-caption-1-medium text-text-secondary">{card.currency}</span>
+          <Chip color={deltaColor(card.changePct)}>
+            <AnimatedValue value={`${signed(card.change)} (${pct(card.changePct)})`} />
+          </Chip>
         </span>
-        <span className="text-[13px] text-muted">{card.lastUpdate}</span>
+        <span className="text-caption-1-regular text-text-tertiary">{card.lastUpdate}</span>
       </div>
-      <span aria-hidden="true" className="h-px bg-[rgba(17,17,19,0.07)]" />
-      <Link href={note} className="group flex flex-col gap-1 text-ink">
+
+      <Link
+        href={note}
+        className={cx(
+          "group -mx-2 -mb-2 flex flex-col gap-1.5 rounded-2xl border-t border-separator-border p-2 pt-4",
+          "transition-colors duration-150 hover:bg-background-primary-hover active:bg-background-primary-active",
+          "outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring",
+        )}
+      >
+        <span className="flex items-center justify-between gap-2 text-caption-1-medium text-text-secondary">
+          My fair value · base case
+          <RiArrowRightUpLine
+            aria-hidden
+            className="size-4 text-foreground-icon-tertiary transition-transform duration-150 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          />
+        </span>
         {card.fairValue !== null ? (
           <FairValue fair={card.fairValue} price={card.price} currency={card.currency} />
         ) : (
-          <span className="text-[15px] text-muted group-hover:text-focus">No fair value yet</span>
+          <span className="text-body-medium text-text-secondary">No fair value yet</span>
         )}
-        <span className="inline-flex h-[22px] items-center self-start rounded-md bg-ink px-[9px] text-[12px] font-medium text-white">
-          My fair value · base case
-        </span>
       </Link>
     </section>
   );
@@ -69,10 +82,10 @@ export function TickerCard({ card }: { card: TickerCardData }) {
 function FairValue({ fair, price, currency }: { fair: number; price: number; currency: string }) {
   const upside = ((fair - price) / price) * 100;
   return (
-    <span className="flex flex-wrap items-baseline gap-2">
-      <span className="text-[24px] font-normal tracking-[-0.02em] group-hover:text-focus">{num(fair)}</span>
-      <span className="text-[14px]">{currency}</span>
-      <span className={`text-[17px] ${tone(upside)}`}>
+    <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+      <span className="text-title-2-medium text-text-primary">{num(fair)}</span>
+      <span className="text-caption-1-medium text-text-secondary">{currency}</span>
+      <span className={cx("text-body-medium", upside >= 0 ? "text-text-positive" : "text-text-negative")}>
         {upside >= 0 ? "+" : "−"}
         {Math.abs(upside).toFixed(1)}% {upside >= 0 ? "upside" : "downside"}
       </span>

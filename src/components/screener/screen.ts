@@ -217,79 +217,72 @@ export type ColumnKey = SortKey | "watch";
 export type ColumnDef = {
   key: ColumnKey;
   label: string;
-  /** grid-template-columns track, as in the design markup. */
-  track: string;
-  /** Narrowest width of `track`, px. */
+  align: "start" | "end";
+  /** Narrowest the column's content gets, px, without cell padding: its widest value or header. */
   min: number;
-  /** Tighter track (and its minimum) for when even the essential columns run out of room. */
-  tight: { track: string; min: number };
-  align: "left" | "right";
   /** Always shown (not offered by "Choose columns"). */
   fixed?: boolean;
 };
 
-function col(
-  key: ColumnKey,
-  label: string,
-  track: string,
-  min: number,
-  align: ColumnDef["align"],
-  tight?: [track: string, min: number],
-  fixed?: boolean,
-): ColumnDef {
-  return { key, label, track, min, tight: tight ? { track: tight[0], min: tight[1] } : { track, min }, align, fixed };
+function col(key: ColumnKey, label: string, align: ColumnDef["align"], min: number, fixed?: boolean): ColumnDef {
+  return { key, label, align, min, fixed };
 }
 
-// Tight minimums fit the widest value (or header) in the sample universe.
+// Minimums measured from the rendered table (min-content of each column over
+// the sample and live universes): the widest value or header label (the sort
+// glyph sits in the gap). Company and Industry truncate long names.
 export const COLUMNS: ColumnDef[] = [
-  col("company", "Company", "minmax(170px,1.6fr)", 170, "left", ["minmax(120px,1.6fr)", 120], true),
-  col("industry", "Industry", "minmax(110px,1fr)", 110, "left"),
-  col("price", "Price", "72px", 72, "right", ["minmax(60px,72px)", 60]),
-  col("today", "Today", "70px", 70, "right", ["minmax(46px,70px)", 46]),
-  col("cap", "Mkt cap", "70px", 70, "right", ["minmax(48px,70px)", 48]),
-  col("pe", "Fwd P/E", "62px", 62, "right", ["minmax(46px,62px)", 46]),
-  col("growth", "Rev growth", "76px", 76, "right", ["minmax(62px,76px)", 62]),
-  col("gm", "Gross m.", "70px", 70, "right", ["minmax(50px,70px)", 50]),
-  col("roic", "ROIC", "60px", 60, "right", ["minmax(42px,60px)", 42]),
-  col("range", "52-week range", "112px", 112, "left"),
-  col("trend", "3 months", "84px", 84, "left"),
-  col("watch", "Watch", "40px", 40, "left", undefined, true),
+  col("company", "Company", "start", 144, true),
+  col("industry", "Industry", "start", 128),
+  col("price", "Price", "end", 58),
+  col("today", "Today", "end", 51),
+  col("cap", "Mkt cap", "end", 51),
+  col("pe", "Fwd P/E", "end", 51),
+  col("growth", "Rev growth", "end", 71),
+  col("gm", "Gross m.", "end", 55),
+  col("roic", "ROIC", "end", 51),
+  col("range", "52-week range", "start", 112),
+  col("trend", "3 months", "start", 84),
+  col("watch", "Watch", "end", 32, true),
 ];
 
-/** Row geometry from the design: 10px column gap, 4px side padding. */
-const COLUMN_GAP = 10;
-const ROW_PADDING = 8;
+/** Cell padding per side, px: BoardUI's compact table (px-2.5), and the tighter fit for narrow cards. */
+export const CELL_PAD = 10;
+export const TIGHT_PAD = 6;
+/** Extra inset of the first and last cells, so the table lines up with the card's 20px padding. */
+export const EDGE_INSET = 10;
 
-/** Below the split width these columns give way, in this order, when the table runs out of room. */
+/** When the table runs out of room these columns give way, in this order. */
 export const AUTO_HIDE: ColumnKey[] = ["industry", "range", "trend", "pe"];
 
-export function gridTemplate(cols: readonly ColumnDef[], tight = false): string {
-  return cols.map((c) => (tight ? c.tight.track : c.track)).join(" ");
-}
-
-/** Width the rows need to show `cols` without scrolling, px. */
-function neededWidth(cols: readonly ColumnDef[]): number {
-  return cols.reduce((w, c) => w + c.min, 0) + COLUMN_GAP * (cols.length - 1) + ROW_PADDING;
+/** Width the table needs to show `cols` without scrolling, px. */
+function neededWidth(cols: readonly ColumnDef[], pad: number): number {
+  return cols.reduce((w, c) => w + c.min + 2 * pad, 0) + 2 * EDGE_INSET;
 }
 
 /**
- * How the table narrows below the split width. Each step applies while the
- * table is narrower than `below` px (steps are cumulative): first the
- * AUTO_HIDE columns go, one per step, then the remaining columns tighten.
+ * How the table narrows with its card. Each step applies while the card is
+ * narrower than `below` px (steps are cumulative): first the AUTO_HIDE
+ * columns go, one per step, then the cells tighten. Below the last step the
+ * table scrolls sideways.
  */
-export type FitStep = { below: number; hide?: ColumnKey; template: string };
+export type FitStep = { below: number; hide?: ColumnKey; tight?: true };
 
 export function fitSteps(visible: readonly ColumnDef[]): FitStep[] {
   const steps: FitStep[] = [];
   let cols = visible;
   for (const key of AUTO_HIDE) {
     if (!cols.some((c) => c.key === key)) continue;
-    const below = neededWidth(cols);
+    steps.push({ below: neededWidth(cols, CELL_PAD), hide: key });
     cols = cols.filter((c) => c.key !== key);
-    steps.push({ below, hide: key, template: gridTemplate(cols) });
   }
-  steps.push({ below: neededWidth(cols), template: gridTemplate(cols, true) });
+  steps.push({ below: neededWidth(cols, CELL_PAD), tight: true });
   return steps;
+}
+
+/** Columns hidden for lack of room in a card `width` px wide. */
+export function hiddenForRoom(visible: readonly ColumnDef[], width: number): ColumnKey[] {
+  return fitSteps(visible).flatMap((s) => (s.hide && width < s.below ? [s.hide] : []));
 }
 
 /** CSV of the matches, for "Export results". Missing values are left empty. */
