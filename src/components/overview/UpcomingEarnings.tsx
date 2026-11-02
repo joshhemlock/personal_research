@@ -1,11 +1,13 @@
 import Link from "next/link";
+import { Chip } from "@/components/base/badges/chip";
+import { LinkButton } from "@/components/base/buttons/link-button";
 import type { EarningsEvent } from "@/lib/mock/overview";
-import { dayCount, dayOfMonth, daysBetween, monthShort } from "./format";
-import { PANEL, PanelHeading } from "./Panel";
+import { countdown, dayOfMonth, daysBetween, monthShort } from "./format";
+import { Card } from "./Card";
 
 type UpcomingEarningsProps = {
   events: EarningsEvent[];
-  /** Today, YYYY-MM-DD; the badges count days from here. */
+  /** Today, YYYY-MM-DD; the countdowns run from here. */
   today: string;
   windowDays: number;
   /** Symbols that reported earlier this week. */
@@ -15,44 +17,46 @@ type UpcomingEarningsProps = {
 /** Next earnings dates for watchlist names, each linking to its financials. */
 export function UpcomingEarnings({ events, today, windowDays, reported }: UpcomingEarningsProps) {
   return (
-    <section aria-labelledby="er-h" className={`${PANEL} pb-[14px]`}>
-      <PanelHeading id="er-h" title="Upcoming earnings" note={`Next ${windowDays} days`} className="mb-[2px]" />
-      {events.length === 0 && <p className="py-2 text-[14px] text-muted">No watchlist reports in this window.</p>}
-      <ul>
-        {events.map((e) => (
-          <li key={`${e.symbol}-${e.date}`}>
-            <Link
-              href={`/stock/${e.symbol}/financials`}
-              className="flex items-center gap-[14px] py-[6px] text-ink hover:text-focus"
-            >
-              <span className="flex size-[50px] flex-none flex-col items-center justify-center rounded-[15px] bg-track leading-[1.1]">
-                <span className="text-[12px] tracking-[0.04em] text-muted uppercase">{monthShort(e.date)}</span>
-                <span className="text-[20px] font-normal">{dayOfMonth(e.date)}</span>
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col leading-[1.35]">
-                <span className="text-[15px]">
-                  <span className="font-medium">{e.symbol}</span> <span className="text-ink-3">· {e.period}</span>
+    <Card titleId="er-h" title="Upcoming earnings" note={`Next ${windowDays} days`}>
+      {events.length === 0 && <p className="text-body-regular text-text-secondary">No watchlist reports in this window.</p>}
+      <ul className="-mx-2 flex flex-col">
+        {events.map((e) => {
+          const days = daysBetween(today, e.date);
+          return (
+            <li key={`${e.symbol}-${e.date}`}>
+              <Link
+                href={`/stock/${e.symbol}/financials`}
+                className="flex items-center gap-3 rounded-2xl p-2 outline-none transition-colors duration-150 ease hover:bg-background-primary-hover focus-visible:ring-2 focus-visible:ring-border-focus-ring"
+              >
+                <span className="flex size-12 shrink-0 flex-col items-center justify-center rounded-xl bg-background-secondary-default">
+                  <span className="text-caption-2-semibold text-text-secondary uppercase">{monthShort(e.date)}</span>
+                  <span className="text-headline-semibold text-text-primary">{dayOfMonth(e.date)}</span>
                 </span>
-                <span className="text-[13px] text-muted">
-                  {e.timing}
-                  {e.epsEstimate != null && ` · EPS est. ${e.epsEstimate.toFixed(2)}`}
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate text-body-medium text-text-primary">
+                    {e.symbol} <span className="text-text-secondary">· {e.period}</span>
+                  </span>
+                  <span className="text-body-2-regular text-text-secondary">
+                    {e.timing}
+                    {e.epsEstimate != null && ` · EPS est. ${e.epsEstimate.toFixed(2)}`}
+                  </span>
                 </span>
-              </span>
-              <span className="inline-flex h-6 flex-none items-center rounded-[6px] bg-ink px-[9px] text-[12px] text-white">
-                {dayCount(daysBetween(today, e.date))}
-              </span>
-            </Link>
-          </li>
-        ))}
+                <Chip variant="caption" color={days <= 1 ? "orange" : "neutral"}>
+                  {countdown(days)}
+                </Chip>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
       {reported.length > 0 && (
-        <p className="mt-[6px] text-[13px] text-ink-3">
+        <p className="text-body-2-regular text-text-secondary">
           Reported this week: {reported.join(", ")} ·{" "}
-          <Link href="/notes" className="link text-ink">
+          <LinkButton href="/notes" size="xs" className="align-baseline">
             Transcripts
-          </Link>
+          </LinkButton>
         </p>
       )}
-    </section>
+    </Card>
   );
 }

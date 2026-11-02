@@ -2,7 +2,7 @@
 
 import { useTemplateCopy } from "@/components/foundations/template-copy/template-copy";
 
-import { useState, type ComponentType } from "react";
+import { useState, type ComponentType, type ReactNode } from "react";
 import {
   RiArrowDownCircleFill,
   RiArrowUpCircleFill,
@@ -29,7 +29,8 @@ import { cx } from "@/utils/cx";
  *
  * KPI stat cards in two looks:
  *
- *   plain   icon tile, label, value, delta chip — the compact dashboard row
+ *   plain   icon tile (or a `visual`, e.g. a sparkline), label, value, delta
+ *           chip — the compact dashboard row
  *   footer  tinted gradient icon tile beside the label (plus an optional
  *           info tooltip), a display-size value, and a white footer band
  *           carrying the comparison caption and a delta pill
@@ -46,7 +47,10 @@ export type StatCardsVariant = "plain" | "footer";
 export type StatTone = "blue" | "orange" | "purple" | "pink" | "sky" | "emerald";
 
 export type Stat = {
-  icon: IconComponent;
+  /** Icon tile glyph. Optional when `visual` takes the tile's place. */
+  icon?: IconComponent;
+  /** Plain variant: replaces the icon tile, e.g. a sparkline. */
+  visual?: ReactNode;
   label: string;
   value: string;
   delta: string;
@@ -182,10 +186,13 @@ function StatHint({ label, hint }: { label: string; hint: string }) {
 function PlainStatCard({ stat }: { stat: Stat }) {
   const localize = useTemplateCopy();
   return localize((
-    <section className="flex h-[132px] min-w-0 flex-col items-start justify-between rounded-2xl bg-background-secondary-default p-4">
-      <span className="flex items-center rounded-md bg-stat-card-icon-background p-1.5">
-        <stat.icon className="size-5 shrink-0 text-foreground-icon-primary" aria-hidden />
-      </span>
+    <section className="flex min-h-[132px] min-w-0 flex-col items-start justify-between gap-3 rounded-2xl bg-background-secondary-default p-4">
+      {stat.visual ??
+        (stat.icon && (
+          <span className="flex items-center rounded-md bg-stat-card-icon-background p-1.5">
+            <stat.icon className="size-5 shrink-0 text-foreground-icon-primary" aria-hidden />
+          </span>
+        ))}
       <div className="flex w-full flex-col gap-0.5">
         <p className="w-full text-body-medium text-text-secondary">{stat.label}</p>
         <div className="flex w-full flex-wrap items-center gap-2">
@@ -211,7 +218,7 @@ function FooterStatCard({ stat }: { stat: Stat }) {
             TILE_TONES[stat.tone ?? "blue"],
           )}
         >
-          <stat.icon className="size-5 shrink-0 text-white" aria-hidden />
+          {stat.icon && <stat.icon className="size-5 shrink-0 text-white" aria-hidden />}
         </span>
         {stat.hint && <StatHint label={stat.label} hint={stat.hint} />}
       </div>

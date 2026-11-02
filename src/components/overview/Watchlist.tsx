@@ -1,140 +1,150 @@
-import Link from "next/link";
-import { Icon } from "@/components/ui/Icon";
-import { ChangePill, TickerDot } from "@/components/ui/Pill";
-import { num, pct, tone } from "@/lib/format";
-import { linePath } from "@/lib/mock/gen";
-import { WATCH_GROUPS, type WatchRow } from "@/lib/mock/overview";
+"use client";
+
+// React Aria tables only render their columns from a client module.
+
+import { useState } from "react";
+import { RiAddLine, RiLayoutColumnLine } from "@remixicon/react";
+import { Chip } from "@/components/base/badges/chip";
+import { IconButton } from "@/components/base/buttons/icon-button";
+import { SegmentedControl, SegmentedControlItem } from "@/components/base/segmented-control/segmented-control";
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@/components/base/table/table";
+import { deltaColor } from "@/components/shell/delta";
+import { num, pct } from "@/lib/format";
+import { WATCH_GROUPS, type WatchGroup, type WatchRow } from "@/lib/mock/overview";
+import { cx } from "@/utils/cx";
+import { CARD, CARD_TITLE } from "./Card";
 import { compactUsd, monthDay } from "./format";
-import { PANEL, PANEL_TITLE } from "./Panel";
-import { WatchlistFilter, type WatchFilter } from "./WatchlistFilter";
+import { Sparkline } from "./Sparkline";
 
-const GRID =
-  "grid grid-cols-[minmax(170px,1.5fr)_84px_84px_108px_136px_76px_66px_96px] items-center gap-x-[14px]";
+type WatchFilter = "All" | WatchGroup;
+const FILTERS: WatchFilter[] = ["All", ...WATCH_GROUPS];
 
-const TOOL =
-  "inline-flex size-10 items-center justify-center rounded-[12px] transition-colors duration-150 hover:bg-track hover:text-ink";
+/** Header text aligned to the end of a numeric column (BoardUI's th aligns to the start). */
+function End({ children }: { children: string }) {
+  return <span className="block text-end">{children}</span>;
+}
 
-/** Watchlist panel: group filter, then one row per symbol linking to its chart. */
+/** Watchlist card: a group filter, then one row per symbol linking to its chart. */
 export function Watchlist({ rows }: { rows: WatchRow[] }) {
-  const filters: WatchFilter[] = ["All", ...WATCH_GROUPS];
-  const tabs = filters.map((f) => ({
-    value: f,
-    label: `${f} ${f === "All" ? rows.length : rows.filter((r) => r.group === f).length}`,
-  }));
+  const [filter, setFilter] = useState<WatchFilter>("All");
+  const shown = filter === "All" ? rows : rows.filter((r) => r.group === filter);
+  const count = (f: WatchFilter) => (f === "All" ? rows.length : rows.filter((r) => r.group === f).length);
+
   return (
-    <section aria-labelledby="wl-h" className={`${PANEL} pb-1`}>
-      <WatchlistFilter
-        heading={
-          <h2 id="wl-h" className={PANEL_TITLE}>
+    <section aria-labelledby="wl-h" className={cx(CARD, "flex min-w-0 flex-col overflow-hidden")}>
+      <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-5 pb-4">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <h2 id="wl-h" className={CARD_TITLE}>
             Watchlist
           </h2>
-        }
-        tools={
-          <span className="inline-flex text-ink-3">
-            <button type="button" aria-label="Add symbol" className={TOOL}>
-              <Icon name="plus" size={19} />
-            </button>
-            <button type="button" aria-label="Choose columns" className={TOOL}>
-              <Icon name="columns" size={18} linejoin="round" />
-            </button>
-            <button type="button" aria-label="Watchlist settings" className={TOOL}>
-              <Icon name="sliders" size={18} />
-            </button>
-          </span>
-        }
-        tabs={tabs}
-        columns={
-          <div role="row" className={`${GRID} px-1 py-[6px] text-[13px] text-muted`}>
-            <span role="columnheader">Symbol</span>
-            <span role="columnheader" className="text-right">
-              Last
-            </span>
-            <span role="columnheader" className="text-right">
-              Today
-            </span>
-            <span role="columnheader">1-month trend</span>
-            <span role="columnheader">52-week range</span>
-            <span role="columnheader" className="text-right">
-              Mkt cap
-            </span>
-            <span role="columnheader" className="text-right">
-              Fwd P/E
-            </span>
-            <span role="columnheader" className="text-right">
-              Earnings
-            </span>
-          </div>
-        }
-        rows={rows.map((r) => ({ symbol: r.symbol, group: r.group, row: <WatchlistRow row={r} /> }))}
-      />
+          <SegmentedControl
+            aria-label="Watchlist filter"
+            selectedKeys={[filter]}
+            onSelectionChange={(keys) => {
+              const next = [...keys][0] as WatchFilter | undefined;
+              if (next) setFilter(next);
+            }}
+          >
+            {FILTERS.map((f) => (
+              <SegmentedControlItem key={f} id={f}>
+                {f}
+                <span className="ms-1.5 text-text-tertiary">{count(f)}</span>
+              </SegmentedControlItem>
+            ))}
+          </SegmentedControl>
+        </div>
+        <div className="flex items-center gap-2">
+          <IconButton size="small" icon={RiAddLine} aria-label="Add symbol" />
+          <IconButton size="small" icon={RiLayoutColumnLine} aria-label="Choose columns" />
+        </div>
+      </div>
+
+      {/* relative: the screen-reader-only text in cells must stay inside the scroller. */}
+      <Table aria-label="Watchlist" size="sm" className="min-w-[50rem]" containerClassName="relative">
+        <TableHeader>
+          <TableColumn isRowHeader textValue="Symbol">
+            <span className="ps-2.5">Symbol</span>
+          </TableColumn>
+          <TableColumn textValue="Last">
+            <End>Last</End>
+          </TableColumn>
+          <TableColumn textValue="Today">
+            <End>Today</End>
+          </TableColumn>
+          <TableColumn>1-month trend</TableColumn>
+          <TableColumn>52-week range</TableColumn>
+          <TableColumn textValue="Mkt cap">
+            <End>Mkt cap</End>
+          </TableColumn>
+          <TableColumn textValue="Fwd P/E">
+            <End>Fwd P/E</End>
+          </TableColumn>
+          <TableColumn textValue="Earnings">
+            <span className="block pe-2.5 text-end">Earnings</span>
+          </TableColumn>
+        </TableHeader>
+        <TableBody items={shown}>
+          {(row) => (
+            <TableRow
+              id={row.symbol}
+              href={`/stock/${row.symbol}`}
+              textValue={`${row.symbol} ${row.name}`}
+              className="cursor-pointer hover:bg-background-primary-hover"
+            >
+              <TableCell>
+                <span className="flex min-w-0 flex-col ps-2.5">
+                  <span className="text-body-2-semibold text-text-primary">{row.symbol}</span>
+                  <span className="max-w-40 truncate text-caption-1-regular text-text-secondary">{row.name}</span>
+                </span>
+              </TableCell>
+              <TableCell className="text-end">{num(row.price)}</TableCell>
+              <TableCell className="text-end">
+                <Chip color={deltaColor(row.changePct)}>{pct(row.changePct)}</Chip>
+              </TableCell>
+              <TableCell>
+                <Sparkline values={row.trend} up={row.monthPct >= 0} className="h-7 w-24" />
+                <span className="sr-only">One month {pct(row.monthPct, 1)}</span>
+              </TableCell>
+              <TableCell>
+                <RangeBar low={row.low52} high={row.high52} price={row.price} />
+              </TableCell>
+              <TableCell className="text-end">
+                <span className="text-text-secondary">{compactUsd(row.marketCap)}</span>
+              </TableCell>
+              <TableCell className="text-end">
+                <span className="text-text-secondary">{row.forwardPE == null ? "—" : row.forwardPE.toFixed(1)}</span>
+              </TableCell>
+              <TableCell className="text-end">
+                <span className="block pe-2.5 text-text-secondary">{row.nextEarnings ? monthDay(row.nextEarnings) : "—"}</span>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </section>
   );
 }
 
-function WatchlistRow({ row }: { row: WatchRow }) {
-  const span = row.high52 - row.low52;
-  const rangePos = span > 0 ? Math.min(100, Math.max(0, Math.round(((row.price - row.low52) / span) * 100))) : 50;
+/** Where the price sits in its 52-week range: a track with a marker, low and high beneath. */
+function RangeBar({ low, high, price }: { low: number; high: number; price: number }) {
+  const span = high - low;
+  const pos = span > 0 ? Math.min(100, Math.max(0, Math.round(((price - low) / span) * 100))) : 50;
   return (
-    <div role="row" className={`${GRID} relative border-t border-hairline px-1 py-px text-[15px]`}>
-      <span role="cell">
-        {/* The link's ::after covers the row, so the whole row opens the chart. */}
-        <Link
-          href={`/stock/${row.symbol}`}
-          className="flex min-h-[38px] items-center gap-3 text-ink after:absolute after:inset-0 hover:text-focus"
-        >
-          <TickerDot symbol={row.symbol} />
-          <span className="flex min-w-0 flex-col leading-[1.15]">
-            <span className="font-medium">{row.symbol}</span>
-            <span className="truncate text-[12px] text-muted">{row.name}</span>
-          </span>
-        </Link>
+    <span className="flex w-32 flex-col gap-1.5 pt-1">
+      {/* The track takes the control-border token: chart-track matches the card in dark mode. */}
+      <span aria-hidden="true" className="relative h-1 rounded-full bg-border-button-default">
+        <span
+          className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground-icon-primary ring-2 ring-background-primary-default"
+          style={{ left: `${pos}%` }}
+        />
       </span>
-      <span role="cell" className="text-right">
-        {num(row.price)}
+      <span aria-hidden="true" className="flex justify-between text-caption-1-regular text-text-secondary">
+        <span>{num(low)}</span>
+        <span>{num(high)}</span>
       </span>
-      <span role="cell" className="text-right">
-        <ChangePill value={row.changePct}>{pct(row.changePct)}</ChangePill>
+      <span className="sr-only">
+        {num(low)} to {num(high)}, at {pos}% of the range
       </span>
-      <span role="cell">
-        <svg
-          width="108"
-          height="28"
-          viewBox="0 0 96 28"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-          className="inline align-baseline"
-        >
-          <path
-            d={linePath(row.trend, 96, 28, 3)}
-            fill="none"
-            stroke={tone(row.monthPct).stroke}
-            strokeWidth="1.6"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
-      </span>
-      <span role="cell" className="flex flex-col gap-[5px]">
-        <span className="relative block h-1 rounded-[2px] bg-[rgba(17,17,19,0.08)]">
-          <span
-            className="absolute -top-1 -ml-[6px] size-3 rounded-full border-2 border-white bg-ink"
-            style={{ left: `${rangePos}%` }}
-          />
-        </span>
-        <span className="flex justify-between text-[12px] text-muted">
-          <span>{num(row.low52)}</span>
-          <span>{num(row.high52)}</span>
-        </span>
-      </span>
-      <span role="cell" className="text-right text-ink-2">
-        {compactUsd(row.marketCap)}
-      </span>
-      <span role="cell" className="text-right text-ink-2">
-        {row.forwardPE == null ? "—" : row.forwardPE.toFixed(1)}
-      </span>
-      <span role="cell" className="text-right text-ink-2">
-        {row.nextEarnings ? monthDay(row.nextEarnings) : "—"}
-      </span>
-    </div>
+    </span>
   );
 }

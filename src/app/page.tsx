@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AppShell } from "@/components/shell/AppShell";
+import { LinkButton } from "@/components/base/buttons/link-button";
 import { Greeting } from "@/components/overview/Greeting";
 import { IndexTiles } from "@/components/overview/IndexTiles";
 import { Movers } from "@/components/overview/Movers";
@@ -17,38 +18,49 @@ export default async function OverviewPage() {
   const data = await getOverviewData();
   return (
     <AppShell active="overview">
-      <main className="flex min-w-0 flex-[999_1_620px] flex-col gap-3 pb-1">
-        <Greeting
-          title={data.greeting}
-          today={data.marketDate}
-          watchlist={data.watchlist}
-          nextEarnings={data.upcomingEarnings[0]}
-        />
-        <IndexTiles tiles={data.indexTiles} />
-        <Watchlist rows={data.watchlist} />
-        <SectorPerformance sectors={data.sectors} periods={SECTOR_PERIODS} scale={SECTOR_HEAT_SCALE} />
-        {!isSample && (
-          <p className="m-0 px-1 text-right text-[12px] text-muted">
-            Market data:{" "}
-            <a href="https://www.tradingview.com/" className="link" target="_blank" rel="noreferrer">
-              TradingView
-            </a>
-          </p>
-        )}
+      {/* Sized by its own width (the sidebar can collapse): the side column
+          sits beside the watchlist once there is room for both. */}
+      <main className="@container min-w-0 flex-1 basis-full">
+        <div className="flex flex-col gap-6">
+          <Greeting
+            title={data.greeting}
+            today={data.marketDate}
+            watchlist={data.watchlist}
+            nextEarnings={data.upcomingEarnings[0]}
+          />
+          <IndexTiles tiles={data.indexTiles} />
+          <div className="grid items-start gap-4 @min-[75rem]:grid-cols-[minmax(0,1fr)_21rem]">
+            <div className="flex min-w-0 flex-col gap-4">
+              <Watchlist rows={data.watchlist} />
+              <SectorPerformance sectors={data.sectors} periods={SECTOR_PERIODS} scale={SECTOR_HEAT_SCALE} />
+            </div>
+            <aside
+              aria-label="Movers, earnings and research queue"
+              className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(18rem,100%),1fr))] items-start gap-4"
+            >
+              <Movers
+                rows={data.watchlist}
+                fullScale={Math.max(MOVERS_FULL_SCALE, ...data.watchlist.map((r) => Math.abs(r.changePct)))}
+              />
+              <UpcomingEarnings
+                events={data.upcomingEarnings}
+                today={data.marketDate}
+                windowDays={EARNINGS_WINDOW_DAYS}
+                reported={data.reportedThisWeek}
+              />
+              <ResearchQueue tasks={data.researchQueue} />
+            </aside>
+          </div>
+          {!isSample && (
+            <p className="text-caption-1-regular text-text-tertiary">
+              Market data:{" "}
+              <LinkButton href="https://www.tradingview.com/" target="_blank" rel="noreferrer" variant="secondary" size="xs">
+                TradingView
+              </LinkButton>
+            </p>
+          )}
+        </div>
       </main>
-      <aside aria-label="Movers, earnings and research queue" className="grid min-w-0 flex-[1_1_330px] grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] content-start gap-3 pb-1 max-split:basis-full">
-        <Movers
-          rows={data.watchlist}
-          fullScale={Math.max(MOVERS_FULL_SCALE, ...data.watchlist.map((r) => Math.abs(r.changePct)))}
-        />
-        <UpcomingEarnings
-          events={data.upcomingEarnings}
-          today={data.marketDate}
-          windowDays={EARNINGS_WINDOW_DAYS}
-          reported={data.reportedThisWeek}
-        />
-        <ResearchQueue tasks={data.researchQueue} />
-      </aside>
     </AppShell>
   );
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
@@ -178,7 +179,7 @@ export function Button({
   );
 }
 
-/** Anchor counterpart to Button for navigational actions. */
+/** Anchor counterpart to Button for navigational actions (next/link, so app routes navigate client-side). */
 export function ButtonLink({
   variant = "primary",
   size = "medium",
@@ -188,11 +189,13 @@ export function ButtonLink({
   children,
   className,
   ref,
+  href = "",
   ...props
 }: ButtonLinkProps) {
   return (
-    <a
+    <Link
       ref={ref}
+      href={href}
       className={cx(
         styles.base,
         styles.size[size],
@@ -209,7 +212,7 @@ export function ButtonLink({
       {!iconOnly && Trailing ? (
         <Trailing className={cx(styles.icon[size], directionalIconClass(Trailing))} aria-hidden />
       ) : null}
-    </a>
+    </Link>
   );
 }
 

@@ -1,37 +1,33 @@
 import type { ReactNode } from "react";
+import { isSample } from "@/lib/data/source";
+import type { NavKey } from "./nav";
+import { ShellFrame } from "./ShellFrame";
 import { TopBar, type HeaderQuote } from "./TopBar";
-import { Rail, type NavKey } from "./Rail";
 
 type AppShellProps = {
-  /** Which rail item is the current page, if any. */
+  /** Which navigation item is the current page, if any. */
   active?: NavKey;
-  /** Symbol the Chart and Financials rail links open. */
+  /** Symbol the Chart and Financials links open. */
   symbol?: string;
-  /** Show this quote in the center pill instead of the search prompt. */
+  /** Show this quote in the top bar's search pill instead of the search prompt. */
   quote?: HeaderQuote;
-  /** Extra classes for the rail (e.g. bottom padding on the chart screen). */
+  /** No longer used: the icon rail it padded is gone. Kept so callers compile. */
   railClassName?: string;
-  /** Overrides the rail's "ask" tool label. */
+  /** Overrides the sidebar's "ask" tool label. */
   askLabel?: string;
-  /** The screen's columns (main, aside…). They wrap beside the rail. */
+  /** The screen's columns (main, aside…). They wrap when there's no room side by side. */
   children: ReactNode;
 };
 
 /**
- * Page background, the rounded app frame, the top bar and the icon rail.
- * Screens render their columns as children; they wrap on narrow viewports.
+ * BoardUI's dashboard layout around every screen: the sidebar (a drawer on
+ * phones), the top bar, then the screen's columns on the page ground.
  */
-export function AppShell({ active, symbol = "NVDA", quote, railClassName, askLabel, children }: AppShellProps) {
+export function AppShell({ active, symbol = "NVDA", quote, askLabel = "Ask a research question", children }: AppShellProps) {
   return (
-    <div className="box-border min-h-screen bg-page p-[14px] max-sm:p-2">
-      <div className="mx-auto box-border flex min-h-[calc(100vh-28px)] max-w-[1600px] flex-col gap-[14px] overflow-hidden rounded-[32px] border border-white bg-shell p-4 shadow-shell max-sm:rounded-[24px] max-sm:p-3">
-        <TopBar quote={quote} />
-        {/* Screen columns wrap inside their own area; the rail keeps its column. */}
-        <div className="flex items-stretch gap-4 max-[1100px]:flex-col">
-          <div className="flex min-w-0 flex-1 flex-wrap items-stretch gap-4">{children}</div>
-          <Rail active={active} symbol={symbol} askLabel={askLabel} className={railClassName} />
-        </div>
-      </div>
-    </div>
+    <ShellFrame sidebar={{ active, symbol, askLabel, live: !isSample }}>
+      <TopBar quote={quote} />
+      <div className="flex min-w-0 flex-wrap items-stretch gap-4">{children}</div>
+    </ShellFrame>
   );
 }

@@ -1,111 +1,88 @@
-@import "tailwindcss";
-
 /*
- * Compound theme tokens. Values come from design/DESIGN_BRIEF.md and the
- * static snapshots in design/static. Utilities: text-ink, bg-up-pill, etc.
+ * Compound's app layer on top of BoardUI.
+ *
+ * BoardUI's stylesheet (Tailwind, theme tokens, type scale, component CSS) is
+ * imported here rather than separately in the root layout, so the tokens below
+ * compile in the same Tailwind build and surface as utilities next to
+ * BoardUI's own. Everything here follows BoardUI's token architecture:
+ * semantic tokens on :root bound to primitive ramps, re-bound under .dark,
+ * and re-exported through @theme inline.
  */
-@theme {
-  --font-sans: var(--font-outfit), system-ui, sans-serif;
+@import "../styles/globals.css";
 
-  --color-page: #e7e7ea;
-  --color-shell: #f7f7f8;
-
-  --color-ink: #111113;
-  --color-ink-2: #3f3f46;
-  --color-ink-3: #55555c;
-  --color-muted: #6e6e76;
-  --color-hairline: rgba(17, 17, 19, 0.05);
-  --color-track: rgba(17, 17, 19, 0.05);
-  --color-account: #1c1c1f;
-  --color-tag: #3a3a40;
-  --color-focus: #2f5fcc;
-
-  --color-up: #4db07f;
-  --color-up-text: #1a7f4e;
-  --color-up-line: #2e9b63;
-  --color-up-pill: #ddf3e6;
-  --color-up-pill-text: #1a6b45;
-  --color-down: #ea5b52;
-  --color-down-text: #c2362d;
-  --color-down-line: #e5484d;
-  --color-down-pill: #fce4e2;
-  --color-down-pill-text: #a82c24;
-
-  --color-go: #2a855a;
-  --color-purple: #a033e8;
-  --color-blue: #3b6fe0;
-  --color-amber: #f5a524;
-  --color-alert: #d93c42;
-
-  /* Below this width the design's side columns no longer have room beside
-     the main column, so screens move them underneath (max-split:...). */
-  --breakpoint-split: 91.5rem;
-
-  --shadow-shell: 0 40px 80px -40px rgba(17, 17, 19, 0.28), 0 2px 6px rgba(17, 17, 19, 0.04);
-  --shadow-seg: 0 1px 3px rgba(17, 17, 19, 0.1);
-  --shadow-chip: 0 1px 2px rgba(17, 17, 19, 0.05);
-}
-
+/* ---------------------------------------------------------------------------
+ * App tokens: market semantics BoardUI has no names for.
+ *
+ * Gains and losses follow BoardUI's own delta language (lime up, rose down,
+ * as on its stat cards and chart chips), so a delta chip, a sparkline and a
+ * heat tile all read as one system.
+ * --------------------------------------------------------------------------- */
 :root {
-  /* Opacity of every frosted-glass surface. One knob for the whole app. */
-  --glass-alpha: 0.72;
-  --glass-border: rgba(255, 255, 255, 0.95);
+  /* Signed numbers as text: "+1.24%", "−0.38%". */
+  --color-text-positive: var(--color-lime-700);
+  --color-text-negative: var(--color-rose-600);
+
+  /* Lines, bars and fills that encode direction (sparklines, mover bars). */
+  --color-chart-positive: var(--color-lime-600);
+  --color-chart-negative: var(--color-rose-500);
+
+  /* Heat tiles, three steps of strength per direction. */
+  --color-heat-positive-1: var(--color-lime-50);
+  --color-heat-positive-2: color-mix(in srgb, var(--color-lime-100) 80%, transparent);
+  --color-heat-positive-3: color-mix(in srgb, var(--color-lime-200) 70%, transparent);
+  --color-heat-negative-1: var(--color-rose-50);
+  --color-heat-negative-2: color-mix(in srgb, var(--color-rose-100) 80%, transparent);
+  --color-heat-negative-3: color-mix(in srgb, var(--color-rose-200) 70%, transparent);
+
+  /* Price chart marks. */
+  --color-candle-up: var(--color-lime-600);
+  --color-candle-down: var(--color-rose-500);
+  --color-chart-compare: var(--color-purple-500);
+  --color-chart-earnings: var(--color-amber-500);
+  --color-chart-alert: var(--color-red-500);
 }
 
-/* Panels: watchlist, movers, alerts… (radius set per use, usually 24px). */
-@utility glass {
-  background: rgba(255, 255, 255, var(--glass-alpha));
-  -webkit-backdrop-filter: blur(24px) saturate(1.4);
-  backdrop-filter: blur(24px) saturate(1.4);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 1px 2px rgba(17, 17, 19, 0.04), 0 14px 34px -18px rgba(17, 17, 19, 0.16);
+.dark {
+  --color-text-positive: var(--color-lime-400);
+  --color-text-negative: var(--color-rose-400);
+
+  --color-chart-positive: var(--color-lime-500);
+  --color-candle-up: var(--color-lime-500);
+
+  --color-heat-positive-1: color-mix(in srgb, var(--color-lime-950) 45%, transparent);
+  --color-heat-positive-2: color-mix(in srgb, var(--color-lime-900) 55%, transparent);
+  --color-heat-positive-3: color-mix(in srgb, var(--color-lime-800) 60%, transparent);
+  --color-heat-negative-1: color-mix(in srgb, var(--color-rose-950) 45%, transparent);
+  --color-heat-negative-2: color-mix(in srgb, var(--color-rose-900) 55%, transparent);
+  --color-heat-negative-3: color-mix(in srgb, var(--color-rose-800) 60%, transparent);
+
+  --color-chart-alert: var(--color-red-400);
 }
 
-/* Small tiles (index tiles, KPI tiles): same recipe, tighter shadow. */
-@utility glass-tile {
-  background: rgba(255, 255, 255, var(--glass-alpha));
-  -webkit-backdrop-filter: blur(24px) saturate(1.4);
-  backdrop-filter: blur(24px) saturate(1.4);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 1px 2px rgba(17, 17, 19, 0.04), 0 14px 34px -20px rgba(17, 17, 19, 0.16);
-}
-
-/* Buttons and rail icons that sit on glass. */
-@utility glass-chip {
-  background: rgba(255, 255, 255, var(--glass-alpha));
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 1px 2px rgba(17, 17, 19, 0.05);
+@theme inline {
+  --color-text-positive: var(--color-text-positive);
+  --color-text-negative: var(--color-text-negative);
+  --color-chart-positive: var(--color-chart-positive);
+  --color-chart-negative: var(--color-chart-negative);
+  --color-heat-positive-1: var(--color-heat-positive-1);
+  --color-heat-positive-2: var(--color-heat-positive-2);
+  --color-heat-positive-3: var(--color-heat-positive-3);
+  --color-heat-negative-1: var(--color-heat-negative-1);
+  --color-heat-negative-2: var(--color-heat-negative-2);
+  --color-heat-negative-3: var(--color-heat-negative-3);
+  --color-candle-up: var(--color-candle-up);
+  --color-candle-down: var(--color-candle-down);
+  --color-chart-compare: var(--color-chart-compare);
+  --color-chart-earnings: var(--color-chart-earnings);
+  --color-chart-alert: var(--color-chart-alert);
 }
 
 @layer base {
-  html {
-    background: var(--color-page);
-  }
+  /* BoardUI's body type, and aligned figures everywhere: this is a numbers app. */
   body {
-    margin: 0;
-    background: var(--color-page);
-    color: var(--color-ink);
-    font-family: var(--font-sans);
-    font-size: 14px;
-    line-height: 1.4;
+    font-size: var(--text-body-regular);
+    line-height: var(--text-body-regular--line-height);
     font-variant-numeric: tabular-nums;
-    -webkit-font-smoothing: antialiased;
-  }
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-  /* Form controls keep the browser's own metrics, as in the design
-     snapshots: normal line height and proportional digits. */
-  button,
-  input,
-  select,
-  textarea {
-    line-height: normal;
-    font-variant-numeric: normal;
-    letter-spacing: normal;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -114,16 +91,99 @@
   label[for] {
     cursor: pointer;
   }
-  :focus-visible {
-    outline: 2px solid var(--color-focus);
-    outline-offset: 2px;
-  }
+}
+
+/* ===========================================================================
+ * LEGACY — remove when every screen is on BoardUI.
+ *
+ * The Chart, Financials, Screener and Notes screens still use the pre-BoardUI
+ * names below. They are mapped onto BoardUI semantic tokens with a flat,
+ * bordered card look (no blur) so those screens keep rendering acceptably
+ * until each one is converted. Nothing new should use them.
+ * =========================================================================== */
+@theme inline {
+  --color-page: var(--color-background-full);
+  --color-shell: var(--color-background-full);
+
+  --color-ink: var(--color-text-primary);
+  --color-ink-2: var(--color-text-secondary);
+  --color-ink-3: var(--color-text-secondary);
+  --color-muted: var(--color-text-secondary);
+  --color-hairline: var(--color-separator-border);
+  --color-track: var(--color-background-secondary-default);
+  --color-account: var(--color-background-tertiary-default);
+  --color-tag: var(--color-background-quaternary-default);
+  --color-focus: var(--color-border-focus-ring);
+
+  --color-up: var(--color-chart-positive);
+  --color-up-text: var(--color-text-positive);
+  --color-up-line: var(--color-candle-up);
+  --color-up-pill: var(--color-status-lime-background);
+  --color-up-pill-text: var(--color-status-lime-text);
+  --color-down: var(--color-chart-negative);
+  --color-down-text: var(--color-text-negative);
+  --color-down-line: var(--color-candle-down);
+  --color-down-pill: var(--color-status-rose-background);
+  --color-down-pill-text: var(--color-status-rose-text);
+
+  --color-go: var(--color-chart-positive);
+  --color-purple: var(--color-chart-compare);
+  --color-blue: var(--color-accent-500);
+  --color-amber: var(--color-chart-earnings);
+  --color-alert: var(--color-chart-alert);
+
+  --shadow-shell: none;
+  --shadow-seg: var(--shadow-2xs);
+  --shadow-chip: var(--shadow-xs);
+}
+
+@theme {
+  /* Viewport width below which those screens move their side column under
+     the main one (max-split:…, split:…). It was 91.5rem beside the old 60px
+     icon rail; BoardUI's 260px sidebar takes ~162px more of the row, so the
+     same content width now arrives at 101.75rem. */
+  --breakpoint-split: 101.75rem;
+}
+
+/* Former frosted panels and tiles: BoardUI's card surface instead. */
+@utility glass {
+  background-color: var(--color-background-primary-default);
+  border: 1px solid var(--color-border-button-default);
+}
+
+@utility glass-tile {
+  background-color: var(--color-background-primary-default);
+  border: 1px solid var(--color-border-button-default);
+}
+
+/* Former frosted buttons: BoardUI's secondary button surface. */
+@utility glass-chip {
+  background-color: var(--color-background-primary-default);
+  border: 1px solid var(--color-border-button-default);
+  box-shadow: var(--shadow-xs);
 }
 
 /* Underlined inline links ("Transcripts", "Reset"). */
 @utility link {
   text-decoration: underline;
+  text-underline-offset: 2px;
   &:hover {
-    color: var(--color-focus);
+    color: var(--color-accent-600);
   }
 }
+
+@layer base {
+  /* Their hand-made controls have no focus style of their own. React Aria
+     elements (data-rac) draw BoardUI's focus ring instead. */
+  :focus-visible:not([data-rac]) {
+    outline: 2px solid var(--color-border-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* `bg-ink` fills sit behind white text (buttons, ticker discs). The ink text
+   token turns light in dark mode, so those fills take a dark surface there. */
+.dark .bg-ink {
+  background-color: var(--color-background-quaternary-default);
+}
+/* LEGACY end */

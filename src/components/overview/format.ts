@@ -33,6 +33,20 @@ export const daysBetween = (from: string, to: string) => Math.round((utc(to) - u
 /** "19 days", "1 day" */
 export const dayCount = (n: number) => `${n} ${n === 1 ? "day" : "days"}`;
 
+/** Countdown to a date `n` days away: "Today", "Tomorrow", "19 days", "Yesterday". */
+export function countdown(n: number): string {
+  if (n === 0) return "Today";
+  if (n === 1) return "Tomorrow";
+  if (n === -1) return "Yesterday";
+  return n > 0 ? dayCount(n) : `${dayCount(-n)} ago`;
+}
+
+/** "AAPL reports today", "… reports in 19 days", "… reported yesterday". */
+export function reportPhrase(symbol: string, n: number): string {
+  if (n < 0) return `${symbol} reported ${n === -1 ? "yesterday" : `${dayCount(-n)} ago`}`;
+  return `${symbol} reports ${n === 0 ? "today" : n === 1 ? "tomorrow" : `in ${dayCount(n)}`}`;
+}
+
 /** Market cap in USD: "4.59T", "407.2B", "12.4M". */
 export function compactUsd(v: number): string {
   if (v >= 1e12) return `${(v / 1e12).toFixed(2)}T`;

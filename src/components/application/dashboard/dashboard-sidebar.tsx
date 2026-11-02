@@ -2,6 +2,7 @@
 
 import { useTemplateCopy } from "@/components/foundations/template-copy/template-copy";
 
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -49,6 +50,12 @@ import { DashboardUserMenu } from "./dashboard-user-menu";
  *
  * The two states morph into each other: the panel width animates while
  * labels / badges / kbd collapse via max-width + opacity.
+ *
+ * Every region can be supplied by the app: `header` (the user menu by
+ * default), `items` and labelled `sections` for navigation, `secondaryItems`
+ * (Support / Settings by default) and `footer` (the team card by default).
+ * Rows with an `href` navigate with next/link; rows with `onPress` are
+ * buttons.
  */
 
 type IconComponent = ComponentType<{
@@ -61,7 +68,7 @@ type IconComponent = ComponentType<{
  * closes, and blurs back in on expand. The icons/rows themselves stay pinned in
  * place — only these label/badge slots animate — so nothing jumps to center.
  */
-function Collapsible({ collapsed, children, className }: { collapsed: boolean; children: ReactNode; className?: string }) {
+export function Collapsible({ collapsed, children, className }: { collapsed: boolean; children: ReactNode; className?: string }) {
   const localize = useTemplateCopy();
   return localize((
     <span
@@ -84,7 +91,7 @@ function NavItem({
   badge,
   isSelected = false,
   collapsed = false,
-  href = "#",
+  href,
   onClick,
 }: {
   icon: IconComponent;
@@ -92,34 +99,23 @@ function NavItem({
   badge?: ReactNode;
   isSelected?: boolean;
   collapsed?: boolean;
+  /** Destination; rendered with next/link for client-side navigation. */
   href?: string;
-  /** Action rows (e.g. Settings → modal) intercept the navigation. */
+  /** Action rows (e.g. Settings → modal) are buttons instead of links. */
   onClick?: () => void;
 }) {
   const localize = useTemplateCopy();
-  return localize((
-    <a
-      href={href}
-      onClick={
-        onClick
-          ? (event) => {
-              event.preventDefault();
-              onClick();
-            }
-          : undefined
-      }
-      aria-current={isSelected ? "page" : undefined}
-      aria-label={label}
-      title={collapsed ? label : undefined}
-      className={cx(
-        "flex items-center justify-between overflow-hidden rounded-2lg p-2",
-        "transition-[width,background-color] duration-300 ease-in-out",
-        collapsed ? "w-9" : "w-full",
-        isSelected
-          ? "bg-linear-to-b from-accent-500 to-accent-600 shadow-nav-selected"
-          : "hover:bg-background-secondary-hover",
-      )}
-    >
+  const className = cx(
+    "flex items-center justify-between overflow-hidden rounded-2lg p-2 text-start",
+    "transition-[width,background-color] duration-300 ease-in-out",
+    "outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring",
+    collapsed ? "w-9" : "w-full",
+    isSelected
+      ? "bg-linear-to-b from-accent-500 to-accent-600 shadow-nav-selected"
+      : "hover:bg-background-secondary-hover",
+  );
+  const content = (
+    <>
       <span className="flex min-w-0 items-center gap-2">
         <Icon
           className={cx("size-5 shrink-0", isSelected ? "text-white" : "text-foreground-icon-secondary")}
@@ -137,17 +133,53 @@ function NavItem({
         </Collapsible>
       </span>
       {badge && <Collapsible collapsed={collapsed}>{badge}</Collapsible>}
-    </a>
-  ));
+    </>
+  );
+  return localize(
+    href && !onClick ? (
+      <Link
+        href={href}
+        aria-current={isSelected ? "page" : undefined}
+        aria-label={label}
+        title={collapsed ? label : undefined}
+        className={className}
+      >
+        {content}
+      </Link>
+    ) : (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={label}
+        title={collapsed ? label : undefined}
+        className={cx("cursor-pointer", className)}
+      >
+        {content}
+      </button>
+    ),
+  );
 }
 
-/** A primary navigation row. Rows without an `href` are decoration only. */
+/** A navigation row: a link with `href`, a button with `onPress`, else decoration only. */
 export interface DashboardNavItem {
   key: string;
   label: string;
   icon: IconComponent;
   href?: string;
   badge?: string | number;
+  /** Runs instead of navigating (e.g. open a dialog). */
+  onPress?: () => void;
+}
+
+/** A labelled group of rows under the primary navigation. */
+export interface DashboardNavSection {
+  label: string;
+  items: DashboardNavItem[];
+}
+
+/** What the app-supplied slots learn about the rail. */
+export interface DashboardSidebarSlotState {
+  collapsed: boolean;
 }
 
 /** Kept as a name for callers that typed their `selected` prop; any key works. */
@@ -199,6 +231,7 @@ function NavRows({
           icon={item.icon}
           label={item.label}
           href={item.href}
+          onClick={item.onPress}
           isSelected={isSelected}
           collapsed={collapsed}
           badge={
@@ -219,6 +252,12 @@ export function DashboardSidebar({
   selected = "home",
   items = DASHBOARD_NAV,
   flat = false,
+  header,
+  quickSearch = true,
+  sections,
+  secondaryItems,
+  footer,
+  navLabel = "Main",
   className,
 }: {
   /** Rendered inside the mobile drawer: always expanded, close button instead of collapse. */
@@ -238,6 +277,18 @@ export function DashboardSidebar({
   items?: DashboardNavItem[];
   /** Removes the floating panel treatment for a sidebar revealed beneath mobile content. */
   flat?: boolean;
+  /** Top-left slot beside the collapse control; the user menu by default. */
+  header?: (state: DashboardSidebarSlotState) => ReactNode;
+  /** Show the Quick Search row that filters the navigation. */
+  quickSearch?: boolean;
+  /** Labelled groups of rows under the primary navigation. */
+  sections?: DashboardNavSection[];
+  /** Rows above the footer; Support and Settings (with its modal) by default. */
+  secondaryItems?: DashboardNavItem[];
+  /** Bottom slot; the team card by default. */
+  footer?: (state: DashboardSidebarSlotState) => ReactNode;
+  /** Accessible name of the primary navigation. */
+  navLabel?: string;
   className?: string;
 } = {}) {
   const localize = useTemplateCopy();
@@ -252,8 +303,12 @@ export function DashboardSidebar({
   const collapsed = mobile ? false : collapsedState;
   const normalizedQuery = query.trim().toLocaleLowerCase();
   const matches = (label: string) => label.toLocaleLowerCase().includes(normalizedQuery);
-  const secondaryLabels = ["Support", "Settings"];
-  const secondaryMatch = secondaryLabels.some(matches);
+  const secondaryRows: DashboardNavItem[] = secondaryItems ?? [
+    { key: "support", label: "Support", icon: RiCustomerServiceLine },
+    { key: "settings", label: "Settings", icon: RiSettings4Line, onPress: () => setSettingsOpen(true) },
+  ];
+  const sectionRows = (sections ?? []).flatMap((section) => section.items);
+  const secondaryMatch = [...secondaryRows, ...sectionRows].some((item) => matches(item.label));
 
   const activateSearch = useCallback(() => {
     if (!mobile) setCollapsed(false);
@@ -348,16 +403,20 @@ export function DashboardSidebar({
                 : "max-w-[206px] scale-100 opacity-100",
             )}
           >
-            <DashboardUserMenu
-              collapsed={collapsed}
-              suppressHover={suppressUserHover}
-              onHoverSuppressionEnd={() => setSuppressUserHover(false)}
-              avatarClassName={
-                flat
-                  ? "bg-background-tertiary-default dark:bg-background-secondary-default"
-                  : undefined
-              }
-            />
+            {header ? (
+              header({ collapsed })
+            ) : (
+              <DashboardUserMenu
+                collapsed={collapsed}
+                suppressHover={suppressUserHover}
+                onHoverSuppressionEnd={() => setSuppressUserHover(false)}
+                avatarClassName={
+                  flat
+                    ? "bg-background-tertiary-default dark:bg-background-secondary-default"
+                    : undefined
+                }
+              />
+            )}
           </div>
           {mobile && flat ? (
             <div
@@ -445,7 +504,7 @@ export function DashboardSidebar({
 
         <div className="flex w-full flex-col gap-3">
           {/* Quick search */}
-          {!flat && (searchActive && !collapsed ? (
+          {!flat && quickSearch && (searchActive && !collapsed ? (
             <div
               ref={searchFieldRef}
               className="flex w-full items-center gap-2 rounded-full bg-background-tertiary-default py-2 pe-2.5 ps-2 ring-2 ring-inset ring-border-button-active transition-[background-color,box-shadow] duration-[var(--input-transition-ms)] ease"
@@ -506,7 +565,7 @@ export function DashboardSidebar({
               collapsed column is exactly as wide as a 36px item, so padding
               here pushes every item 2px right and the rail's own clip shaves
               that much off its selected fill and hover state. */}
-          <nav className={cx("flex w-full flex-col gap-1", !collapsed && "px-0.5")}>
+          <nav aria-label={navLabel} className={cx("flex w-full flex-col gap-1", !collapsed && "px-0.5")}>
             <NavRows
               items={items}
               query={normalizedQuery}
@@ -515,6 +574,38 @@ export function DashboardSidebar({
               secondaryMatch={secondaryMatch}
             />
           </nav>
+
+          {/* App sections (e.g. tools): the label folds away with the rail,
+              as the row labels do, leaving the icons in place. */}
+          {sections?.map((section) => {
+            const shown = section.items.filter((item) => matches(item.label));
+            if (shown.length === 0) return null;
+            return (
+              <div
+                key={section.label}
+                role="group"
+                aria-label={section.label}
+                className={cx("flex w-full flex-col gap-1", !collapsed && "px-0.5")}
+              >
+                <Collapsible collapsed={collapsed} className="px-2 pt-2 pb-0.5">
+                  <span aria-hidden className="text-body-2-medium whitespace-nowrap text-text-tertiary">
+                    {section.label}
+                  </span>
+                </Collapsible>
+                {shown.map((item) => (
+                  <NavItem
+                    key={item.key}
+                    icon={item.icon}
+                    label={item.label}
+                    href={item.href}
+                    onClick={item.onPress}
+                    isSelected={selected === item.key}
+                    collapsed={collapsed}
+                  />
+                ))}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -529,32 +620,40 @@ export function DashboardSidebar({
             />
           ))}
         {/* Secondary nav */}
-        <nav className="flex w-full flex-col gap-1">
-          {matches("Support") && (
-            <NavItem icon={RiCustomerServiceLine} label="Support" collapsed={collapsed} />
-          )}
-          {matches("Settings") && (
-            <NavItem
-              icon={RiSettings4Line}
-              label="Settings"
-              collapsed={collapsed}
-              onClick={() => setSettingsOpen(true)}
-            />
-          )}
+        <nav aria-label="Secondary" className="flex w-full flex-col gap-1">
+          {secondaryRows
+            .filter((item) => matches(item.label))
+            .map((item) => (
+              <NavItem
+                key={item.key}
+                icon={item.icon}
+                label={item.label}
+                href={item.href}
+                onClick={item.onPress}
+                isSelected={selected === item.key}
+                collapsed={collapsed}
+              />
+            ))}
         </nav>
 
         {/* Team card → opens the profile menu next to the sidebar */}
-        <DashboardTeamMenu
-          collapsed={collapsed}
-          className={flat ? "!bg-background-secondary-default" : undefined}
-        />
+        {footer ? (
+          footer({ collapsed })
+        ) : (
+          <DashboardTeamMenu
+            collapsed={collapsed}
+            className={flat ? "!bg-background-secondary-default" : undefined}
+          />
+        )}
       </div>
 
-      <SettingsModal
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        planArtSrc="/templates/settings-plan-art.png"
-      />
+      {!secondaryItems && (
+        <SettingsModal
+          isOpen={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          planArtSrc="/templates/settings-plan-art.png"
+        />
+      )}
     </aside>
   ));
 }

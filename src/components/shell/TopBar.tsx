@@ -1,11 +1,16 @@
 import Link from "next/link";
-import { APP_NAME, APP_TAGLINE } from "@/lib/brand";
+import { Chip } from "@/components/base/badges/chip";
+import { APP_NAME } from "@/lib/brand";
 import { fixedMarketLabel, getHeaderIndices } from "@/lib/data/shell";
+import { isSample } from "@/lib/data/source";
 import { pct } from "@/lib/format";
-import { Icon } from "@/components/ui/Icon";
-import { ChangePill } from "@/components/ui/Pill";
+import { ALERTS } from "@/lib/mock/chart";
+import { deltaColor } from "./delta";
+import { BrandMark } from "./Logo";
 import { MarketClock } from "./MarketClock";
+import { NotificationBell, type ShellNotice } from "./NotificationBell";
 import { SearchTrigger } from "./SearchTrigger";
+import { NavMenuButton } from "./ShellFrame";
 
 export type HeaderQuote = {
   symbol: string;
@@ -17,62 +22,72 @@ export type HeaderQuote = {
   asOf: string;
 };
 
-export function Logo({ size = 26 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 26 26" aria-hidden="true">
-      <circle cx="13" cy="13" r="12" fill="#111113" />
-      <path
-        d="M6.5 17.5c3.8 0 5.5-2 6.6-4.6C14.2 10.3 15.8 8.2 19 8.2"
-        fill="none"
-        stroke="#FFFFFF"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <circle cx="19" cy="8.2" r="2" fill="#4DB07F" />
-    </svg>
-  );
-}
+// The user's fired alerts and system notices. Like the watchlist, they are
+// user data that stays as in the sample until it is saved per user (the
+// chart's alerts panel shows the same lists).
+const NOTICES: ShellNotice[] = [
+  ...ALERTS.History.map((a, i) => ({
+    id: `alert-${i}`,
+    kind: "alert" as const,
+    title: a.text,
+    symbol: a.symbol,
+    when: a.scope,
+    state: a.state,
+    unread: a.scope.startsWith("Today"),
+  })),
+  ...ALERTS.System.map((a, i) => ({
+    id: `system-${i}`,
+    kind: "system" as const,
+    title: a.text,
+    symbol: a.symbol,
+    when: a.scope,
+    state: a.state,
+    unread: false,
+  })),
+];
 
+/**
+ * Above every screen: market clock, search (or the current quote on stock
+ * pages), the S&P 500 and Nasdaq 100, and notifications. Below `lg` the
+ * menu button and brand lead the first row, and the clock and indices move
+ * to a row of their own.
+ */
 export async function TopBar({ quote }: { quote?: HeaderQuote }) {
   const indices = await getHeaderIndices();
   return (
-    <header className="flex flex-wrap items-center gap-x-5 gap-y-3 px-1">
-      <Link href="/" className="flex min-h-12 items-center gap-3 text-ink">
-        <span className="inline-flex size-12 flex-none items-center justify-center rounded-full border-[1.5px] border-[#D4D4D8]">
-          <Logo />
-        </span>
-        <span className="flex flex-col leading-[1.2]">
-          <span className="text-[19px] font-semibold tracking-[-0.01em]">{APP_NAME}</span>
-          <span className="text-[13px] text-muted">{APP_TAGLINE}</span>
-        </span>
-      </Link>
-      <span aria-hidden="true" className="h-8 w-px bg-[rgba(17,17,19,0.1)] max-md:hidden" />
-      <MarketClock fixedLabel={fixedMarketLabel} />
-      <SearchTrigger quote={quote} />
-      <div className="ml-auto flex flex-wrap items-center gap-[22px] max-sm:order-4 max-sm:ml-0">
-        {indices.map((ix) => (
-          <div key={ix.name} className="flex flex-col leading-[1.3]">
-            <span className="flex items-center gap-2 text-[16px] font-medium">
-              {ix.value}
-              <ChangePill value={ix.changePct} size="sm">
-                {pct(ix.changePct)}
-              </ChangePill>
-            </span>
-            <span className="text-[12px] text-muted">{ix.label}</span>
-          </div>
-        ))}
+    <header className="flex flex-wrap items-center gap-x-4 gap-y-3">
+      <div className="order-1 flex items-center gap-3 lg:hidden">
+        <NavMenuButton />
+        <Link
+          href="/"
+          className="flex items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring"
+        >
+          <BrandMark className="size-7" />
+          <span className="text-headline-semibold text-text-primary">{APP_NAME}</span>
+        </Link>
       </div>
-      {/* On phones the account pill moves up beside the logo. */}
-      <button
-        type="button"
-        aria-label="Account menu"
-        className="ml-[2px] inline-flex h-[52px] items-center gap-3 rounded-full border-0 bg-account pr-4 pl-[5px] text-white shadow-[0_10px_24px_-12px_rgba(17,17,19,0.5)] max-sm:order-1 max-sm:ml-auto"
-      >
-        <span className="inline-flex size-[42px] items-center justify-center rounded-full bg-tag">
-          <Icon name="user" size={22} />
-        </span>
-        <Icon name="menu" size={20} strokeWidth={1.8} />
-      </button>
+
+      <SearchTrigger quote={quote} live={!isSample} className="order-2 max-lg:ms-auto" />
+
+      {/* Its own row below lg; from lg up its children join the bar. */}
+      <div className="order-4 flex basis-full flex-wrap items-center justify-between gap-x-6 gap-y-2 lg:contents">
+        <MarketClock fixedLabel={fixedMarketLabel} className="lg:order-1" />
+        <dl className="flex items-center gap-6 lg:order-3 lg:ms-auto">
+          {indices.map((ix) => (
+            <div key={ix.name} className="flex flex-col">
+              <dt className="text-caption-1-medium whitespace-nowrap text-text-secondary">{ix.name}</dt>
+              <dd className="flex items-center gap-2">
+                <span className="text-body-semibold text-text-primary">{ix.value}</span>
+                <Chip variant="caption" color={deltaColor(ix.changePct)}>
+                  {pct(ix.changePct)}
+                </Chip>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+
+      <NotificationBell notices={NOTICES} className="order-3 lg:order-4" />
     </header>
   );
 }

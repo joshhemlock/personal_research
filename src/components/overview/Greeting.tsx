@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { Icon } from "@/components/ui/Icon";
+import { RiAddLine, RiEqualizerLine } from "@remixicon/react";
+import { Button, ButtonLink } from "@/components/base/buttons/button";
 import type { EarningsEvent, WatchRow } from "@/lib/mock/overview";
-import { daysBetween, longDay } from "./format";
+import { daysBetween, longDay, reportPhrase } from "./format";
 
 type GreetingProps = {
   title: string;
@@ -16,29 +16,21 @@ export function Greeting({ title, today, watchlist, nextEarnings }: GreetingProp
   const up = watchlist.filter((r) => r.changePct >= 0).length;
   const summary = [longDay(today), `${up} of ${watchlist.length} watchlist names are up`];
   if (nextEarnings) {
-    summary.push(`${nextEarnings.symbol} reports in ${daysBetween(today, nextEarnings.date)} days`);
+    summary.push(reportPhrase(nextEarnings.symbol, daysBetween(today, nextEarnings.date)));
   }
   return (
-    <div className="flex flex-wrap items-end justify-between gap-3 px-1">
-      <div>
-        <h1 className="text-[26px] font-normal tracking-[-0.02em]">{title}</h1>
-        <p className="text-[14px] text-ink-3">{summary.join(" · ")}</p>
+    <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+      <div className="flex min-w-0 flex-col gap-0.5">
+        <h1 className="text-title-1-medium text-text-primary">{title}</h1>
+        <p className="text-body-regular text-text-secondary">{summary.join(" · ")}</p>
       </div>
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          className="glass-chip inline-flex h-[42px] items-center gap-2 rounded-full px-[18px] text-[15px] text-ink transition-colors duration-150 hover:bg-white"
-        >
-          <Icon name="sliders" size={18} />
+      <div className="flex flex-wrap gap-2.5">
+        <Button variant="secondary" leadingIcon={RiEqualizerLine}>
           Customize
-        </button>
-        <Link
-          href="/screener"
-          className="inline-flex h-[42px] items-center gap-2 rounded-full bg-ink px-5 text-[15px] font-medium text-white transition-colors duration-150 hover:bg-[#2C2C31]"
-        >
-          <Icon name="plus" size={18} strokeWidth={1.8} />
+        </Button>
+        <ButtonLink href="/screener" leadingIcon={RiAddLine}>
           Find ideas
-        </Link>
+        </ButtonLink>
       </div>
     </div>
   );

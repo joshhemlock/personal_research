@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Segmented } from "@/components/ui/Segmented";
+import { SegmentedControl, SegmentedControlItem } from "@/components/base/segmented-control/segmented-control";
 import { pct } from "@/lib/format";
 import type { SectorMove, SectorPeriod } from "@/lib/mock/overview";
-import { PANEL, PANEL_TITLE } from "./Panel";
+import { cx } from "@/utils/cx";
+import { CARD, CARD_TITLE } from "./Card";
 
-// Three heat steps per direction, as in the design script.
-const UP_HEAT = ["bg-[rgba(77,176,127,0.10)]", "bg-[rgba(77,176,127,0.20)]", "bg-[rgba(77,176,127,0.34)]"];
-const DOWN_HEAT = ["bg-[rgba(234,91,82,0.09)]", "bg-[rgba(234,91,82,0.18)]", "bg-[rgba(234,91,82,0.30)]"];
-
-const FIRST_ROW = 7;
+// Three heat steps per direction.
+const UP_HEAT = ["bg-heat-positive-1", "bg-heat-positive-2", "bg-heat-positive-3"];
+const DOWN_HEAT = ["bg-heat-negative-1", "bg-heat-negative-2", "bg-heat-negative-3"];
 
 /** Tile background for a move `v`, relative to the move that counts as full strength. */
 function heat(v: number, full: number): string {
@@ -30,40 +29,48 @@ type SectorPerformanceProps = {
 export function SectorPerformance({ sectors, periods, scale }: SectorPerformanceProps) {
   const [period, setPeriod] = useState<SectorPeriod>(periods[0]);
   return (
-    <section aria-labelledby="sec-h" className={`${PANEL} pb-4`}>
-      <div className="mb-[10px] flex flex-wrap items-center justify-between gap-[10px]">
-        <h2 id="sec-h" className={PANEL_TITLE}>
+    <section aria-labelledby="sec-h" className={cx(CARD, "flex min-w-0 flex-col gap-4 p-5")}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 id="sec-h" className={CARD_TITLE}>
           Sector performance
         </h2>
-        <Segmented
-          label="Period"
-          options={periods.map((p) => ({ value: p, label: p }))}
-          value={period}
-          onChange={setPeriod}
-          buttonClassName="h-[34px] min-w-12 px-3 text-[14px] leading-[normal] normal-nums"
-        />
+        <SegmentedControl
+          aria-label="Period"
+          selectedKeys={[period]}
+          onSelectionChange={(keys) => {
+            const next = [...keys][0] as SectorPeriod | undefined;
+            if (next) setPeriod(next);
+          }}
+        >
+          {periods.map((p) => (
+            <SegmentedControlItem key={p} id={p} className="min-w-10">
+              {p}
+            </SegmentedControlItem>
+          ))}
+        </SegmentedControl>
       </div>
-      {/* Two rows (7 + 4) as in the design, so wider screens keep its balance. */}
-      <div className="flex flex-col gap-2">
-        {[sectors.slice(0, FIRST_ROW), sectors.slice(FIRST_ROW)].map((row, i) => (
-          <div key={i} className="flex flex-wrap gap-2">
-            {row.map((s) => {
-              const v = s.change[period];
-              return (
-                <div
-                  key={s.name}
-                  className={`flex min-h-[50px] flex-[1_1_128px] flex-col justify-between gap-[6px] rounded-[14px] px-[14px] py-[7px] transition-colors duration-200 ${heat(v, scale[period])}`}
-                >
-                  <span className="text-[13px] text-ink">{s.name}</span>
-                  <span className={`text-[17px] font-normal ${v >= 0 ? "text-[#155C3B]" : "text-[#8E2A23]"}`}>
-                    {pct(v)}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
+      {/* Two, three, then six tiles to a row as the card widens (eleven
+          sectors make 6 + 5); a short last row's tiles widen to fill it. */}
+      <ul className="@container flex flex-wrap gap-2">
+        {sectors.map((s) => {
+          const v = s.change[period];
+          return (
+            <li
+              key={s.name}
+              className={cx(
+                "flex min-h-16 grow basis-[calc(50%-8px)] flex-col justify-between gap-1 rounded-xl px-3 py-2.5 transition-colors duration-200 ease",
+                "@md:basis-[calc(33.333%-8px)] @2xl:basis-[calc(16.666%-8px)]",
+                heat(v, scale[period]),
+              )}
+            >
+              <span className="text-body-2-medium text-text-primary">{s.name}</span>
+              <span className={cx("text-headline-medium", v >= 0 ? "text-text-positive" : "text-text-negative")}>
+                {pct(v)}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }

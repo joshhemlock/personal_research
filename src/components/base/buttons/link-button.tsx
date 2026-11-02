@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
@@ -19,7 +20,7 @@ import { directionalIconClass } from "@/utils/directional-icon";
  *           | small  (Body 1/Medium, 18px icons)
  *           | xs     (Caption 1/Semibold, 14px icons)
  *
- * Renders an `<a>` when `href` is passed, otherwise a `<button>` — the same
+ * Renders a next/link `<a>` when `href` is passed, otherwise a `<button>` — the same
  * action can live in copy ("Learn more →") or trigger a handler. Icons are
  * rendered by the component itself via `leadingIcon` / `trailingIcon` (pass
  * the Remix Icon reference, e.g. `RiArrowRightLine`, not an element).
@@ -116,16 +117,17 @@ export function LinkButton({
 
   if (props.href !== undefined) {
     const { ref, href, ...anchorProps } = props as LinkButtonAnchorProps;
+    if (disabled) {
+      return (
+        <a ref={ref} aria-disabled className={classes} {...anchorProps}>
+          {content}
+        </a>
+      );
+    }
     return (
-      <a
-        ref={ref}
-        href={disabled ? undefined : href}
-        aria-disabled={disabled || undefined}
-        className={classes}
-        {...anchorProps}
-      >
+      <Link ref={ref} href={href} className={classes} {...anchorProps}>
         {content}
-      </a>
+      </Link>
     );
   }
 

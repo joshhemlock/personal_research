@@ -1,6 +1,7 @@
 import { pct } from "@/lib/format";
 import type { WatchRow } from "@/lib/mock/overview";
-import { PANEL, PanelHeading } from "./Panel";
+import { cx } from "@/utils/cx";
+import { Card } from "./Card";
 
 type MoversProps = {
   rows: WatchRow[];
@@ -12,30 +13,30 @@ type MoversProps = {
 export function Movers({ rows, fullScale }: MoversProps) {
   const sorted = [...rows].sort((a, b) => b.changePct - a.changePct);
   return (
-    <section aria-labelledby="mv-h" className={`${PANEL} pb-4`}>
-      <PanelHeading id="mv-h" title="Movers" note="Watchlist · today" className="mb-[10px]" />
-      <ul className="flex flex-col gap-[6px]">
+    <Card titleId="mv-h" title="Movers" note="Watchlist · today">
+      <ul className="flex flex-col gap-1">
         {sorted.map((r) => {
           const up = r.changePct >= 0;
           const width = `${Math.min(100, (Math.abs(r.changePct) / fullScale) * 100).toFixed(0)}%`;
           return (
-            <li key={r.symbol} className="grid min-h-6 grid-cols-[54px_minmax(0,1fr)_64px] items-center gap-[10px]">
-              <span className="text-[14px] font-medium">{r.symbol}</span>
-              <span aria-hidden="true" className="flex h-3">
-                <span className="flex flex-1 justify-end border-r border-[rgba(17,17,19,0.15)]">
-                  {!up && <span className="block h-3 rounded-l-[6px] bg-down" style={{ width }} />}
+            <li key={r.symbol} className="grid min-h-7 grid-cols-[3.5rem_minmax(0,1fr)_4.5rem] items-center gap-3">
+              <span className="text-body-medium text-text-primary">{r.symbol}</span>
+              {/* Bars are drawn in physical left/right: a chart, not text. */}
+              <span aria-hidden="true" className="flex h-2.5">
+                <span className="flex flex-1 justify-end border-r border-separator-border">
+                  {!up && <span className="block h-full rounded-l-sm bg-chart-negative" style={{ width }} />}
                 </span>
                 <span className="flex flex-1">
-                  {up && <span className="block h-3 rounded-r-[6px] bg-up" style={{ width }} />}
+                  {up && <span className="block h-full rounded-r-sm bg-chart-positive" style={{ width }} />}
                 </span>
               </span>
-              <span className={`text-right text-[14px] ${up ? "text-up-text" : "text-down-text"}`}>
+              <span className={cx("text-end text-body-medium", up ? "text-text-positive" : "text-text-negative")}>
                 {pct(r.changePct)}
               </span>
             </li>
           );
         })}
       </ul>
-    </section>
+    </Card>
   );
 }

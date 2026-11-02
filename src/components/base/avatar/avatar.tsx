@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import type { HTMLAttributes, Ref } from "react";
+import type { ComponentType, HTMLAttributes, Ref } from "react";
 import { cx, sortCx } from "@/utils/cx";
 
 /**
@@ -12,8 +12,8 @@ import { cx, sortCx } from "@/utils/cx";
  *   md = 32   sidebar workspace / team card  (initials 16/22 semibold)
  *   lg = 36   people cards                   (initials 18/24 semibold)
  *
- * Renders a photo when `src` is given, otherwise centered initials on a
- * tinted disc. Initial tints from Figma:
+ * Renders a photo when `src` is given, otherwise centered initials (or, with
+ * `icon`, a glyph at the initials' size) on a tinted disc. Initial tints from Figma:
  *   neutral → bg avatar/neutral/background, text text/secondary
  *   blue    → bg color/blue/300,    text color/blue/900
  *   lime    → bg color/lime/200,    text color/lime/700
@@ -31,6 +31,8 @@ export interface AvatarProps extends HTMLAttributes<HTMLSpanElement> {
   alt?: string;
   /** Fallback initials, e.g. "M". */
   initials?: string;
+  /** Fallback glyph when there are no initials, e.g. a person icon. */
+  icon?: ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>;
   ref?: Ref<HTMLSpanElement>;
 }
 
@@ -56,6 +58,7 @@ export function Avatar({
   src,
   alt,
   initials,
+  icon: Icon,
   className,
   ref,
   ...props
@@ -74,9 +77,11 @@ export function Avatar({
           decoding="async"
           className="size-full object-cover"
         />
-      ) : (
+      ) : initials ? (
         initials
-      )}
+      ) : Icon ? (
+        <Icon className="size-[60%]" aria-hidden />
+      ) : null}
     </span>
   );
 }

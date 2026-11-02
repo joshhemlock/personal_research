@@ -39,6 +39,10 @@ import { cx } from "@/utils/cx";
  * footer. Rows mirror the sidebar nav item pattern (icon + label + optional
  * counter) but use the menu tokens from Figma (text/primary label,
  * background/primary/hover on hover + the selected row).
+ *
+ * The card's identity (`name`, `detail`, `avatar`), the menu rows (`groups`)
+ * and the footer can be supplied by the app; the Board team copy is the
+ * default.
  */
 
 type IconComponent = ComponentType<{
@@ -46,14 +50,14 @@ type IconComponent = ComponentType<{
   "aria-hidden"?: boolean | "true" | "false";
 }>;
 
-type MenuRow = {
+export type MenuRow = {
   icon: IconComponent;
   label: string;
   badge?: string;
   isSelected?: boolean;
 };
 
-type MenuGroup = {
+export type MenuGroup = {
   id: string;
   label?: string;
   items: MenuRow[];
@@ -141,15 +145,43 @@ const subscribeMobile = (listener: () => void) => {
   return () => query.removeEventListener("change", listener);
 };
 
+const BOARD_AVATAR = <Avatar size="md" color="blue" src="/brand/boardui_logo_circle.webp" alt="Board team" />;
+
+const BOARD_FOOTER = (
+  <>
+    <span className="text-body-2-medium whitespace-nowrap text-text-tertiary">BoardUI</span>
+    <span className="inline-flex items-center justify-center rounded-sm bg-background-tertiary-default px-1 py-px text-body-2-medium whitespace-nowrap text-text-tertiary">
+      v1.0.1
+    </span>
+  </>
+);
+
 export function DashboardTeamMenu({
   collapsed = false,
   className,
   showThemeToggle = false,
+  name = "Board team",
+  detail = "hi@boardui.com",
+  avatar = BOARD_AVATAR,
+  groups = GROUPS,
+  footer = BOARD_FOOTER,
+  onSelect,
 }: {
   collapsed?: boolean;
   className?: string;
   /** Show appearance controls inside the menu instead of the sidebar. */
   showThemeToggle?: boolean;
+  /** Card title, also the trigger's accessible name. */
+  name?: string;
+  /** Second line under the name. */
+  detail?: ReactNode;
+  /** 32px avatar on the card and in the menu header. */
+  avatar?: ReactNode;
+  groups?: MenuGroup[];
+  /** Bottom row of the menu (product name and version by default). */
+  footer?: ReactNode;
+  /** Called with the label of the row chosen, after the menu closes. */
+  onSelect?: (label: string) => void;
 }) {
   const localize = useTemplateCopy();
   const languageSelector = useTemplateLanguageSelector();
@@ -164,7 +196,7 @@ export function DashboardTeamMenu({
   return localize((
     <AriaDialogTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
       <AriaButton
-        aria-label="Board team"
+        aria-label={name}
         className={cx(
           "flex cursor-pointer items-center overflow-hidden outline-none",
           "border-2 border-transparent hover:border-border-button-hover",
@@ -177,11 +209,11 @@ export function DashboardTeamMenu({
         )}
       >
         <span className="flex min-w-0 items-center gap-2">
-          <Avatar size="md" color="blue" src="/brand/boardui_logo_circle.webp" alt="Board team" />
+          {avatar}
           <Collapsible collapsed={collapsed}>
             <span className="flex min-w-0 flex-col items-start justify-center">
-              <span className="text-body-medium whitespace-nowrap text-text-primary">Board team</span>
-              <span className="text-body-regular whitespace-nowrap text-text-secondary">hi@boardui.com</span>
+              <span className="text-body-medium whitespace-nowrap text-text-primary">{name}</span>
+              <span className="text-body-regular whitespace-nowrap text-text-secondary">{detail}</span>
             </span>
           </Collapsible>
         </span>
@@ -205,20 +237,28 @@ export function DashboardTeamMenu({
           "data-[exiting]:opacity-0 data-[exiting]:scale-95 data-[exiting]:blur-[2px]",
         )}
       >
-        <AriaDialog aria-label="Board team menu" className="flex flex-col gap-[7px] outline-none">
+        <AriaDialog aria-label={`${name} menu`} className="flex flex-col gap-[7px] outline-none">
           {/* Header */}
           <div className="flex w-full items-center gap-2 px-2 pt-1">
-            <Avatar size="md" color="blue" src="/brand/boardui_logo_circle.webp" alt="Board team" />
+            {avatar}
             <div className="flex min-w-0 flex-col items-start justify-center">
-              <span className="text-body-medium whitespace-nowrap text-text-primary">Board team</span>
-              <span className="text-body-regular whitespace-nowrap text-text-secondary">hi@boardui.com</span>
+              <span className="text-body-medium whitespace-nowrap text-text-primary">{name}</span>
+              <span className="text-body-regular whitespace-nowrap text-text-secondary">{detail}</span>
             </div>
           </div>
 
           {/* Grouped sidebar-style rows */}
           <div className="flex w-full flex-col">
-            {GROUPS.map((group, index) => (
-              <Group key={group.id} group={group} showDivider={index > 0} onSelect={() => setIsOpen(false)}>
+            {groups.map((group, index) => (
+              <Group
+                key={group.id}
+                group={group}
+                showDivider={index > 0}
+                onSelect={(label) => {
+                  setIsOpen(false);
+                  onSelect?.(label);
+                }}
+              >
                 {showThemeToggle && group.id === "personal" && (
                   <div className="flex w-full items-center justify-between gap-2.5 rounded-2lg px-2 py-1">
                     <span className="flex min-w-0 flex-1 items-center gap-2">
@@ -234,19 +274,14 @@ export function DashboardTeamMenu({
           </div>
 
           {/* Footer */}
-          <div className="flex w-full items-center justify-between px-2 pt-1 pb-2">
-            <span className="text-body-2-medium whitespace-nowrap text-text-tertiary">BoardUI</span>
-            <span className="inline-flex items-center justify-center rounded-sm bg-background-tertiary-default px-1 py-px text-body-2-medium whitespace-nowrap text-text-tertiary">
-              v1.0.1
-            </span>
-          </div>
+          <div className="flex w-full items-center justify-between px-2 pt-1 pb-2">{footer}</div>
         </AriaDialog>
       </AriaPopover>
     </AriaDialogTrigger>
   ));
 }
 
-function Group({ group, showDivider, onSelect, children }: { group: MenuGroup; showDivider: boolean; onSelect: () => void; children?: ReactNode }) {
+function Group({ group, showDivider, onSelect, children }: { group: MenuGroup; showDivider: boolean; onSelect: (label: string) => void; children?: ReactNode }) {
   const localize = useTemplateCopy();
   return localize((
     <>
@@ -257,7 +292,7 @@ function Group({ group, showDivider, onSelect, children }: { group: MenuGroup; s
         )}
         <div className="flex w-full flex-col gap-1">
           {group.items.map((item) => (
-            <TeamMenuItem key={item.label} {...item} onSelect={onSelect} />
+            <TeamMenuItem key={item.label} {...item} onSelect={() => onSelect(item.label)} />
           ))}
           {children}
         </div>
