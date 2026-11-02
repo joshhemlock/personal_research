@@ -1,12 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, Suspense, useContext, useEffect, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { RiMenuLine } from "@remixicon/react";
 import { IconButton } from "@/components/base/buttons/icon-button";
 import { whenIdle } from "./preload";
 import { ShellPageProvider } from "./ShellPage";
-import { Sidebar } from "./Sidebar";
+import { Sidebar, SidebarFallback } from "./Sidebar";
 
 const loadNavDrawer = () => import("./NavDrawer");
 const NavDrawer = dynamic(() => import("./NavDrawer").then((m) => m.NavDrawer), { ssr: false });
@@ -53,7 +53,12 @@ export function ShellFrame({ live, topBar, children }: ShellFrameProps) {
       <NavContext.Provider value={control}>
         <div className="flex min-h-dvh items-start gap-4 bg-background-full p-3 max-sm:p-2">
           <div className="sticky top-3 hidden h-[calc(100dvh-24px)] shrink-0 lg:flex">
-            <Sidebar live={live} />
+            {/* The sidebar follows the URL; a prerender that can't know it
+                (a route param outside generateStaticParams) shows it with
+                nothing selected until the request fills it in. */}
+            <Suspense fallback={<SidebarFallback live={live} />}>
+              <Sidebar live={live} />
+            </Suspense>
           </div>
           {drawerUsed && <NavDrawer isOpen={navOpen} onOpenChange={setNavOpen} live={live} />}
           <div className="flex min-w-0 flex-1 flex-col gap-6 pt-1.5 pb-6">

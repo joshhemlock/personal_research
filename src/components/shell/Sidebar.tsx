@@ -32,7 +32,7 @@ import { version } from "../../../package.json";
 import { cx } from "@/utils/cx";
 import { BrandMark } from "./Logo";
 import type { NavKey } from "./nav";
-import { pageForPath } from "./page-state";
+import { DEFAULT_ASK_LABEL, DEFAULT_SYMBOL, pageForPath } from "./page-state";
 import { useShellPage } from "./ShellPage";
 
 export type SidebarProps = {
@@ -54,6 +54,9 @@ const notYet = () => {};
  * Chart and Financials rows open and the ask label follow the screen on view
  * (useShellPage). A pressed row is marked straight away, before its screen
  * has loaded, so the selection glides the moment the row is clicked.
+ *
+ * It reads the URL, which a prerender of a route with an unknown param
+ * can't: render it inside <Suspense> with <SidebarFallback> as the fallback.
  */
 export function Sidebar({ live, mobile = false, onClose, className }: SidebarProps) {
   const { active, symbol, askLabel } = useShellPage();
@@ -61,6 +64,45 @@ export function Sidebar({ live, mobile = false, onClose, className }: SidebarPro
   // The row pressed on this URL; it stops counting once the URL changes.
   const [pressed, setPressed] = useState<{ key: NavKey | undefined; from: string } | null>(null);
   const selected = pressed && pressed.from === pathname ? pressed.key : active;
+  return (
+    <SidebarPanel
+      live={live}
+      mobile={mobile}
+      onClose={onClose}
+      className={className}
+      selected={selected}
+      symbol={symbol}
+      askLabel={askLabel}
+      onNavigate={(href) => {
+        if (href !== pathname) setPressed({ key: pageForPath(href).active, from: pathname });
+      }}
+    />
+  );
+}
+
+/** The sidebar before the URL is known (a prerendered shell for an unknown param): nothing selected yet. */
+export function SidebarFallback({ live }: { live: boolean }) {
+  return <SidebarPanel live={live} symbol={DEFAULT_SYMBOL} askLabel={DEFAULT_ASK_LABEL} />;
+}
+
+type SidebarPanelProps = Omit<SidebarProps, "mobile"> & {
+  mobile?: boolean;
+  selected?: NavKey;
+  symbol: string;
+  askLabel: string;
+  onNavigate?: (href: string) => void;
+};
+
+function SidebarPanel({
+  live,
+  mobile = false,
+  onClose,
+  className,
+  selected,
+  symbol,
+  askLabel,
+  onNavigate,
+}: SidebarPanelProps) {
   const items: DashboardNavItem[] = [
     { key: "overview", label: "Overview", icon: RiDashboardLine, href: "/" },
     { key: "chart", label: "Chart", icon: RiStockLine, href: `/stock/${symbol}` },
@@ -99,9 +141,7 @@ export function Sidebar({ live, mobile = false, onClose, className }: SidebarPro
       onClose={onClose}
       fluid={mobile}
       selected={selected ?? ""}
-      onNavigate={(href) => {
-        if (href !== pathname) setPressed({ key: pageForPath(href).active, from: pathname });
-      }}
+      onNavigate={onNavigate}
       items={items}
       quickSearch={false}
       sections={[tools]}

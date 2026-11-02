@@ -235,7 +235,7 @@ function Menu({ label, icon: Icon, iconOnly = false, placement = "bottom start",
       {iconOnly ? null : (
         <>
           {/* Compare / Indicators drop their labels when the column gets narrow. */}
-          <span className="px-1 @max-[44rem]:sr-only">{label}</span>
+          <span className="px-1 @max-[52rem]:sr-only">{label}</span>
           <RiArrowDownSLine
             aria-hidden
             className={cx("size-4 shrink-0 text-foreground-icon-secondary transition-transform duration-200 ease-out", open && "rotate-180")}

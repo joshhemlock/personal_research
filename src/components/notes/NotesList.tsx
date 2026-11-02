@@ -82,8 +82,7 @@ function visibleNotes(notes: NoteListItem[], f: ListFilter, draft: NoteDraft | n
  * The search field and the filter answer at once; the rows follow in a
  * deferred render, which React runs as a view transition: rows that leave
  * blur out, rows that arrive blur in, and the rest glide to their new places.
- */
-/**
+ *
  * Outside a note (the loading state) there is no draft: the list then marks
  * the row that was clicked, if any.
  */
@@ -165,7 +164,11 @@ export function NotesList({ notes, headingId }: { notes: NoteListItem[]; heading
                   <Link
                     href={`/notes/${n.id}`}
                     aria-current={on ? "page" : undefined}
-                    onClick={() => openingStore.set(n.id)}
+                    onClick={(e) => {
+                      // A plain click on another note: this tab is about to open it.
+                      const plain = e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+                      if (plain && !on) openingStore.set(n.id);
+                    }}
                     className={cx(
                       "flex items-start gap-3 rounded-2xl p-2.5 outline-none",
                       "transition-colors duration-150 ease focus-visible:ring-2 focus-visible:ring-border-focus-ring",
